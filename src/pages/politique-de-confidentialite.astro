@@ -1,0 +1,44 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import { breadcrumbLd } from "../utils/seo.js";
+import { SITE } from "../data/site.js";
+---
+
+<Layout
+  title="Politique de confidentialité"
+  description="Comment MONOFORGE traite les données transmises via le site et le configurateur."
+  noindex={true}
+  jsonLd={breadcrumbLd([{ name: "Politique de confidentialité", path: "/politique-de-confidentialite" }])}
+>
+  <Breadcrumbs items={[{ name: "Confidentialité", path: "/politique-de-confidentialite" }]} />
+
+  <section class="container-mf max-w-3xl pb-24 pt-6">
+    <h1 class="font-display text-3xl font-bold text-(--color-paper)">Politique de confidentialité</h1>
+
+    <div class="prose-mf mt-10">
+      <p class="rounded border border-(--color-forge-500)/30 bg-(--color-forge-500)/5 p-4 text-sm">
+        Page à adapter selon les outils réellement utilisés (formulaire, mesure d'audience, hébergement) avant mise en ligne.
+      </p>
+
+      <h2>Données collectées</h2>
+      <p>
+        Le configurateur et le formulaire de contact transmettent les informations que vous saisissez volontairement (nom, email, informations sur votre véhicule et votre projet) directement vers l'adresse email de {SITE.name}, sans passage par une base de données du site.
+      </p>
+
+      <h2>Finalité</h2>
+      <p>Ces données sont utilisées exclusivement pour répondre à votre demande et assurer le suivi de votre projet éventuel. Elles ne sont ni vendues, ni cédées à des tiers à des fins commerciales.</p>
+
+      <h2>Durée de conservation</h2>
+      <p>Les échanges liés à un projet sont conservés pendant la durée nécessaire à son traitement, puis à des fins de garantie et d'obligations légales le cas échéant.</p>
+
+      <h2>Cookies</h2>
+      <p>Ce site n'utilise pas de cookies publicitaires ni de traceurs tiers à des fins de profilage. [À compléter si un outil de mesure d'audience est ajouté ultérieurement.]</p>
+
+      <h2>Vos droits</h2>
+      <p>
+        Conformément au Règlement Général sur la Protection des Données (RGPD), vous disposez d'un droit d'accès, de rectification et de suppression de vos données. Pour l'exercer, contactez-nous à <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+      </p>
+    </div>
+  </section>
+</Layout>

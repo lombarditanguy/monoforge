@@ -1,0 +1,59 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import { breadcrumbLd } from "../utils/seo.js";
+import { SITE } from "../data/site.js";
+---
+
+<Layout
+  title="Mentions légales"
+  description="Mentions légales du site MONOFORGE."
+  noindex={true}
+  jsonLd={breadcrumbLd([{ name: "Mentions légales", path: "/mentions-legales" }])}
+>
+  <Breadcrumbs items={[{ name: "Mentions légales", path: "/mentions-legales" }]} />
+
+  <section class="container-mf max-w-3xl pb-24 pt-6">
+    <h1 class="font-display text-3xl font-bold text-(--color-paper)">Mentions légales</h1>
+
+    <div class="prose-mf mt-10">
+      <p class="rounded border border-(--color-forge-500)/30 bg-(--color-forge-500)/5 p-4 text-sm">
+        Page à compléter avant mise en ligne : les champs entre crochets doivent être remplacés par les informations réelles et vérifiées de l'entreprise (forme juridique, SIRET, RCS, capital social, hébergeur) avant publication.
+      </p>
+
+      <h2>Éditeur du site</h2>
+      <p>
+        Le site {SITE.url.replace("https://", "")} est édité par {SITE.legalName}.<br />
+        Forme juridique : [à compléter]<br />
+        Siège social : [adresse à compléter], {SITE.addressLocality}<br />
+        SIRET : [à compléter]<br />
+        RCS : [à compléter]<br />
+        Directeur de la publication : [nom à compléter]<br />
+        Contact : <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+      </p>
+
+      <h2>Hébergement</h2>
+      <p>
+        Ce site est hébergé par : [nom de l'hébergeur, adresse et contact à compléter selon la solution d'hébergement retenue].
+      </p>
+
+      <h2>Propriété intellectuelle</h2>
+      <p>
+        L'ensemble des contenus présents sur ce site (textes, dessins techniques, illustrations, structure) est la propriété de {SITE.name}, sauf mention contraire, et ne peut être reproduit sans autorisation préalable.
+      </p>
+
+      <h2>Fabrication et sous-traitance</h2>
+      <p>
+        {SITE.name} conçoit et coordonne les projets de jantes forgées sur mesure présentés sur ce site. La fabrication est assurée par un atelier de forgeage partenaire. Les caractéristiques techniques annoncées (tailles, matières, délais) sont données à titre indicatif et confirmées pour chaque projet lors de l'étude technique et du devis.
+      </p>
+
+      <h2>Responsabilité</h2>
+      <p>
+        {SITE.name} s'efforce d'assurer l'exactitude des informations diffusées sur ce site, sans garantir qu'elles soient exemptes d'erreurs ou d'omissions. Toute utilisation route des produits doit respecter la réglementation applicable, y compris, le cas échéant, les démarches d'homologation individuelle.
+      </p>
+
+      <h2>Droit applicable</h2>
+      <p>Le présent site et ses mentions légales sont soumis au droit français.</p>
+    </div>
+  </section>
+</Layout>
