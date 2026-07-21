@@ -1,0 +1,21 @@
+---
+import Layout from "../layouts/Layout.astro";
+import WheelGraphic from "../components/WheelGraphic.astro";
+---
+
+<Layout
+  title="Page introuvable"
+  description="Cette page n'existe pas ou plus."
+  noindex={true}
+>
+  <section class="container-mf flex flex-col items-center py-32 text-center">
+    <WheelGraphic spokes={8} spokeStyle="straight" size={160} accent={false} />
+    <p class="chip mt-8">Erreur 404</p>
+    <h1 class="mt-6 font-display text-3xl font-bold text-(--color-paper) sm:text-4xl">Cette page n'a pas été forgée.</h1>
+    <p class="mt-4 max-w-md text-(--color-mist)">Le lien suivi est peut-être obsolète. Retournez à l'accueil ou explorez le catalogue.</p>
+    <div class="mt-9 flex flex-col gap-4 sm:flex-row">
+      <a href="/" class="btn btn-forge">Retour à l'accueil</a>
+      <a href="/catalogue" class="btn btn-outline">Voir le catalogue</a>
+    </div>
+  </section>
+</Layout>
