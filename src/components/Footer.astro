@@ -1,0 +1,49 @@
+---
+import { SITE } from "../data/site.js";
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-32 border-t border-(--color-line) bg-(--color-surface)">
+  <div class="container-mf grid gap-12 py-16 md:grid-cols-4">
+    <div class="md:col-span-2">
+      <p class="font-display text-xl font-bold text-(--color-paper)">{SITE.name}</p>
+      <p class="mt-3 max-w-sm text-sm leading-relaxed text-(--color-mist)">
+        {SITE.description}
+      </p>
+      <p class="mt-6 text-xs uppercase tracking-widest text-(--color-fog)">Atelier partenaire — {SITE.addressLocality}</p>
+    </div>
+
+    <nav aria-label="Plan du site">
+      <p class="section-label mb-4">Le site</p>
+      <ul class="space-y-2.5 text-sm text-(--color-mist)">
+        <li><a href="/catalogue" class="hover:text-(--color-paper)">Catalogue</a></li>
+        <li><a href="/sur-mesure" class="hover:text-(--color-paper)">Sur-mesure</a></li>
+        <li><a href="/savoir-faire" class="hover:text-(--color-paper)">Savoir-faire</a></li>
+        <li><a href="/journal" class="hover:text-(--color-paper)">Journal</a></li>
+        <li><a href="/faq" class="hover:text-(--color-paper)">FAQ</a></li>
+        <li><a href="/a-propos" class="hover:text-(--color-paper)">À propos</a></li>
+      </ul>
+    </nav>
+
+    <div>
+      <p class="section-label mb-4">Contact</p>
+      <ul class="space-y-2.5 text-sm text-(--color-mist)">
+        <li><a href={`mailto:${SITE.email}`} class="hover:text-(--color-paper)">{SITE.email}</a></li>
+        <li>{SITE.phoneDisplay}</li>
+        <li>{SITE.hoursNote}</li>
+        <li><a href="/configurateur" class="mt-1 inline-block text-(--color-forge-400) hover:text-(--color-forge-300)">Démarrer un projet →</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="hairline"></div>
+
+  <div class="container-mf flex flex-col gap-3 py-6 text-xs text-(--color-fog) md:flex-row md:items-center md:justify-between">
+    <p>© {year} {SITE.name}. Jantes forgées sur mesure — fabrication à la demande.</p>
+    <div class="flex flex-wrap gap-x-6 gap-y-2">
+      <a href="/mentions-legales" class="hover:text-(--color-mist)">Mentions légales</a>
+      <a href="/politique-de-confidentialite" class="hover:text-(--color-mist)">Confidentialité</a>
+      <a href="/cgv" class="hover:text-(--color-mist)">CGV</a>
+    </div>
+  </div>
+</footer>
