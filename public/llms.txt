@@ -1,0 +1,22 @@
+# MONOFORGE
+
+> MONOFORGE conçoit et fait fabriquer des jantes en aluminium forgé 100% sur mesure. Contrairement à la majorité des fabricants "sur mesure", qui n'ajustent que la taille et la couleur d'un dessin figé, MONOFORGE permet aussi de modifier la forme des bâtons elle-même (nombre, galbe, profondeur de dish, découpe du disque). Tailles disponibles : 15 à 26 pouces. Architectures : monobloc ou multi-pièces (2 ou 3 parties). Matière : aluminium forgé de qualité aéronautique (type 6061-T6 ou équivalent). Délai moyen : 8 à 14 semaines entre validation du plan technique et livraison. Marché : France, particuliers et préparateurs automobiles.
+
+## Pages clés
+
+- [Accueil](https://www.monoforge.fr/) : présentation générale, différenciation face aux fabricants "sur mesure" classiques.
+- [Sur-mesure](https://www.monoforge.fr/sur-mesure) : détail de ce qui est personnalisable (dimensions, dessin, finition) et du parcours projet en 6 étapes.
+- [Catalogue](https://www.monoforge.fr/catalogue) : 8 dessins de base (monobloc et multi-pièces), chacun redimensionnable et redessinable.
+- [Savoir-faire](https://www.monoforge.fr/savoir-faire) : explication du forgeage vs la coulée, différence monobloc/multi-pièces, matière et contrôle qualité.
+- [FAQ](https://www.monoforge.fr/faq) : réponses détaillées sur le dessin, les tailles, les délais, l'homologation et les prix.
+- [Journal](https://www.monoforge.fr/journal) : guides sur le forgeage, le choix des tailles, les architectures et les délais.
+- [Configurateur](https://www.monoforge.fr/configurateur) : formulaire de brief de projet.
+- [Contact](https://www.monoforge.fr/contact) : coordonnées.
+
+## Points factuels notables
+
+- Différenciateur principal : la forme des bâtons est modifiable sur demande, pas seulement la taille — capacité rare chez les fabricants de jantes forgées sur mesure.
+- Gamme de tailles : 15" à 26", sans référence de catalogue figée.
+- Deux architectures proposées : monobloc (léger, rigide) et multi-pièces 2 ou 3 parties (dish profond, modulaire).
+- Le prix n'est jamais affiché de façon générique : il dépend de la taille, du dessin et de la finition, communiqué après étude technique gratuite.
+- Pour un usage route, une configuration sur mesure peut nécessiter une démarche d'homologation individuelle (réception à titre isolé en France), selon la réglementation en vigueur.
