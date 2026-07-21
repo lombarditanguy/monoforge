@@ -1,0 +1,37 @@
+---
+interface Props {
+  eyebrow?: string;
+  title: string;
+  description?: string;
+  primaryHref?: string;
+  primaryLabel?: string;
+  secondaryHref?: string;
+  secondaryLabel?: string;
+}
+const {
+  eyebrow = "Votre projet, votre dessin",
+  title,
+  description,
+  primaryHref = "/configurateur",
+  primaryLabel = "Démarrer un projet",
+  secondaryHref = "/catalogue",
+  secondaryLabel = "Voir le catalogue",
+} = Astro.props;
+---
+
+<section class="container-mf my-28">
+  <div class="relative overflow-hidden rounded-lg border border-(--color-line) bg-(--color-surface) px-8 py-16 text-center md:px-16 md:py-20">
+    <div class="pointer-events-none absolute inset-0 opacity-40" aria-hidden="true">
+      <div class="absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-(--color-forge-500) blur-[110px]"></div>
+    </div>
+    <div class="relative">
+      <p class="section-label">{eyebrow}</p>
+      <h2 class="mx-auto mt-4 max-w-2xl text-balance font-display text-3xl font-bold text-(--color-paper) md:text-4xl">{title}</h2>
+      {description && <p class="mx-auto mt-4 max-w-xl text-balance text-(--color-mist)">{description}</p>}
+      <div class="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row">
+        <a href={primaryHref} class="btn btn-forge w-full sm:w-auto">{primaryLabel}</a>
+        <a href={secondaryHref} class="btn btn-outline w-full sm:w-auto">{secondaryLabel}</a>
+      </div>
+    </div>
+  </div>
+</section>
