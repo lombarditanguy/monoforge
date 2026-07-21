@@ -1,0 +1,149 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import { breadcrumbLd } from "../utils/seo.js";
+import { wheels } from "../data/wheels.js";
+import { SITE } from "../data/site.js";
+---
+
+<Layout
+  title="Configurateur — Démarrer un projet de jantes sur mesure"
+  description="Décrivez votre véhicule, vos tailles et le style recherché : recevez une première lecture technique gratuite pour votre projet de jantes forgées sur mesure."
+  jsonLd={breadcrumbLd([{ name: "Configurateur", path: "/configurateur" }])}
+>
+  <Breadcrumbs items={[{ name: "Configurateur", path: "/configurateur" }]} />
+
+  <section class="container-mf pb-16 pt-6">
+    <p class="chip">Étape 1/1 — le brief</p>
+    <h1 class="mt-6 max-w-2xl text-balance font-display text-4xl font-bold leading-tight text-(--color-paper) sm:text-5xl">
+      Décrivez votre projet, on s'occupe de la technique.
+    </h1>
+    <p class="mt-5 max-w-xl text-balance text-lg leading-relaxed text-(--color-mist)">
+      Plus votre brief est précis, plus notre première réponse le sera. Comptez 5 minutes — l'étude technique qui suit est gratuite et sans engagement.
+    </p>
+  </section>
+
+  <section class="container-mf pb-24">
+    <div class="grid gap-12 lg:grid-cols-[1fr_20rem]">
+      <form id="mf-config-form" class="card-mf space-y-8 p-6 md:p-10" novalidate>
+        <fieldset>
+          <legend class="section-label mb-5">Votre véhicule</legend>
+          <div class="grid gap-5 sm:grid-cols-2">
+            <label class="block">
+              <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Marque &amp; modèle *</span>
+              <input required name="vehicule" type="text" placeholder="Ex : Porsche 992 GT3" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) placeholder:text-(--color-fog) focus:border-(--color-forge-500) focus:outline-none" />
+            </label>
+            <label class="block">
+              <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Année</span>
+              <input name="annee" type="text" placeholder="Ex : 2023" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) placeholder:text-(--color-fog) focus:border-(--color-forge-500) focus:outline-none" />
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend class="section-label mb-5">Tailles souhaitées</legend>
+          <div class="grid gap-5 sm:grid-cols-3">
+            <label class="block">
+              <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Diamètre</span>
+              <input name="diametre" type="text" placeholder="Ex : 20&quot; AV / 21&quot; AR" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) placeholder:text-(--color-fog) focus:border-(--color-forge-500) focus:outline-none" />
+            </label>
+            <label class="block">
+              <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Largeur</span>
+              <input name="largeur" type="text" placeholder="Ex : 9,5&quot; / 11,5&quot;" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) placeholder:text-(--color-fog) focus:border-(--color-forge-500) focus:outline-none" />
+            </label>
+            <label class="block">
+              <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Déport souhaité</span>
+              <input name="deport" type="text" placeholder="Si connu, sinon on calcule" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) placeholder:text-(--color-fog) focus:border-(--color-forge-500) focus:outline-none" />
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend class="section-label mb-5">Style</legend>
+          <div class="grid gap-5 sm:grid-cols-2">
+            <label class="block">
+              <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Point de départ</span>
+              <select name="modele" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) focus:border-(--color-forge-500) focus:outline-none">
+                <option value="Dessin inédit">Dessin inédit — feuille blanche</option>
+                {wheels.map((w) => <option value={w.name}>{w.name} — {w.style}</option>)}
+              </select>
+            </label>
+            <label class="block">
+              <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Finition envisagée</span>
+              <input name="finition" type="text" placeholder="Ex : noir mat, brossé..." class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) placeholder:text-(--color-fog) focus:border-(--color-forge-500) focus:outline-none" />
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend class="section-label mb-5">Votre projet</legend>
+          <label class="block">
+            <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Décrivez votre projet, vos contraintes, vos délais *</span>
+            <textarea required name="message" rows="5" placeholder="Usage route ou piste, gros freinage, garde au sol visée, délai souhaité..." class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) placeholder:text-(--color-fog) focus:border-(--color-forge-500) focus:outline-none"></textarea>
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend class="section-label mb-5">Vos coordonnées</legend>
+          <div class="grid gap-5 sm:grid-cols-2">
+            <label class="block">
+              <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Nom *</span>
+              <input required name="nom" type="text" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) focus:border-(--color-forge-500) focus:outline-none" />
+            </label>
+            <label class="block">
+              <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Email *</span>
+              <input required name="email" type="email" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) focus:border-(--color-forge-500) focus:outline-none" />
+            </label>
+          </div>
+        </fieldset>
+
+        <div>
+          <button type="submit" class="btn btn-forge w-full sm:w-auto">Envoyer mon projet</button>
+          <p class="mt-3 text-xs text-(--color-fog)">
+            L'envoi ouvre votre messagerie avec le brief pré-rempli à destination de {SITE.email}. Réponse sous 48h ouvrées.
+          </p>
+        </div>
+      </form>
+
+      <aside class="h-fit space-y-6">
+        <div class="card-mf p-6">
+          <h2 class="font-display text-base font-bold text-(--color-paper)">Ce qui se passe ensuite</h2>
+          <ol class="mt-4 space-y-3 text-sm text-(--color-mist)">
+            <li><strong class="text-(--color-paper)">1.</strong> Lecture technique de votre brief sous 48h.</li>
+            <li><strong class="text-(--color-paper)">2.</strong> Échange pour affiner les cotes et le style.</li>
+            <li><strong class="text-(--color-paper)">3.</strong> Plan technique et devis ferme.</li>
+          </ol>
+        </div>
+        <div class="card-mf p-6">
+          <h2 class="font-display text-base font-bold text-(--color-paper)">Besoin de parler à quelqu'un ?</h2>
+          <p class="mt-2 text-sm text-(--color-mist)">{SITE.phoneDisplay}<br />{SITE.hoursNote}</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+</Layout>
+
+<script define:vars={{ email: SITE.email }}>
+  const form = document.getElementById("mf-config-form");
+  form?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const data = new FormData(form);
+    const lines = [
+      `Véhicule : ${data.get("vehicule") || "—"} (${data.get("annee") || "année non précisée"})`,
+      `Diamètre souhaité : ${data.get("diametre") || "—"}`,
+      `Largeur souhaitée : ${data.get("largeur") || "—"}`,
+      `Déport souhaité : ${data.get("deport") || "—"}`,
+      `Point de départ : ${data.get("modele") || "—"}`,
+      `Finition envisagée : ${data.get("finition") || "—"}`,
+      "",
+      "Projet :",
+      String(data.get("message") || "—"),
+      "",
+      `Nom : ${data.get("nom") || "—"}`,
+      `Email : ${data.get("email") || "—"}`,
+    ];
+    const subject = encodeURIComponent(`Projet jantes sur mesure — ${data.get("vehicule") || "nouveau projet"}`);
+    const body = encodeURIComponent(lines.join("\n"));
+    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+  });
+</script>
