@@ -1,0 +1,137 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import CTASection from "../components/CTASection.astro";
+import WheelGraphic from "../components/WheelGraphic.astro";
+import { breadcrumbLd } from "../utils/seo.js";
+
+const steps = [
+  {
+    t: "Brief & inspiration",
+    d: "Vous nous envoyez votre véhicule, vos cotes actuelles (ou celles souhaitées), vos références visuelles et vos contraintes : passage de freins, garde au sol, style recherché.",
+  },
+  {
+    t: "Étude de faisabilité",
+    d: "Notre bureau technique vérifie la compatibilité (déport, alésage, dégagement d'étrier) et vous propose un premier dessin, fidèle au style choisi ou entièrement inédit.",
+  },
+  {
+    t: "Plan technique & devis",
+    d: "Rendu 3D, cotes complètes, poids estimé et devis ferme. Rien n'est forgé tant que vous n'avez pas validé le plan.",
+  },
+  {
+    t: "Forgeage",
+    d: "Fabrication en aluminium aéronautique forgé, monobloc ou multi-pièces selon la géométrie retenue.",
+  },
+  {
+    t: "Contrôle qualité",
+    d: "Contrôle dimensionnel, équilibrage statique et vérification visuelle de chaque jante avant finition.",
+  },
+  {
+    t: "Finition & livraison",
+    d: "Application de la finition choisie, montage à blanc si demandé, puis expédition ou remise en main propre.",
+  },
+];
+---
+
+<Layout
+  title="Jantes forgées sur mesure : toute taille, toute forme"
+  description="Comment MONOFORGE conçoit vos jantes forgées sur mesure : dessin personnalisable, toutes tailles et déports, du brief au plan technique validé avant forgeage."
+  jsonLd={breadcrumbLd([{ name: "Sur-mesure", path: "/sur-mesure" }])}
+>
+  <Breadcrumbs items={[{ name: "Sur-mesure", path: "/sur-mesure" }]} />
+
+  <section class="container-mf pb-20 pt-8 md:pt-14">
+    <div class="grid items-center gap-16 lg:grid-cols-2">
+      <div>
+        <p class="chip">Sur-mesure intégral</p>
+        <h1 class="mt-6 text-balance font-display text-4xl font-bold leading-[1.05] text-(--color-paper) sm:text-5xl">
+          Vous ne choisissez pas dans un catalogue. Vous dessinez votre jante.
+        </h1>
+        <p class="mt-6 max-w-lg text-balance text-lg leading-relaxed text-(--color-mist)">
+          La plupart des fabricants forgés « sur mesure » se limitent à adapter taille et déport à un dessin déjà arrêté. MONOFORGE va plus loin : le nombre de bâtons, leur galbe, la profondeur du dish et la découpe du disque sont redessinables pour votre projet — dans les limites de faisabilité technique validées lors de l'étude.
+        </p>
+        <div class="mt-9 flex flex-col gap-4 sm:flex-row">
+          <a href="/configurateur" class="btn btn-forge">Démarrer une étude gratuite</a>
+          <a href="/faq" class="btn btn-outline">Questions fréquentes</a>
+        </div>
+      </div>
+      <div class="mx-auto flex aspect-square w-full max-w-sm items-center justify-center">
+        <WheelGraphic spokes={15} spokeStyle="mesh" size={380} />
+      </div>
+    </div>
+  </section>
+
+  <div class="hairline"></div>
+
+  <section class="container-mf py-24">
+    <p class="section-label">Ce qui est modifiable</p>
+    <h2 class="mt-4 max-w-2xl text-balance font-display text-3xl font-bold text-(--color-paper) md:text-4xl">
+      Trois niveaux de personnalisation, un seul interlocuteur.
+    </h2>
+    <div class="mt-14 grid gap-px overflow-hidden rounded-lg border border-(--color-line) bg-(--color-line) md:grid-cols-3">
+      <div class="bg-(--color-ink) p-8">
+        <p class="font-display text-sm font-bold uppercase tracking-widest text-(--color-forge-400)">Dimensions</p>
+        <ul class="mt-4 space-y-3 text-sm text-(--color-mist)">
+          <li>Diamètre de 15″ à 26″</li>
+          <li>Largeur ajustée au montage souhaité</li>
+          <li>Déport (offset) calculé pour votre carrossage</li>
+          <li>Alésage central et perçage adaptés au véhicule</li>
+        </ul>
+      </div>
+      <div class="bg-(--color-ink) p-8">
+        <p class="font-display text-sm font-bold uppercase tracking-widest text-(--color-forge-400)">Dessin</p>
+        <ul class="mt-4 space-y-3 text-sm text-(--color-mist)">
+          <li>Nombre et galbe des bâtons</li>
+          <li>Profondeur de dish (concave)</li>
+          <li>Architecture monobloc ou multi-pièces</li>
+          <li>Design inédit ou réinterprétation d'un modèle du catalogue</li>
+        </ul>
+      </div>
+      <div class="bg-(--color-ink) p-8">
+        <p class="font-display text-sm font-bold uppercase tracking-widest text-(--color-forge-400)">Finition</p>
+        <ul class="mt-4 space-y-3 text-sm text-(--color-mist)">
+          <li>Brossé, poli miroir, mat ou satiné</li>
+          <li>Teintes personnalisées sur demande</li>
+          <li>Combinaisons bicolores centre / barrel</li>
+          <li>Marquage discret ou signature visible</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="container-mf py-24">
+    <p class="section-label">Du brief à la livraison</p>
+    <h2 class="mt-4 max-w-xl text-balance font-display text-3xl font-bold text-(--color-paper) md:text-4xl">
+      Le parcours d'un projet MONOFORGE
+    </h2>
+    <ol class="mt-14 space-y-0 border-t border-(--color-line)">
+      {steps.map((step, i) => (
+        <li class="grid gap-4 border-b border-(--color-line) py-8 md:grid-cols-[4rem_1fr]">
+          <span class="font-display text-2xl font-bold text-(--color-fog)">{String(i + 1).padStart(2, "0")}</span>
+          <div>
+            <h3 class="font-display text-lg font-bold text-(--color-paper)">{step.t}</h3>
+            <p class="mt-2 max-w-2xl text-sm leading-relaxed text-(--color-mist)">{step.d}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="container-mf py-10">
+    <div class="card-mf grid gap-8 p-8 md:grid-cols-2 md:p-12">
+      <div>
+        <p class="section-label">Bon à savoir</p>
+        <h2 class="mt-4 font-display text-2xl font-bold text-(--color-paper)">Délais &amp; homologation</h2>
+      </div>
+      <div class="prose-mf">
+        <p>Comptez en moyenne <strong>8 à 14 semaines</strong> entre la validation du plan technique et la réception du jeu complet, selon la complexité du dessin et la finition retenue.</p>
+        <p>Pour un usage route, certaines configurations sur mesure peuvent nécessiter une démarche d'homologation individuelle (réception à titre isolé) selon la réglementation en vigueur dans votre pays. Nous vous orientons sur cette démarche dès l'étude technique — voir notre <a href="/faq">FAQ</a> pour le détail.</p>
+      </div>
+    </div>
+  </section>
+
+  <CTASection
+    title="Décrivez votre projet, on s'occupe du reste."
+    description="Étude technique gratuite, plan validé avant forgeage, aucun engagement avant devis."
+  />
+</Layout>

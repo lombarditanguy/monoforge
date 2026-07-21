@@ -1,0 +1,50 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import WheelCard from "../../components/WheelCard.astro";
+import CTASection from "../../components/CTASection.astro";
+import { wheels } from "../../data/wheels.js";
+import { breadcrumbLd } from "../../utils/seo.js";
+
+const families = [...new Set(wheels.map((w) => w.family))];
+---
+
+<Layout
+  title="Catalogue de jantes forgées sur mesure"
+  description="8 dessins de jantes forgées MONOFORGE — monobloc et multi-pièces, de 17 à 24 pouces. Chaque modèle est un point de départ, entièrement redimensionnable et redessinable."
+  jsonLd={breadcrumbLd([{ name: "Catalogue", path: "/catalogue" }])}
+>
+  <Breadcrumbs items={[{ name: "Catalogue", path: "/catalogue" }]} />
+
+  <section class="container-mf pb-16 pt-6">
+    <p class="chip">8 dessins de base</p>
+    <h1 class="mt-6 max-w-2xl text-balance font-display text-4xl font-bold leading-tight text-(--color-paper) sm:text-5xl">
+      Le catalogue MONOFORGE
+    </h1>
+    <p class="mt-5 max-w-2xl text-balance text-lg leading-relaxed text-(--color-mist)">
+      Chaque modèle ci-dessous est un <strong class="text-(--color-paper)">point de départ</strong>, pas une limite : taille, largeur, déport et dessin des bâtons sont adaptables à votre projet. Cliquez sur un modèle pour voir ses caractéristiques, ou passez directement par le configurateur si vous partez d'une feuille blanche.
+    </p>
+
+    <div class="mt-8 flex flex-wrap gap-2" role="list" aria-label="Familles de jantes">
+      {families.map((f) => (
+        <span class="chip" role="listitem">{f}</span>
+      ))}
+    </div>
+  </section>
+
+  <section class="container-mf pb-10">
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {wheels.map((wheel) => <WheelCard wheel={wheel} />)}
+    </div>
+  </section>
+
+  <CTASection
+    eyebrow="Aucun de ces dessins ne convient tel quel ?"
+    title="Partez d'une feuille blanche avec notre bureau technique."
+    description="Décrivez votre projet : nous dessinons une jante inédite, taillée pour votre véhicule."
+    primaryHref="/configurateur"
+    primaryLabel="Démarrer un projet inédit"
+    secondaryHref="/sur-mesure"
+    secondaryLabel="Comprendre le sur-mesure"
+  />
+</Layout>

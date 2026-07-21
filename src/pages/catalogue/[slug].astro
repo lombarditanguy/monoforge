@@ -1,0 +1,99 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import WheelGraphic from "../../components/WheelGraphic.astro";
+import WheelCard from "../../components/WheelCard.astro";
+import CTASection from "../../components/CTASection.astro";
+import { wheels } from "../../data/wheels.js";
+import { breadcrumbLd, wheelProductLd } from "../../utils/seo.js";
+
+export function getStaticPaths() {
+  return wheels.map((wheel) => ({
+    params: { slug: wheel.slug },
+    props: { wheel },
+  }));
+}
+
+const { wheel } = Astro.props;
+const related = wheels.filter((w) => w.slug !== wheel.slug).slice(0, 3);
+
+const ld = [
+  breadcrumbLd([
+    { name: "Catalogue", path: "/catalogue" },
+    { name: wheel.name, path: `/catalogue/${wheel.slug}` },
+  ]),
+  wheelProductLd(wheel),
+];
+---
+
+<Layout
+  title={`${wheel.name} — jante forgée ${wheel.family.toLowerCase()} sur mesure`}
+  description={`${wheel.name} : ${wheel.style}, disponible en ${wheel.sizes}. Dessin, taille et finition entièrement adaptables à votre projet. ${wheel.blurb}`}
+  jsonLd={ld}
+>
+  <Breadcrumbs items={[{ name: "Catalogue", path: "/catalogue" }, { name: wheel.name, path: `/catalogue/${wheel.slug}` }]} />
+
+  <section class="container-mf grid gap-14 pb-20 pt-6 lg:grid-cols-2 lg:gap-20">
+    <div class="flex items-center justify-center rounded-lg border border-(--color-line) bg-(--color-surface-2) p-10 lg:sticky lg:top-28 lg:h-fit">
+      <WheelGraphic spokes={wheel.spokes} spokeStyle={wheel.spokeStyle} size={400} />
+    </div>
+
+    <div>
+      <p class="chip">{wheel.family}</p>
+      <h1 class="mt-5 text-balance font-display text-3xl font-bold leading-tight text-(--color-paper) sm:text-4xl">{wheel.name}</h1>
+      <p class="mt-2 text-(--color-mist)">{wheel.style}</p>
+      <p class="mt-6 max-w-lg leading-relaxed text-(--color-mist)">{wheel.blurb}</p>
+
+      <div class="mt-8 flex flex-wrap gap-2">
+        {wheel.tags.map((tag) => <span class="chip">{tag}</span>)}
+      </div>
+
+      <dl class="mt-10 grid grid-cols-2 gap-6 border-t border-(--color-line) pt-8 sm:grid-cols-3">
+        <div>
+          <dt class="text-xs uppercase tracking-widest text-(--color-fog)">Tailles</dt>
+          <dd class="mt-1 font-display text-lg font-bold text-(--color-paper)">{wheel.sizes}</dd>
+        </div>
+        <div>
+          <dt class="text-xs uppercase tracking-widest text-(--color-fog)">Largeurs</dt>
+          <dd class="mt-1 font-display text-lg font-bold text-(--color-paper)">{wheel.widths}</dd>
+        </div>
+        <div>
+          <dt class="text-xs uppercase tracking-widest text-(--color-fog)">Poids indicatif</dt>
+          <dd class="mt-1 font-display text-lg font-bold text-(--color-paper)">{wheel.weightFrom}</dd>
+        </div>
+      </dl>
+
+      <div class="mt-8">
+        <p class="text-xs uppercase tracking-widest text-(--color-fog)">Finitions disponibles</p>
+        <ul class="mt-3 flex flex-wrap gap-2">
+          {wheel.finishes.map((f) => (
+            <li class="rounded border border-(--color-line) px-3 py-1.5 text-sm text-(--color-mist)">{f}</li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="mt-10 rounded-lg border border-(--color-forge-500)/30 bg-(--color-forge-500)/5 p-5 text-sm leading-relaxed text-(--color-mist)">
+        <strong class="text-(--color-paper)">Ce dessin n'est qu'un point de départ.</strong> Taille, largeur, déport et forme des bâtons peuvent être adaptés pour votre véhicule — jusqu'à un dessin de bâtons entièrement différent si vous le souhaitez.
+      </div>
+
+      <div class="mt-10 flex flex-col gap-4 sm:flex-row">
+        <a href="/configurateur" class="btn btn-forge">Adapter ce modèle à mon projet</a>
+        <a href="/sur-mesure" class="btn btn-outline">Voir ce qui est modifiable</a>
+      </div>
+      <p class="mt-4 text-xs text-(--color-fog)">Fabrication à la demande — prix communiqué après étude technique, selon taille, dessin et finition.</p>
+    </div>
+  </section>
+
+  <section class="container-mf py-20">
+    <p class="section-label">Continuer d'explorer</p>
+    <h2 class="mt-4 font-display text-2xl font-bold text-(--color-paper)">Autres dessins du catalogue</h2>
+    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {related.map((w) => <WheelCard wheel={w} />)}
+    </div>
+  </section>
+
+  <CTASection
+    title={`Envie d'une ${wheel.name} à votre taille exacte ?`}
+    description="Envoyez-nous les cotes de votre véhicule, on s'occupe de l'adaptation technique."
+  />
+</Layout>
