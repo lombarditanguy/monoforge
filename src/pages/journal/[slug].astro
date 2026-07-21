@@ -1,0 +1,47 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import CTASection from "../../components/CTASection.astro";
+import { articles } from "../../data/articles.js";
+import { breadcrumbLd, articleLd } from "../../utils/seo.js";
+
+export function getStaticPaths() {
+  return articles.map((article) => ({
+    params: { slug: article.slug },
+    props: { article },
+  }));
+}
+
+const { article } = Astro.props;
+const dateFmt = (d) => new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+
+const ld = [
+  breadcrumbLd([
+    { name: "Journal", path: "/journal" },
+    { name: article.title, path: `/journal/${article.slug}` },
+  ]),
+  articleLd({
+    title: article.title,
+    description: article.excerpt,
+    path: `/journal/${article.slug}`,
+    datePublished: article.date,
+  }),
+];
+---
+
+<Layout title={article.title} description={article.excerpt} jsonLd={ld}>
+  <Breadcrumbs items={[{ name: "Journal", path: "/journal" }, { name: article.title, path: `/journal/${article.slug}` }]} />
+
+  <article class="container-mf pb-24 pt-6">
+    <div class="max-w-2xl">
+      <p class="text-xs uppercase tracking-widest text-(--color-fog)">{dateFmt(article.date)} · {article.readingTime} de lecture</p>
+      <h1 class="mt-4 text-balance font-display text-3xl font-bold leading-tight text-(--color-paper) sm:text-4xl">{article.title}</h1>
+    </div>
+    <div class="prose-mf mt-12 max-w-2xl" set:html={article.html} />
+  </article>
+
+  <CTASection
+    title="Cet article répond à une partie de vos questions ?"
+    description="Passons à l'étude technique de votre projet."
+  />
+</Layout>
