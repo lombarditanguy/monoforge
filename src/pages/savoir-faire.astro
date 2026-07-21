@@ -1,0 +1,97 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import CTASection from "../components/CTASection.astro";
+import { breadcrumbLd } from "../utils/seo.js";
+---
+
+<Layout
+  title="Savoir-faire : le forgeage de jantes en aluminium"
+  description="Monobloc ou multi-pièces, forgeage à chaud, matière et contrôle qualité : comment MONOFORGE fabrique des jantes forgées sur mesure, expliqué simplement."
+  jsonLd={breadcrumbLd([{ name: "Savoir-faire", path: "/savoir-faire" }])}
+>
+  <Breadcrumbs items={[{ name: "Savoir-faire", path: "/savoir-faire" }]} />
+
+  <section class="container-mf pb-16 pt-6">
+    <p class="chip">Comprendre le forgeage</p>
+    <h1 class="mt-6 max-w-2xl text-balance font-display text-4xl font-bold leading-tight text-(--color-paper) sm:text-5xl">
+      Pourquoi une jante forgée n'a rien à voir avec une jante coulée
+    </h1>
+    <p class="mt-5 max-w-2xl text-balance text-lg leading-relaxed text-(--color-mist)">
+      Le forgeage n'est pas un argument marketing : c'est un procédé de fabrication qui change la structure même du métal. Voici comment, et pourquoi c'est le seul procédé qui permette une vraie liberté de forme sur mesure.
+    </p>
+  </section>
+
+  <section class="container-mf grid gap-16 py-16 lg:grid-cols-2">
+    <div class="prose-mf">
+      <h2>Coulée, basse pression, forgée : trois procédés, trois résultats</h2>
+      <p>
+        La grande majorité des jantes d'origine et d'aftermarket sont <strong>coulées</strong> : l'aluminium en fusion est versé dans un moule. Le procédé est économique et permet des formes complexes, mais laisse une structure de grain hétérogène, avec un risque de microporosités.
+      </p>
+      <p>
+        Le <strong>forgeage</strong> part d'un lingot d'aluminium plein, chauffé puis comprimé sous plusieurs milliers de tonnes de pression pour épouser la forme voulue. Le grain du métal est resserré et orienté selon les contraintes mécaniques : à volume égal, la pièce est plus dense, plus résistante et généralement plus légère.
+      </p>
+      <h3>Ce que ça change concrètement</h3>
+      <ul>
+        <li><strong>Résistance à l'impact</strong> — meilleure absorption des chocs (nid de poule, bordure) sans propagation de fissure.</li>
+        <li><strong>Rapport poids/résistance</strong> — permet d'affiner les bâtons sans sacrifier la solidité, donc des dessins plus fins que sur une jante coulée.</li>
+        <li><strong>Reprise en usinage</strong> — la pièce forgée brute est ensuite usinée aux cotes exactes, ce qui autorise un ajustement fin du dessin final.</li>
+      </ul>
+    </div>
+    <div class="prose-mf">
+      <h2>Monobloc ou multi-pièces : comment choisir</h2>
+      <p>
+        Une jante <strong>monobloc</strong> est forgée et usinée en une seule pièce. C'est le choix le plus rigide et le plus léger, adapté à la majorité des projets route et piste.
+      </p>
+      <p>
+        Une jante <strong>multi-pièces</strong> (2 ou 3 parties) assemble un centre forgé et un ou deux barrels boulonnés. L'intérêt : ajuster indépendamment la largeur et le déport, et faciliter le remplacement d'un élément endommagé. C'est le choix classique pour les dish profonds ou les projets qui évoluent dans le temps.
+      </p>
+      <table>
+        <thead>
+          <tr><th>Critère</th><th>Monobloc</th><th>Multi-pièces</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Poids</td><td>Le plus léger</td><td>Légèrement supérieur</td></tr>
+          <tr><td>Modularité</td><td>Fixe une fois fabriquée</td><td>Barrel ajustable / remplaçable</td></tr>
+          <tr><td>Dish profond</td><td>Limité</td><td>Idéal</td></tr>
+          <tr><td>Cas d'usage type</td><td>Route, piste, poids minimal</td><td>Stance, projets évolutifs</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="hairline"></div>
+
+  <section class="container-mf py-20">
+    <p class="section-label">Matière & contrôle</p>
+    <h2 class="mt-4 max-w-xl text-balance font-display text-3xl font-bold text-(--color-paper) md:text-4xl">
+      Ce que nous vérifions avant de vous livrer une jante
+    </h2>
+    <div class="mt-12 grid gap-6 md:grid-cols-3">
+      <div class="card-mf p-8">
+        <h3 class="font-display text-lg font-bold text-(--color-paper)">Alliage aéronautique</h3>
+        <p class="mt-2 text-sm leading-relaxed text-(--color-mist)">Aluminium forgé de type 6061-T6 ou équivalent, choisi pour son rapport résistance/masse et sa tenue à la fatigue.</p>
+      </div>
+      <div class="card-mf p-8">
+        <h3 class="font-display text-lg font-bold text-(--color-paper)">Contrôle dimensionnel</h3>
+        <p class="mt-2 text-sm leading-relaxed text-(--color-mist)">Chaque jante est mesurée après usinage pour vérifier la conformité au plan validé avant fabrication.</p>
+      </div>
+      <div class="card-mf p-8">
+        <h3 class="font-display text-lg font-bold text-(--color-paper)">Équilibrage & finition</h3>
+        <p class="mt-2 text-sm leading-relaxed text-(--color-mist)">Vérification de l'équilibrage statique et application de la finition choisie avant expédition du jeu complet.</p>
+      </div>
+    </div>
+    <p class="mt-8 max-w-2xl text-sm leading-relaxed text-(--color-fog)">
+      Selon la destination de vos jantes (route ou usage piste/exposition), des démarches d'homologation peuvent être nécessaires : nous vous orientons sur ce point dès l'étude technique. Voir notre <a href="/faq" class="text-(--color-forge-400) hover:underline">FAQ</a>.
+    </p>
+  </section>
+
+  <CTASection
+    title="Une question technique sur votre projet ?"
+    description="Notre bureau technique répond avant même de parler devis."
+    primaryHref="/configurateur"
+    primaryLabel="Poser mon projet"
+    secondaryHref="/faq"
+    secondaryLabel="Voir la FAQ"
+  />
+</Layout>

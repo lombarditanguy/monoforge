@@ -1,0 +1,55 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import CTASection from "../components/CTASection.astro";
+import { breadcrumbLd } from "../utils/seo.js";
+import { SITE } from "../data/site.js";
+---
+
+<Layout
+  title="À propos de MONOFORGE"
+  description="MONOFORGE est né d'un constat simple : le sur-mesure forgé existe, mais personne ne va jusqu'au bout de la promesse. Notre histoire, notre atelier partenaire, notre engagement qualité."
+  jsonLd={breadcrumbLd([{ name: "À propos", path: "/a-propos" }])}
+>
+  <Breadcrumbs items={[{ name: "À propos", path: "/a-propos" }]} />
+
+  <section class="container-mf pb-16 pt-6">
+    <p class="chip">Notre histoire</p>
+    <h1 class="mt-6 max-w-2xl text-balance font-display text-4xl font-bold leading-tight text-(--color-paper) sm:text-5xl">
+      Le sur-mesure forgé existait déjà. On a décidé d'aller jusqu'au bout de la promesse.
+    </h1>
+  </section>
+
+  <section class="container-mf grid gap-16 py-10 lg:grid-cols-2">
+    <div class="prose-mf">
+      <p>
+        {SITE.name} est né d'un constat simple, fait en cherchant des jantes forgées pour un projet personnel : les fabricants qui parlent de « sur-mesure » proposent en réalité un catalogue figé, avec quelques options de taille et de couleur. Le dessin lui-même — celui qui donne vraiment son caractère à une jante — restait hors de portée, réservé aux constructeurs et aux teams officielles.
+      </p>
+      <p>
+        En nouant un partenariat avec un atelier de forgeage capable de sortir de ces standards, {SITE.name} rend accessible ce que peu de particuliers et de préparateurs pouvaient obtenir jusque-là : une jante dont la taille <strong>et</strong> la forme sont pensées pour un seul véhicule, le vôtre.
+      </p>
+      <h2>Notre position</h2>
+      <p>
+        Nous ne sommes pas le forgeron : nous sommes le bureau d'étude et le point de contact qui traduit votre projet en plan technique, encadre la fabrication chez notre atelier partenaire, et contrôle chaque jeu de jantes avant livraison. Cette organisation nous permet de rester exigeants sur chaque étape sans porter la lourdeur d'un site de production.
+      </p>
+    </div>
+    <div class="prose-mf">
+      <h2>Ce qui ne change pas, quel que soit le projet</h2>
+      <ul>
+        <li><strong>Un plan validé avant forgeage.</strong> Aucune pièce n'est lancée en fabrication sans votre accord écrit sur les cotes et le rendu.</li>
+        <li><strong>Une matière tracée.</strong> Aluminium forgé de qualité aéronautique, sans compromis sur l'alliage pour tenir un prix.</li>
+        <li><strong>Une honnêteté sur les délais.</strong> Le sur-mesure prend du temps ; nous préférons vous donner un délai réaliste qu'une promesse intenable.</li>
+        <li><strong>Un accompagnement jusqu'à la route.</strong> Quand une démarche d'homologation est nécessaire, nous vous orientons dans les démarches.</li>
+      </ul>
+      <h2>L'atelier partenaire</h2>
+      <p>
+        Le forgeage est réalisé par un atelier partenaire spécialisé, sélectionné pour sa capacité à sortir des dessins standards et à travailler des séries courtes — jusqu'au jeu unique. {SITE.name} pilote chaque projet de bout en bout : étude, plan, suivi de fabrication, contrôle qualité.
+      </p>
+    </div>
+  </section>
+
+  <CTASection
+    title="Envie d'en discuter directement ?"
+    description="Décrivez votre véhicule et votre projet, on revient vers vous avec une première lecture technique."
+  />
+</Layout>
