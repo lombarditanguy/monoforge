@@ -1,0 +1,115 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import FaqList from "../components/FaqList.astro";
+import CTASection from "../components/CTASection.astro";
+import { breadcrumbLd, faqLd } from "../utils/seo.js";
+
+const groups = [
+  {
+    title: "Sur-mesure & dessin",
+    items: [
+      {
+        q: "Puis-je vraiment modifier la forme des bâtons, pas seulement la taille ?",
+        a: "Oui, c'est notre différence principale. Le nombre de bâtons, leur galbe, la profondeur du dish et la découpe du disque peuvent être redessinés pour votre projet, dans les limites de faisabilité validées lors de l'étude technique gratuite.",
+      },
+      {
+        q: "Je pars d'une feuille blanche, sans dessin en tête. Vous pouvez m'aider ?",
+        a: "Oui. Décrivez le style recherché, vos références visuelles et les contraintes de votre véhicule via le <a href='/configurateur'>configurateur</a> : notre bureau technique vous propose un premier dessin.",
+      },
+      {
+        q: "Quelle est la différence entre MONOFORGE et un fabricant \"sur mesure\" classique ?",
+        a: "Un fabricant \"sur mesure\" classique ajuste généralement la taille, le déport et la couleur d'un dessin déjà figé. MONOFORGE peut en plus faire évoluer le dessin des bâtons lui-même, en s'appuyant sur un atelier de forgeage capable de sortir des standards de production.",
+      },
+    ],
+  },
+  {
+    title: "Tailles, poids & compatibilité",
+    items: [
+      {
+        q: "Quelles tailles de jantes forgées proposez-vous ?",
+        a: "De 15 à 26 pouces, avec largeurs et déports calculés pour votre véhicule. Il n'y a pas de gamme figée : chaque commande est dimensionnée sur mesure.",
+      },
+      {
+        q: "Comment est calculé le déport (offset) de ma jante ?",
+        a: "À partir des cotes de votre véhicule (voie, garde au sol, dégagement de suspension et de carrosserie) et de vos objectifs (affleurement, élargissement visuel). Ce calcul fait partie de l'étude de faisabilité gratuite.",
+      },
+      {
+        q: "Mes jantes seront-elles compatibles avec mon système de freinage actuel ou futur ?",
+        a: "Le dégagement d'étrier est vérifié pendant l'étude technique. Si vous prévoyez un gros kit de freinage, indiquez-le dès le brief : nous dimensionnons directement en conséquence.",
+      },
+    ],
+  },
+  {
+    title: "Fabrication & délais",
+    items: [
+      {
+        q: "Combien de temps faut-il pour recevoir mes jantes ?",
+        a: "En moyenne 8 à 14 semaines entre la validation du plan technique et la réception du jeu complet, selon la complexité du dessin, la taille et la finition. Un délai précis vous est communiqué avec le devis.",
+      },
+      {
+        q: "Mes jantes sont-elles monobloc ou multi-pièces ?",
+        a: "Cela dépend du dessin retenu. Le monobloc est plus léger et adapté à la majorité des projets ; le multi-pièces (2 ou 3 parties) permet un dish plus profond et un ajustement indépendant de la largeur. Nous vous conseillons selon votre projet — voir notre page <a href='/savoir-faire'>savoir-faire</a>.",
+      },
+      {
+        q: "Quelle matière utilisez-vous ?",
+        a: "De l'aluminium forgé de qualité aéronautique (type 6061-T6 ou équivalent), choisi pour son rapport résistance/masse et sa tenue à la fatigue — bien supérieur à une jante coulée à volume équivalent.",
+      },
+    ],
+  },
+  {
+    title: "Homologation, prix & après-vente",
+    items: [
+      {
+        q: "Mes jantes sur mesure sont-elles homologuées pour la route ?",
+        a: "Cela dépend de votre configuration et de la réglementation de votre pays. En France notamment, une jante sur mesure peut nécessiter une démarche de réception à titre isolé (RTI) pour un usage route. Nous vous orientons sur cette démarche dès l'étude technique ; pour un usage piste ou exposition, cette contrainte ne s'applique pas.",
+      },
+      {
+        q: "Combien coûte un jeu de jantes forgées sur mesure ?",
+        a: "Le prix dépend de la taille, de la complexité du dessin, de l'architecture (monobloc ou multi-pièces) et de la finition. Un devis ferme est communiqué après l'étude technique gratuite — nous ne communiquons pas de prix de départ générique pour éviter toute confusion.",
+      },
+      {
+        q: "Proposez-vous une garantie ?",
+        a: "Les conditions de garantie applicables à votre commande sont précisées dans le devis et les CGV, avant toute validation de fabrication.",
+      },
+      {
+        q: "Livrez-vous en dehors de la France ?",
+        a: "Contactez-nous avec votre localisation : nous étudions chaque demande d'expédition au cas par cas selon la destination.",
+      },
+    ],
+  },
+];
+
+const allFaqs = groups.flatMap((g) => g.items);
+---
+
+<Layout
+  title="FAQ — Jantes forgées sur mesure"
+  description="Toutes les réponses sur la fabrication de jantes forgées sur mesure MONOFORGE : dessin personnalisable, tailles, délais, matière et homologation."
+  jsonLd={[breadcrumbLd([{ name: "FAQ", path: "/faq" }]), faqLd(allFaqs)]}
+>
+  <Breadcrumbs items={[{ name: "FAQ", path: "/faq" }]} />
+
+  <section class="container-mf pb-16 pt-6">
+    <p class="chip">Questions fréquentes</p>
+    <h1 class="mt-6 max-w-2xl text-balance font-display text-4xl font-bold leading-tight text-(--color-paper) sm:text-5xl">
+      Tout ce qu'on nous demande avant de se lancer
+    </h1>
+  </section>
+
+  <section class="container-mf space-y-16 pb-24">
+    {groups.map((group) => (
+      <div>
+        <h2 class="mb-6 font-display text-xl font-bold text-(--color-paper)">{group.title}</h2>
+        <FaqList items={group.items} />
+      </div>
+    ))}
+  </section>
+
+  <CTASection
+    title="Une question qui n'est pas là ?"
+    description="Écrivez-nous, on répond avec des détails techniques, pas des formules toutes faites."
+    primaryHref="/contact"
+    primaryLabel="Nous écrire"
+  />
+</Layout>
