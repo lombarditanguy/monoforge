@@ -1,0 +1,58 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import { breadcrumbLd } from "../utils/seo.js";
+import { SITE } from "../data/site.js";
+---
+
+<Layout
+  title="Contact"
+  description="Contactez MONOFORGE pour votre projet de jantes forgées sur mesure : email, téléphone et configurateur en ligne."
+  jsonLd={breadcrumbLd([{ name: "Contact", path: "/contact" }])}
+>
+  <Breadcrumbs items={[{ name: "Contact", path: "/contact" }]} />
+
+  <section class="container-mf grid gap-16 pb-24 pt-6 lg:grid-cols-2">
+    <div>
+      <p class="chip">Parlons de votre projet</p>
+      <h1 class="mt-6 text-balance font-display text-4xl font-bold leading-tight text-(--color-paper) sm:text-5xl">Contact</h1>
+      <p class="mt-5 max-w-md text-balance text-lg leading-relaxed text-(--color-mist)">
+        Pour un projet précis (véhicule, tailles, style), le <a href="/configurateur" class="text-(--color-forge-400) hover:underline">configurateur</a> nous donne tout ce qu'il faut pour une première réponse utile. Pour toute autre question, écrivez-nous directement.
+      </p>
+
+      <dl class="mt-12 space-y-8">
+        <div>
+          <dt class="text-xs uppercase tracking-widest text-(--color-fog)">Email</dt>
+          <dd class="mt-1"><a href={`mailto:${SITE.email}`} class="font-display text-xl font-bold text-(--color-paper) hover:text-(--color-forge-400)">{SITE.email}</a></dd>
+        </div>
+        <div>
+          <dt class="text-xs uppercase tracking-widest text-(--color-fog)">Téléphone</dt>
+          <dd class="mt-1 font-display text-xl font-bold text-(--color-paper)">{SITE.phoneDisplay}</dd>
+          <p class="mt-1 text-sm text-(--color-mist)">{SITE.hoursNote}</p>
+        </div>
+        <div>
+          <dt class="text-xs uppercase tracking-widest text-(--color-fog)">Atelier</dt>
+          <dd class="mt-1 font-display text-xl font-bold text-(--color-paper)">{SITE.addressLocality}</dd>
+          <p class="mt-1 text-sm text-(--color-mist)">Visites d'atelier possibles sur rendez-vous, selon les projets en cours.</p>
+        </div>
+      </dl>
+    </div>
+
+    <div class="card-mf p-8 md:p-10">
+      <h2 class="font-display text-xl font-bold text-(--color-paper)">Un projet déjà défini ?</h2>
+      <p class="mt-3 text-sm leading-relaxed text-(--color-mist)">
+        Le configurateur reste le moyen le plus rapide d'obtenir une première lecture technique : véhicule, tailles, style, contraintes. 5 minutes suffisent.
+      </p>
+      <a href="/configurateur" class="btn btn-forge mt-6 w-full">Ouvrir le configurateur</a>
+
+      <div class="hairline my-8"></div>
+
+      <h2 class="font-display text-xl font-bold text-(--color-paper)">Encore hésitant ?</h2>
+      <p class="mt-3 text-sm leading-relaxed text-(--color-mist)">Deux pages pour vous aider à trancher avant de nous écrire :</p>
+      <ul class="mt-4 space-y-2 text-sm">
+        <li><a href="/sur-mesure" class="text-(--color-forge-400) hover:underline">Comment fonctionne le sur-mesure MONOFORGE →</a></li>
+        <li><a href="/faq" class="text-(--color-forge-400) hover:underline">Les questions qu'on nous pose le plus →</a></li>
+      </ul>
+    </div>
+  </section>
+</Layout>
