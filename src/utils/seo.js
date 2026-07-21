@@ -37,17 +37,16 @@ export function wheelProductLd(wheel) {
     brand: { "@type": "Brand", name: SITE.name },
     material: "Aluminium forgé",
     additionalProperty: [
-      { "@type": "PropertyValue", name: "Taille de référence", value: wheel.sizes },
-      { "@type": "PropertyValue", name: "Largeur de référence", value: wheel.widths },
       { "@type": "PropertyValue", name: "Famille", value: wheel.family },
-      { "@type": "PropertyValue", name: "Personnalisation", value: "Toute taille de 15\" à 26\" disponible sur demande, dessin des bâtons adaptable" },
+      { "@type": "PropertyValue", name: "Disponibilité", value: "Fabrication à la commande, sans stock — aucune taille de série" },
+      { "@type": "PropertyValue", name: "Personnalisation", value: "Toute taille de 15\" à 26\" définie sur mesure, dessin des bâtons adaptable" },
     ],
     offers: {
       "@type": "Offer",
       priceCurrency: "EUR",
-      availability: "https://schema.org/PreOrder",
+      availability: "https://schema.org/MadeToOrder",
       url: `${SITE.url}/catalogue/${wheel.slug}`,
-      description: "Fabrication sur devis — prix selon taille, dessin et finition.",
+      description: "Fabrication à la commande — prix sur devis selon taille, dessin et finition.",
     },
   };
 }
