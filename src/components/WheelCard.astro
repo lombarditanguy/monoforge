@@ -1,0 +1,27 @@
+---
+import WheelGraphic from "./WheelGraphic.astro";
+interface Props { wheel: any }
+const { wheel } = Astro.props;
+---
+
+<a href={`/catalogue/${wheel.slug}`} class="card-mf group flex flex-col overflow-hidden transition-colors hover:border-(--color-forge-500)/60">
+  <div class="relative flex items-center justify-center bg-(--color-surface-2) p-6">
+    <span class="chip absolute left-4 top-4">{wheel.family}</span>
+    <WheelGraphic spokes={wheel.spokes} spokeStyle={wheel.spokeStyle} size={220} />
+  </div>
+  <div class="flex flex-1 flex-col p-6">
+    <h3 class="font-display text-lg font-bold text-(--color-paper)">{wheel.name}</h3>
+    <p class="mt-1 text-sm text-(--color-mist)">{wheel.style}</p>
+    <div class="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs text-(--color-fog)">
+      <span>{wheel.sizes}</span>
+      <span aria-hidden="true">·</span>
+      <span>{wheel.finishes.length} finitions</span>
+    </div>
+    <span class="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-(--color-forge-400)">
+      Voir le modèle
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" class="transition-transform group-hover:translate-x-1" aria-hidden="true">
+        <path d="M1 7H13M13 7L8 2M13 7L8 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </span>
+  </div>
+</a>

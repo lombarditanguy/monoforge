@@ -1,0 +1,134 @@
+---
+// Illustration technique paramétrique d'une jante — style "plan / blueprint",
+// volontairement stylisée (pas une photo produit) pour représenter chaque
+// modèle et son nombre de bâtons de façon honnête et cohérente.
+interface Props {
+  spokes?: number;
+  spokeStyle?: "straight" | "mesh" | "double" | "turbine" | "y" | "disc" | "wide";
+  size?: number;
+  accent?: boolean;
+  class?: string;
+  spin?: boolean;
+}
+
+const {
+  spokes = 8,
+  spokeStyle = "straight",
+  size = 320,
+  accent = true,
+  class: className = "",
+  spin = false,
+} = Astro.props;
+
+const cx = 160;
+const cy = 160;
+const rOuter = 150;
+const rRim = 128;
+const rSpokeOuter = 118;
+const rHub = 34;
+const rBore = 14;
+
+const lines: string[] = [];
+const overlays: string[] = [];
+
+const angleStep = (Math.PI * 2) / spokes;
+
+for (let i = 0; i < spokes; i++) {
+  const a = i * angleStep - Math.PI / 2;
+  const isAccent = accent && i === 0;
+  const stroke = isAccent ? "var(--color-forge-400)" : "var(--color-mist)";
+  const opacity = isAccent ? 1 : 0.55;
+
+  if (spokeStyle === "straight" || spokeStyle === "wide") {
+    const w = spokeStyle === "wide" ? 9 : 4;
+    const x1 = cx + Math.cos(a) * rHub;
+    const y1 = cy + Math.sin(a) * rHub;
+    const x2 = cx + Math.cos(a) * rSpokeOuter;
+    const y2 = cy + Math.sin(a) * rSpokeOuter;
+    lines.push(
+      `<line x1="${x1.toFixed(2)}" y1="${y1.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y2.toFixed(2)}" stroke="${stroke}" stroke-width="${w}" stroke-linecap="round" opacity="${opacity}" />`
+    );
+  } else if (spokeStyle === "mesh") {
+    const x1 = cx + Math.cos(a) * rHub;
+    const y1 = cy + Math.sin(a) * rHub;
+    const a2 = a + angleStep * 1.6;
+    const x2 = cx + Math.cos(a2) * rSpokeOuter;
+    const y2 = cy + Math.sin(a2) * rSpokeOuter;
+    lines.push(
+      `<line x1="${x1.toFixed(2)}" y1="${y1.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y2.toFixed(2)}" stroke="${stroke}" stroke-width="1.6" stroke-linecap="round" opacity="${opacity}" />`
+    );
+  } else if (spokeStyle === "double") {
+    for (const off of [-0.045, 0.045]) {
+      const x1 = cx + Math.cos(a + off) * rHub;
+      const y1 = cy + Math.sin(a + off) * rHub;
+      const x2 = cx + Math.cos(a + off) * rSpokeOuter;
+      const y2 = cy + Math.sin(a + off) * rSpokeOuter;
+      lines.push(
+        `<line x1="${x1.toFixed(2)}" y1="${y1.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y2.toFixed(2)}" stroke="${stroke}" stroke-width="3.5" stroke-linecap="round" opacity="${opacity}" />`
+      );
+    }
+  } else if (spokeStyle === "turbine") {
+    const x1 = cx + Math.cos(a) * rHub;
+    const y1 = cy + Math.sin(a) * rHub;
+    const aMid = a + angleStep * 0.55;
+    const xm = cx + Math.cos(aMid) * ((rHub + rSpokeOuter) / 2);
+    const ym = cy + Math.sin(aMid) * ((rHub + rSpokeOuter) / 2);
+    const x2 = cx + Math.cos(a + angleStep * 0.15) * rSpokeOuter;
+    const y2 = cy + Math.sin(a + angleStep * 0.15) * rSpokeOuter;
+    lines.push(
+      `<path d="M ${x1.toFixed(2)} ${y1.toFixed(2)} Q ${xm.toFixed(2)} ${ym.toFixed(2)} ${x2.toFixed(2)} ${y2.toFixed(2)}" fill="none" stroke="${stroke}" stroke-width="7" stroke-linecap="round" opacity="${opacity}" />`
+    );
+  } else if (spokeStyle === "y") {
+    const xh = cx + Math.cos(a) * rHub;
+    const yh = cy + Math.sin(a) * rHub;
+    const xm = cx + Math.cos(a) * (rHub + 26);
+    const ym = cy + Math.sin(a) * (rHub + 26);
+    lines.push(
+      `<line x1="${xh.toFixed(2)}" y1="${yh.toFixed(2)}" x2="${xm.toFixed(2)}" y2="${ym.toFixed(2)}" stroke="${stroke}" stroke-width="4.5" stroke-linecap="round" opacity="${opacity}" />`
+    );
+    for (const off of [-0.16, 0.16]) {
+      const x2 = cx + Math.cos(a + off) * rSpokeOuter;
+      const y2 = cy + Math.sin(a + off) * rSpokeOuter;
+      lines.push(
+        `<line x1="${xm.toFixed(2)}" y1="${ym.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y2.toFixed(2)}" stroke="${stroke}" stroke-width="3" stroke-linecap="round" opacity="${opacity}" />`
+      );
+    }
+  } else if (spokeStyle === "disc") {
+    const half = angleStep * 0.22;
+    const x1 = cx + Math.cos(a - half) * rHub;
+    const y1 = cy + Math.sin(a - half) * rHub;
+    const x2 = cx + Math.cos(a - half) * rSpokeOuter;
+    const y2 = cy + Math.sin(a - half) * rSpokeOuter;
+    const x3 = cx + Math.cos(a + half) * rSpokeOuter;
+    const y3 = cy + Math.sin(a + half) * rSpokeOuter;
+    const x4 = cx + Math.cos(a + half) * rHub;
+    const y4 = cy + Math.sin(a + half) * rHub;
+    overlays.push(
+      `<path d="M ${x1.toFixed(2)} ${y1.toFixed(2)} L ${x2.toFixed(2)} ${y2.toFixed(2)} A ${rSpokeOuter} ${rSpokeOuter} 0 0 1 ${x3.toFixed(2)} ${y3.toFixed(2)} L ${x4.toFixed(2)} ${y4.toFixed(2)} Z" fill="${isAccent ? "color-mix(in oklab, var(--color-forge-500) 30%, transparent)" : "var(--color-surface-3)"}" stroke="${stroke}" stroke-width="1" opacity="${isAccent ? 1 : 0.85}" />`
+    );
+  }
+}
+
+const svgMarkup = [...overlays, ...lines].join("");
+---
+
+<div class={`relative aspect-square ${className}`} style={`width:${size}px;max-width:100%;`}>
+  <svg
+    viewBox="0 0 320 320"
+    class={spin ? "animate-[spin_38s_linear_infinite]" : ""}
+    role="img"
+    aria-label={`Illustration technique d'une jante forgée à ${spokes} bâtons, style ${spokeStyle}`}
+  >
+    <circle cx={cx} cy={cy} r={rOuter} fill="none" stroke="var(--color-line)" stroke-width="1.5" />
+    <circle cx={cx} cy={cy} r={rRim} fill="none" stroke="var(--color-line)" stroke-width="1" opacity="0.6" />
+    <Fragment set:html={svgMarkup} />
+    <circle cx={cx} cy={cy} r={rHub} fill="var(--color-surface-3)" stroke="var(--color-mist)" stroke-width="1.5" opacity="0.9" />
+    <circle cx={cx} cy={cy} r={rBore} fill="var(--color-ink)" stroke="var(--color-line)" stroke-width="1.5" />
+    {Array.from({ length: 5 }).map((_, i) => {
+      const a = (i / 5) * Math.PI * 2 - Math.PI / 2;
+      const x = cx + Math.cos(a) * (rHub - 8);
+      const y = cy + Math.sin(a) * (rHub - 8);
+      return <circle cx={x} cy={y} r="2.4" fill="var(--color-ink)" stroke="var(--color-mist)" stroke-width="1" />;
+    })}
+  </svg>
+</div>
