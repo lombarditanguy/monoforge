@@ -28,7 +28,7 @@ const ld = [
 
 <Layout
   title={`${wheel.name} — jante forgée ${wheel.family.toLowerCase()} sur mesure`}
-  description={`${wheel.name} : ${wheel.style}, disponible en ${wheel.sizes}. Dessin, taille et finition entièrement adaptables à votre projet. ${wheel.blurb}`}
+  description={`${wheel.name} : ${wheel.style}, réf. ${wheel.sizes}. Dessin, taille (15 à 26 pouces) et finition entièrement adaptables à votre projet. ${wheel.blurb}`}
   jsonLd={ld}
 >
   <Breadcrumbs items={[{ name: "Catalogue", path: "/catalogue" }, { name: wheel.name, path: `/catalogue/${wheel.slug}` }]} />
@@ -50,11 +50,11 @@ const ld = [
 
       <dl class="mt-10 grid grid-cols-2 gap-6 border-t border-(--color-line) pt-8 sm:grid-cols-3">
         <div>
-          <dt class="text-xs uppercase tracking-widest text-(--color-fog)">Tailles</dt>
+          <dt class="text-xs uppercase tracking-widest text-(--color-fog)">Taille de référence</dt>
           <dd class="mt-1 font-display text-lg font-bold text-(--color-paper)">{wheel.sizes}</dd>
         </div>
         <div>
-          <dt class="text-xs uppercase tracking-widest text-(--color-fog)">Largeurs</dt>
+          <dt class="text-xs uppercase tracking-widest text-(--color-fog)">Largeur de référence</dt>
           <dd class="mt-1 font-display text-lg font-bold text-(--color-paper)">{wheel.widths}</dd>
         </div>
         <div>
@@ -62,6 +62,7 @@ const ld = [
           <dd class="mt-1 font-display text-lg font-bold text-(--color-paper)">{wheel.weightFrom}</dd>
         </div>
       </dl>
+      <p class="mt-3 text-xs text-(--color-fog)">Valeurs de référence pour ce dessin. Toute taille de 15″ à 26″ reste possible sur demande — voir <a href="/sur-mesure" class="underline hover:text-(--color-mist)">le sur-mesure</a>.</p>
 
       <div class="mt-8">
         <p class="text-xs uppercase tracking-widest text-(--color-fog)">Finitions disponibles</p>

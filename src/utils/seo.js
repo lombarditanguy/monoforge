@@ -37,9 +37,10 @@ export function wheelProductLd(wheel) {
     brand: { "@type": "Brand", name: SITE.name },
     material: "Aluminium forgé",
     additionalProperty: [
-      { "@type": "PropertyValue", name: "Tailles disponibles", value: wheel.sizes },
-      { "@type": "PropertyValue", name: "Largeurs disponibles", value: wheel.widths },
+      { "@type": "PropertyValue", name: "Taille de référence", value: wheel.sizes },
+      { "@type": "PropertyValue", name: "Largeur de référence", value: wheel.widths },
       { "@type": "PropertyValue", name: "Famille", value: wheel.family },
+      { "@type": "PropertyValue", name: "Personnalisation", value: "Toute taille de 15\" à 26\" disponible sur demande, dessin des bâtons adaptable" },
     ],
     offers: {
       "@type": "Offer",
