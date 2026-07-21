@@ -1,0 +1,207 @@
+---
+import Layout from "../layouts/Layout.astro";
+import WheelGraphic from "../components/WheelGraphic.astro";
+import WheelCard from "../components/WheelCard.astro";
+import CTASection from "../components/CTASection.astro";
+import FaqList from "../components/FaqList.astro";
+import { wheels } from "../data/wheels.js";
+import { faqLd } from "../utils/seo.js";
+import { SITE } from "../data/site.js";
+
+const homeFaqs = [
+  {
+    q: "En quoi MONOFORGE est différent d'un fabricant de jantes forgées sur mesure classique ?",
+    a: "La plupart des fabricants de jantes forgées « sur mesure » vous laissent choisir une taille et une finition sur un dessin déjà figé. MONOFORGE va plus loin : le dessin des bâtons lui-même — leur nombre, leur galbe, leur profondeur de dish — peut être redessiné pour votre projet, en plus d'une liberté totale sur les dimensions (diamètre, largeur, déport, alésage).",
+  },
+  {
+    q: "Quelles tailles de jantes forgées proposez-vous ?",
+    a: "Toutes les tailles, sans exception de gamme figée : de 15 à 26 pouces, avec des largeurs et des déports calculés pour votre véhicule et votre carrossage. Notre catalogue présente des dessins de base à titre d'inspiration, chacun étant redimensionnable intégralement.",
+  },
+  {
+    q: "Combien de temps faut-il pour fabriquer une jante forgée sur mesure ?",
+    a: "Comptez en moyenne 8 à 14 semaines entre la validation du plan technique et la réception du jeu complet, selon la complexité du dessin, la taille et la finition. Un délai précis est communiqué après l'étude technique gratuite.",
+  },
+];
+---
+
+<Layout
+  title="MONOFORGE — Jantes forgées sur mesure, toute taille et toute forme"
+  description="MONOFORGE conçoit des jantes forgées 100% sur mesure : toutes tailles, tous déports, et dessin de bâtons personnalisable à la demande. Étude technique gratuite."
+  jsonLd={faqLd(homeFaqs)}
+>
+  <!-- HERO -->
+  <section class="container-mf relative overflow-hidden pt-14 pb-20 md:pt-20 md:pb-28">
+    <div class="pointer-events-none absolute -right-40 -top-40 h-[32rem] w-[32rem] rounded-full bg-(--color-forge-500)/10 blur-[140px]" aria-hidden="true"></div>
+    <div class="relative grid items-center gap-16 lg:grid-cols-2">
+      <div>
+        <p class="chip">Fabrication à la demande — aluminium forgé</p>
+        <h1 class="mt-6 text-balance font-display text-4xl font-bold leading-[1.05] text-(--color-paper) sm:text-5xl lg:text-6xl">
+          Des jantes forgées <span class="text-(--color-forge-400)">à votre dessin</span>, pas au dessin du catalogue.
+        </h1>
+        <p class="mt-6 max-w-lg text-balance text-lg leading-relaxed text-(--color-mist)">
+          Toute taille. Toute largeur. Et, à la différence de tous les autres fabricants sur mesure, la forme même des bâtons peut être redessinée pour votre projet. C'est notre seule règle : zéro compromis sur votre exigence.
+        </p>
+        <div class="mt-9 flex flex-col gap-4 sm:flex-row">
+          <a href="/configurateur" class="btn btn-forge">Démarrer une étude gratuite</a>
+          <a href="/catalogue" class="btn btn-outline">Explorer le catalogue</a>
+        </div>
+        <dl class="mt-14 grid grid-cols-3 gap-6 border-t border-(--color-line) pt-8">
+          <div>
+            <dt class="text-xs uppercase tracking-widest text-(--color-fog)">Tailles</dt>
+            <dd class="mt-1 font-display text-2xl font-bold text-(--color-paper)">15″ – 26″</dd>
+          </div>
+          <div>
+            <dt class="text-xs uppercase tracking-widest text-(--color-fog)">Dessin</dt>
+            <dd class="mt-1 font-display text-2xl font-bold text-(--color-paper)">100% modifiable</dd>
+          </div>
+          <div>
+            <dt class="text-xs uppercase tracking-widest text-(--color-fog)">Matière</dt>
+            <dd class="mt-1 font-display text-2xl font-bold text-(--color-paper)">Alu forgé</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="relative mx-auto flex aspect-square w-full max-w-md items-center justify-center">
+        <div class="absolute inset-0 rounded-full border border-(--color-line)"></div>
+        <div class="absolute inset-8 rounded-full border border-(--color-line) opacity-60"></div>
+        <WheelGraphic spokes={12} spokeStyle="turbine" size={420} spin={true} />
+      </div>
+    </div>
+  </section>
+
+  <div class="hairline"></div>
+
+  <!-- DIFFERENTIATORS -->
+  <section class="container-mf py-24">
+    <div class="max-w-2xl">
+      <p class="section-label">Ce qui change vraiment</p>
+      <h2 class="mt-4 text-balance font-display text-3xl font-bold text-(--color-paper) md:text-4xl">
+        « Sur mesure », presque tout le monde le dit. Peu de fabricants le font vraiment.
+      </h2>
+    </div>
+
+    <div class="mt-14 grid gap-6 md:grid-cols-3">
+      <div class="card-mf p-8">
+        <span class="flex h-11 w-11 items-center justify-center rounded-full border border-(--color-forge-500)/40 text-(--color-forge-400)">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 2V18M2 10H18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </span>
+        <h3 class="mt-5 font-display text-lg font-bold text-(--color-paper)">Toutes les tailles, vraiment</h3>
+        <p class="mt-2 text-sm leading-relaxed text-(--color-mist)">Pas de gamme figée entre deux références catalogue. Diamètre, largeur, déport et alésage sont calculés sur mesure pour votre véhicule, du 15″ de youngtimer au 26″ de SUV.</p>
+      </div>
+      <div class="card-mf p-8">
+        <span class="flex h-11 w-11 items-center justify-center rounded-full border border-(--color-forge-500)/40 text-(--color-forge-400)">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 2L17 6V14L10 18L3 14V6L10 2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        </span>
+        <h3 class="mt-5 font-display text-lg font-bold text-(--color-paper)">La forme elle-même est modifiable</h3>
+        <p class="mt-2 text-sm leading-relaxed text-(--color-mist)">Nombre de bâtons, galbe, profondeur de dish, découpe du disque : notre partenaire forgeron peut adapter le dessin, pas seulement la taille ou la couleur. C'est notre vraie différence.</p>
+      </div>
+      <div class="card-mf p-8">
+        <span class="flex h-11 w-11 items-center justify-center rounded-full border border-(--color-forge-500)/40 text-(--color-forge-400)">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10L8 14L16 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <h3 class="mt-5 font-display text-lg font-bold text-(--color-paper)">Suivi technique de bout en bout</h3>
+        <p class="mt-2 text-sm leading-relaxed text-(--color-mist)">Étude de faisabilité, plan technique validé avant forgeage, contrôle qualité et accompagnement sur les démarches d'homologation si votre configuration l'exige.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARISON TABLE (GEO-friendly extractable facts) -->
+  <section class="container-mf py-10">
+    <div class="card-mf overflow-x-auto p-2">
+      <table class="w-full min-w-[640px] border-collapse text-sm">
+        <caption class="p-6 text-left">
+          <p class="section-label">Comparatif</p>
+          <p class="mt-2 font-display text-xl font-bold text-(--color-paper)">MONOFORGE face à une jante forgée « sur mesure » classique</p>
+        </caption>
+        <thead>
+          <tr class="border-t border-(--color-line) text-left text-(--color-fog)">
+            <th class="p-4 font-medium">Critère</th>
+            <th class="p-4 font-medium">Jante forgée catalogue « sur mesure »</th>
+            <th class="p-4 font-medium text-(--color-forge-400)">MONOFORGE</th>
+          </tr>
+        </thead>
+        <tbody class="text-(--color-mist)">
+          <tr class="border-t border-(--color-line)">
+            <td class="p-4 font-medium text-(--color-paper)">Dessin des bâtons</td>
+            <td class="p-4">Figé, choix parmi un catalogue fermé</td>
+            <td class="p-4">Redessinable à la demande</td>
+          </tr>
+          <tr class="border-t border-(--color-line)">
+            <td class="p-4 font-medium text-(--color-paper)">Tailles disponibles</td>
+            <td class="p-4">Gamme limitée par référence</td>
+            <td class="p-4">15″ à 26″, sans exception</td>
+          </tr>
+          <tr class="border-t border-(--color-line)">
+            <td class="p-4 font-medium text-(--color-paper)">Déport / offset</td>
+            <td class="p-4">Quelques valeurs proposées</td>
+            <td class="p-4">Calculé pour votre carrossage exact</td>
+          </tr>
+          <tr class="border-t border-(--color-line)">
+            <td class="p-4 font-medium text-(--color-paper)">Accompagnement technique</td>
+            <td class="p-4">Souvent limité au commercial</td>
+            <td class="p-4">Étude de faisabilité et plan validé avant forgeage</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- CATALOG PREVIEW -->
+  <section class="container-mf py-24">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <div class="max-w-xl">
+        <p class="section-label">Points de départ</p>
+        <h2 class="mt-4 text-balance font-display text-3xl font-bold text-(--color-paper) md:text-4xl">
+          Un catalogue de dessins de base — chacun entièrement réadaptable.
+        </h2>
+      </div>
+      <a href="/catalogue" class="btn btn-outline shrink-0">Tout le catalogue</a>
+    </div>
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {wheels.slice(0, 4).map((wheel) => <WheelCard wheel={wheel} />)}
+    </div>
+  </section>
+
+  <div class="hairline"></div>
+
+  <!-- PROCESS -->
+  <section class="container-mf py-24">
+    <p class="section-label">La méthode</p>
+    <h2 class="mt-4 max-w-xl text-balance font-display text-3xl font-bold text-(--color-paper) md:text-4xl">
+      De l'idée à la jante forgée, en quatre étapes.
+    </h2>
+    <ol class="mt-14 grid gap-10 md:grid-cols-4">
+      {[
+        { n: "01", t: "Étude technique", d: "Vous nous décrivez votre véhicule, vos contraintes (freins, carrossage, style) et vos envies de dessin. Étude de faisabilité gratuite." },
+        { n: "02", t: "Plan validé", d: "Nous produisons un plan technique complet (cotes, poids estimé, rendu) que vous validez avant tout forgeage." },
+        { n: "03", t: "Forgeage", d: "Fabrication en aluminium forgé chez notre partenaire, monobloc ou multi-pièces selon le dessin retenu." },
+        { n: "04", t: "Contrôle & livraison", d: "Contrôle dimensionnel, finition appliquée, puis livraison du jeu complet avec sa fiche technique." },
+      ].map((step) => (
+        <li>
+          <p class="font-display text-3xl font-bold text-(--color-line)">{step.n}</p>
+          <h3 class="mt-4 font-display text-lg font-bold text-(--color-paper)">{step.t}</h3>
+          <p class="mt-2 text-sm leading-relaxed text-(--color-mist)">{step.d}</p>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <!-- FAQ TEASER -->
+  <section class="container-mf py-24">
+    <div class="grid gap-12 lg:grid-cols-[minmax(0,20rem)_1fr]">
+      <div>
+        <p class="section-label">Questions fréquentes</p>
+        <h2 class="mt-4 text-balance font-display text-3xl font-bold text-(--color-paper)">Avant de vous lancer</h2>
+        <a href="/faq" class="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-(--color-forge-400)">
+          Toutes les questions →
+        </a>
+      </div>
+      <FaqList items={homeFaqs} />
+    </div>
+  </section>
+
+  <CTASection
+    title="Un projet en tête ? Parlons dessin, taille et délais."
+    description="L'étude technique est gratuite et sans engagement. Vous recevez un plan validé avant tout forgeage."
+  />
+</Layout>
