@@ -25,7 +25,7 @@ const dateFmt = (d) => new Date(d).toLocaleDateString("fr-FR", { day: "numeric",
     </p>
   </section>
 
-  <section class="container-mf grid gap-6 pb-24 md:grid-cols-2">
+  <section class="container-mf grid grid-cols-1 gap-6 pb-24 md:grid-cols-2">
     {articles.map((article) => (
       <a href={`/journal/${article.slug}`} class="card-mf flex flex-col p-8 transition-colors hover:border-(--color-forge-500)/60">
         <p class="text-xs uppercase tracking-widest text-(--color-fog)">{dateFmt(article.date)} · {article.readingTime} de lecture</p>

@@ -37,7 +37,7 @@ const ld = [
 >
   <Breadcrumbs items={[{ name: "Catalogue", path: "/catalogue" }, { name: family.short, path: `/catalogue/${family.slug}` }, { name: item.code, path: `/catalogue/${item.family}/${item.slug}` }]} />
 
-  <section class="container-mf grid gap-14 pb-20 pt-6 lg:grid-cols-2 lg:gap-20">
+  <section class="container-mf grid grid-cols-1 gap-14 pb-20 pt-6 lg:grid-cols-2 lg:gap-20">
     <div class="overflow-hidden rounded-lg border border-(--color-line) bg-(--color-surface-2) lg:sticky lg:top-28 lg:h-fit">
       <img src={item.image} alt={`Jante forgée ${item.code}`} width="600" height="600" class="w-full object-cover" />
     </div>

@@ -32,7 +32,7 @@ const homeFaqs = [
   <!-- HERO -->
   <section class="container-mf relative overflow-hidden pt-14 pb-20 md:pt-20 md:pb-28">
     <div class="pointer-events-none absolute -right-40 -top-40 h-[32rem] w-[32rem] rounded-full bg-(--color-forge-500)/10 blur-[140px]" aria-hidden="true"></div>
-    <div class="relative grid items-center gap-16 lg:grid-cols-2">
+    <div class="relative grid grid-cols-1 items-center gap-16 lg:grid-cols-2">
       <div>
         <p class="chip">Fabrication à la demande — aluminium forgé</p>
         <h1 class="mt-6 text-balance font-display text-4xl font-bold leading-[1.05] text-(--color-paper) sm:text-5xl lg:text-6xl">
@@ -80,7 +80,7 @@ const homeFaqs = [
       </h2>
     </div>
 
-    <div class="mt-14 grid gap-6 md:grid-cols-3">
+    <div class="mt-14 grid grid-cols-1 gap-6 md:grid-cols-3">
       <div class="card-mf p-8">
         <span class="flex h-11 w-11 items-center justify-center rounded-full border border-(--color-forge-500)/40 text-(--color-forge-400)">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 2V18M2 10H18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
@@ -108,7 +108,7 @@ const homeFaqs = [
   <!-- COMPARISON TABLE (GEO-friendly extractable facts) -->
   <section class="container-mf py-10">
     <div class="card-mf overflow-x-auto p-2">
-      <table class="w-full min-w-[640px] border-collapse text-sm">
+      <table class="w-full min-w-[520px] border-collapse text-sm">
         <caption class="p-6 text-left">
           <p class="section-label">Comparatif</p>
           <p class="mt-2 font-display text-xl font-bold text-(--color-paper)">MONOFORGE face à une jante forgée « sur mesure » classique</p>
@@ -116,7 +116,10 @@ const homeFaqs = [
         <thead>
           <tr class="border-t border-(--color-line) text-left text-(--color-fog)">
             <th class="p-4 font-medium">Critère</th>
-            <th class="p-4 font-medium">Jante forgée catalogue « sur mesure »</th>
+            <th class="p-4 font-medium">
+              <span class="block text-(--color-paper)">Concurrent</span>
+              <span class="block text-xs font-normal text-(--color-fog)">jante forgée « sur mesure » classique</span>
+            </th>
             <th class="p-4 font-medium text-(--color-forge-400)">MONOFORGE</th>
           </tr>
         </thead>
@@ -157,7 +160,7 @@ const homeFaqs = [
       </div>
       <a href="/catalogue" class="btn btn-outline shrink-0">Tout le catalogue</a>
     </div>
-    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
       {FAMILIES.map((family) => <FamilyCard family={family} />)}
     </div>
   </section>
@@ -170,7 +173,7 @@ const homeFaqs = [
     <h2 class="mt-4 max-w-xl text-balance font-display text-3xl font-bold text-(--color-paper) md:text-4xl">
       De l'idée à la jante forgée, en quatre étapes.
     </h2>
-    <ol class="mt-14 grid gap-10 md:grid-cols-4">
+    <ol class="mt-14 grid grid-cols-1 gap-10 md:grid-cols-4">
       {[
         { n: "01", t: "Étude technique", d: "Vous nous décrivez votre véhicule, vos contraintes (freins, carrossage, style) et vos envies de dessin. Étude de faisabilité gratuite." },
         { n: "02", t: "Plan validé", d: "Nous produisons un plan technique complet (cotes, poids estimé, rendu) que vous validez avant tout forgeage." },
@@ -188,7 +191,7 @@ const homeFaqs = [
 
   <!-- FAQ TEASER -->
   <section class="container-mf py-24">
-    <div class="grid gap-12 lg:grid-cols-[minmax(0,20rem)_1fr]">
+    <div class="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,20rem)_1fr]">
       <div>
         <p class="section-label">Questions fréquentes</p>
         <h2 class="mt-4 text-balance font-display text-3xl font-bold text-(--color-paper)">Avant de vous lancer</h2>

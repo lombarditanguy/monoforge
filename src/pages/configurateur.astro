@@ -27,11 +27,11 @@ import { SITE } from "../data/site.js";
   </section>
 
   <section class="container-mf pb-24">
-    <div class="grid gap-12 lg:grid-cols-[1fr_20rem]">
+    <div class="grid grid-cols-1 gap-12 lg:grid-cols-[1fr_20rem]">
       <form id="mf-config-form" class="card-mf space-y-8 p-6 md:p-10" novalidate>
         <fieldset>
           <legend class="section-label mb-5">Votre véhicule</legend>
-          <div class="grid gap-5 sm:grid-cols-2">
+          <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <label class="block">
               <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Marque &amp; modèle *</span>
               <input required name="vehicule" type="text" placeholder="Ex : Porsche 992 GT3" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) placeholder:text-(--color-fog) focus:border-(--color-forge-500) focus:outline-none" />
@@ -45,7 +45,7 @@ import { SITE } from "../data/site.js";
 
         <fieldset>
           <legend class="section-label mb-5">Tailles souhaitées</legend>
-          <div class="grid gap-5 sm:grid-cols-3">
+          <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
             <label class="block">
               <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Diamètre</span>
               <input name="diametre" type="text" placeholder="Ex : 20&quot; AV / 21&quot; AR" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) placeholder:text-(--color-fog) focus:border-(--color-forge-500) focus:outline-none" />
@@ -63,7 +63,7 @@ import { SITE } from "../data/site.js";
 
         <fieldset>
           <legend class="section-label mb-5">Style</legend>
-          <div class="grid gap-5 sm:grid-cols-2">
+          <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <label class="block">
               <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Famille recherchée</span>
               <select name="famille" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) focus:border-(--color-forge-500) focus:outline-none">
@@ -92,7 +92,7 @@ import { SITE } from "../data/site.js";
 
         <fieldset>
           <legend class="section-label mb-5">Vos coordonnées</legend>
-          <div class="grid gap-5 sm:grid-cols-2">
+          <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <label class="block">
               <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Nom *</span>
               <input required name="nom" type="text" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) focus:border-(--color-forge-500) focus:outline-none" />
