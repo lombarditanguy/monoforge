@@ -1,10 +1,10 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import WheelGraphic from "../components/WheelGraphic.astro";
-import WheelCard from "../components/WheelCard.astro";
+import FamilyCard from "../components/FamilyCard.astro";
 import CTASection from "../components/CTASection.astro";
 import FaqList from "../components/FaqList.astro";
-import { wheels } from "../data/wheels.js";
+import { FAMILIES, catalogItems } from "../data/catalog.js";
 import { faqLd } from "../utils/seo.js";
 import { SITE } from "../data/site.js";
 
@@ -150,15 +150,15 @@ const homeFaqs = [
   <section class="container-mf py-24">
     <div class="flex flex-wrap items-end justify-between gap-6">
       <div class="max-w-xl">
-        <p class="section-label">Points de départ</p>
+        <p class="section-label">{catalogItems.length} références en photo</p>
         <h2 class="mt-4 text-balance font-display text-3xl font-bold text-(--color-paper) md:text-4xl">
-          Un catalogue de dessins de base — chacun entièrement réadaptable.
+          Un aperçu de ce que notre atelier sait forger — pas un stock.
         </h2>
       </div>
       <a href="/catalogue" class="btn btn-outline shrink-0">Tout le catalogue</a>
     </div>
     <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-      {wheels.slice(0, 4).map((wheel) => <WheelCard wheel={wheel} />)}
+      {FAMILIES.map((family) => <FamilyCard family={family} />)}
     </div>
   </section>
 

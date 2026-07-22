@@ -28,24 +28,26 @@ export function faqLd(items) {
   };
 }
 
-export function wheelProductLd(wheel) {
+export function catalogItemLd(item, family) {
   return {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: wheel.name,
-    description: wheel.blurb,
+    name: `Jante forgée ${item.code}`,
+    description: `Référence ${item.code}, famille ${family.short}. ${family.description}`,
+    image: new URL(item.image, SITE.url).toString(),
     brand: { "@type": "Brand", name: SITE.name },
     material: "Aluminium forgé",
+    sku: item.code,
     additionalProperty: [
-      { "@type": "PropertyValue", name: "Famille", value: wheel.family },
+      { "@type": "PropertyValue", name: "Famille", value: family.label },
       { "@type": "PropertyValue", name: "Disponibilité", value: "Fabrication à la commande, sans stock — aucune taille de série" },
-      { "@type": "PropertyValue", name: "Personnalisation", value: "Toute taille de 15\" à 26\" définie sur mesure, dessin des bâtons adaptable" },
+      { "@type": "PropertyValue", name: "Personnalisation", value: "Toute taille définie sur mesure, dessin des bâtons adaptable" },
     ],
     offers: {
       "@type": "Offer",
       priceCurrency: "EUR",
       availability: "https://schema.org/MadeToOrder",
-      url: `${SITE.url}/catalogue/${wheel.slug}`,
+      url: `${SITE.url}/catalogue/${item.family}/${item.slug}`,
       description: "Fabrication à la commande — prix sur devis selon taille, dessin et finition.",
     },
   };

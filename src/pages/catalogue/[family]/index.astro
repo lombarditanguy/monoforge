@@ -1,0 +1,48 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import Breadcrumbs from "../../../components/Breadcrumbs.astro";
+import WheelPhotoCard from "../../../components/WheelPhotoCard.astro";
+import CTASection from "../../../components/CTASection.astro";
+import { FAMILIES, itemsForFamily } from "../../../data/catalog.js";
+import { breadcrumbLd } from "../../../utils/seo.js";
+
+export function getStaticPaths() {
+  return FAMILIES.map((family) => ({
+    params: { family: family.slug },
+    props: { family },
+  }));
+}
+
+const { family } = Astro.props;
+const items = itemsForFamily(family.slug);
+---
+
+<Layout
+  title={`${family.label} — ${items.length} références de jantes forgées`}
+  description={`${family.description} ${items.length} références en photo, fabriquées à la commande, toute taille sur demande.`}
+  jsonLd={breadcrumbLd([{ name: "Catalogue", path: "/catalogue" }, { name: family.short, path: `/catalogue/${family.slug}` }])}
+>
+  <Breadcrumbs items={[{ name: "Catalogue", path: "/catalogue" }, { name: family.short, path: `/catalogue/${family.slug}` }]} />
+
+  <section class="container-mf pb-12 pt-6">
+    <p class="chip">{items.length} références</p>
+    <h1 class="mt-6 max-w-2xl text-balance font-display text-4xl font-bold leading-tight text-(--color-paper) sm:text-5xl">
+      {family.label}
+    </h1>
+    <p class="mt-5 max-w-2xl text-balance text-lg leading-relaxed text-(--color-mist)">{family.description}</p>
+    <div class="mt-6 rounded-lg border border-(--color-forge-500)/30 bg-(--color-forge-500)/5 p-4 text-sm leading-relaxed text-(--color-mist)">
+      <strong class="text-(--color-paper)">Aucune taille affichée ici volontairement.</strong> Ces photos montrent le dessin, pas un format figé : diamètre, largeur et déport sont définis avec vous au moment de la commande. Aucun stock — chaque jeu est fabriqué spécialement pour votre véhicule.
+    </div>
+  </section>
+
+  <section class="container-mf pb-10">
+    <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+      {items.map((item) => <WheelPhotoCard item={item} />)}
+    </div>
+  </section>
+
+  <CTASection
+    title={`Une référence ${family.short} vous plaît ?`}
+    description="Indiquez sa référence dans le configurateur : nous l'adaptons à la taille et au déport de votre véhicule."
+  />
+</Layout>

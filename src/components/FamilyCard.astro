@@ -1,0 +1,33 @@
+---
+import { itemsForFamily } from "../data/catalog.js";
+interface Props { family: any }
+const { family } = Astro.props;
+const items = itemsForFamily(family.slug);
+const cover = items[Math.floor(items.length / 3)] ?? items[0];
+---
+
+<a href={`/catalogue/${family.slug}`} class="card-mf group flex flex-col overflow-hidden transition-colors hover:border-(--color-forge-500)/60">
+  <div class="relative aspect-[4/3] overflow-hidden bg-(--color-surface-2)">
+    {cover && (
+      <img
+        src={cover.image}
+        alt={`Exemple de jante forgée ${family.short} — référence ${cover.code}`}
+        loading="lazy"
+        width="400"
+        height="400"
+        class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+      />
+    )}
+    <span class="chip absolute left-4 top-4 bg-(--color-ink)/80">{items.length} références</span>
+  </div>
+  <div class="flex flex-1 flex-col p-6">
+    <h3 class="font-display text-lg font-bold text-(--color-paper)">{family.label}</h3>
+    <p class="mt-2 flex-1 text-sm leading-relaxed text-(--color-mist)">{family.description}</p>
+    <span class="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-(--color-forge-400)">
+      Voir les références
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" class="transition-transform group-hover:translate-x-1" aria-hidden="true">
+        <path d="M1 7H13M13 7L8 2M13 7L8 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </span>
+  </div>
+</a>

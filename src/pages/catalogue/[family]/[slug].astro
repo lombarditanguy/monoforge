@@ -1,0 +1,79 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import Breadcrumbs from "../../../components/Breadcrumbs.astro";
+import WheelPhotoCard from "../../../components/WheelPhotoCard.astro";
+import CTASection from "../../../components/CTASection.astro";
+import { FAMILIES, catalogItems, itemsForFamily } from "../../../data/catalog.js";
+import { breadcrumbLd, catalogItemLd } from "../../../utils/seo.js";
+
+export function getStaticPaths() {
+  return catalogItems.map((item) => {
+    const family = FAMILIES.find((f) => f.slug === item.family);
+    return {
+      params: { family: item.family, slug: item.slug },
+      props: { item, family },
+    };
+  });
+}
+
+const { item, family } = Astro.props;
+const siblings = itemsForFamily(family.slug).filter((i) => i.slug !== item.slug);
+const related = siblings.sort(() => 0.5 - Math.random()).slice(0, 6);
+
+const ld = [
+  breadcrumbLd([
+    { name: "Catalogue", path: "/catalogue" },
+    { name: family.short, path: `/catalogue/${family.slug}` },
+    { name: item.code, path: `/catalogue/${item.family}/${item.slug}` },
+  ]),
+  catalogItemLd(item, family),
+];
+---
+
+<Layout
+  title={`${item.code} — jante forgée ${family.short.toLowerCase()}`}
+  description={`${item.code} : référence ${family.short.toLowerCase()} du catalogue MONOFORGE. Fabriquée à la commande, sans stock — taille, largeur et déport définis pour votre véhicule.`}
+  jsonLd={ld}
+>
+  <Breadcrumbs items={[{ name: "Catalogue", path: "/catalogue" }, { name: family.short, path: `/catalogue/${family.slug}` }, { name: item.code, path: `/catalogue/${item.family}/${item.slug}` }]} />
+
+  <section class="container-mf grid gap-14 pb-20 pt-6 lg:grid-cols-2 lg:gap-20">
+    <div class="overflow-hidden rounded-lg border border-(--color-line) bg-(--color-surface-2) lg:sticky lg:top-28 lg:h-fit">
+      <img src={item.image} alt={`Jante forgée ${item.code}`} width="600" height="600" class="w-full object-cover" />
+    </div>
+
+    <div>
+      <p class="chip">{family.label}</p>
+      <h1 class="mt-5 text-balance font-display text-3xl font-bold leading-tight text-(--color-paper) sm:text-4xl">{item.code}</h1>
+      <p class="mt-6 max-w-lg leading-relaxed text-(--color-mist)">{family.description}</p>
+
+      <div class="mt-10 border-t border-(--color-line) pt-8">
+        <p class="text-xs uppercase tracking-widest text-(--color-fog)">Fabrication</p>
+        <p class="mt-2 font-display text-lg font-bold text-(--color-paper)">Fabriquée spécialement pour votre véhicule</p>
+        <p class="mt-2 max-w-lg text-sm leading-relaxed text-(--color-mist)">
+          Aucun stock : diamètre, largeur et déport sont définis avec vous au moment de la commande, à partir de ce dessin. Le nombre et la forme des bâtons peuvent eux-mêmes être adaptés si besoin — voir <a href="/sur-mesure" class="underline hover:text-(--color-mist)">le sur-mesure</a>.
+        </p>
+      </div>
+
+      <div class="mt-10 flex flex-col gap-4 sm:flex-row">
+        <a href={`/configurateur?ref=${encodeURIComponent(item.code)}`} class="btn btn-forge">Demander cette référence</a>
+        <a href={`/catalogue/${family.slug}`} class="btn btn-outline">Voir toute la famille {family.short}</a>
+      </div>
+      <p class="mt-4 text-xs text-(--color-fog)">Fabrication à la demande — prix communiqué après étude technique, selon taille, dessin et finition.</p>
+    </div>
+  </section>
+
+  <section class="container-mf py-20">
+    <p class="section-label">Continuer d'explorer</p>
+    <h2 class="mt-4 font-display text-2xl font-bold text-(--color-paper)">Autres références {family.short}</h2>
+    <div class="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+      {related.map((w) => <WheelPhotoCard item={w} />)}
+    </div>
+  </section>
+
+  <CTASection
+    title={`Envie d'une ${item.code} à votre taille exacte ?`}
+    description="Envoyez-nous les cotes de votre véhicule, on s'occupe de l'adaptation technique."
+    primaryHref={`/configurateur?ref=${encodeURIComponent(item.code)}`}
+  />
+</Layout>

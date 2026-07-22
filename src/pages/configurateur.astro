@@ -2,7 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 import Breadcrumbs from "../components/Breadcrumbs.astro";
 import { breadcrumbLd } from "../utils/seo.js";
-import { wheels } from "../data/wheels.js";
+import { FAMILIES } from "../data/catalog.js";
 import { SITE } from "../data/site.js";
 ---
 
@@ -62,17 +62,21 @@ import { SITE } from "../data/site.js";
           <legend class="section-label mb-5">Style</legend>
           <div class="grid gap-5 sm:grid-cols-2">
             <label class="block">
-              <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Point de départ</span>
-              <select name="modele" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) focus:border-(--color-forge-500) focus:outline-none">
+              <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Famille recherchée</span>
+              <select name="famille" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) focus:border-(--color-forge-500) focus:outline-none">
                 <option value="Dessin inédit">Dessin inédit — feuille blanche</option>
-                {wheels.map((w) => <option value={w.name}>{w.name} — {w.style}</option>)}
+                {FAMILIES.map((f) => <option value={f.label}>{f.label}</option>)}
               </select>
             </label>
             <label class="block">
-              <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Finition envisagée</span>
-              <input name="finition" type="text" placeholder="Ex : noir mat, brossé..." class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) placeholder:text-(--color-fog) focus:border-(--color-forge-500) focus:outline-none" />
+              <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Référence catalogue (si vous en avez une)</span>
+              <input id="mf-ref-input" name="reference" type="text" placeholder="Ex : DXH1-42" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) placeholder:text-(--color-fog) focus:border-(--color-forge-500) focus:outline-none" />
             </label>
           </div>
+          <label class="mt-5 block">
+            <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Finition envisagée</span>
+            <input name="finition" type="text" placeholder="Ex : noir mat, brossé..." class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) placeholder:text-(--color-fog) focus:border-(--color-forge-500) focus:outline-none" />
+          </label>
         </fieldset>
 
         <fieldset>
@@ -124,6 +128,13 @@ import { SITE } from "../data/site.js";
 </Layout>
 
 <script define:vars={{ email: SITE.email }}>
+  const params = new URLSearchParams(window.location.search);
+  const ref = params.get("ref");
+  if (ref) {
+    const refInput = document.getElementById("mf-ref-input");
+    if (refInput) refInput.value = ref;
+  }
+
   const form = document.getElementById("mf-config-form");
   form?.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -133,7 +144,8 @@ import { SITE } from "../data/site.js";
       `Diamètre souhaité : ${data.get("diametre") || "—"}`,
       `Largeur souhaitée : ${data.get("largeur") || "—"}`,
       `Déport souhaité : ${data.get("deport") || "—"}`,
-      `Point de départ : ${data.get("modele") || "—"}`,
+      `Famille recherchée : ${data.get("famille") || "—"}`,
+      `Référence catalogue : ${data.get("reference") || "—"}`,
       `Finition envisagée : ${data.get("finition") || "—"}`,
       "",
       "Projet :",
@@ -142,7 +154,7 @@ import { SITE } from "../data/site.js";
       `Nom : ${data.get("nom") || "—"}`,
       `Email : ${data.get("email") || "—"}`,
     ];
-    const subject = encodeURIComponent(`Projet jantes sur mesure — ${data.get("vehicule") || "nouveau projet"}`);
+    const subject = encodeURIComponent(`Projet jantes sur mesure — ${data.get("reference") || data.get("vehicule") || "nouveau projet"}`);
     const body = encodeURIComponent(lines.join("\n"));
     window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
   });
