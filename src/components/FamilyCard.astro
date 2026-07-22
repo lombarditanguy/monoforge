@@ -3,7 +3,7 @@ import { itemsForFamily } from "../data/catalog.js";
 interface Props { family: any }
 const { family } = Astro.props;
 const items = itemsForFamily(family.slug);
-const cover = items[Math.floor(items.length / 3)] ?? items[0];
+const cover = (family.cover && items.find((i) => i.slug === family.cover)) || items[Math.floor(items.length / 3)] || items[0];
 ---
 
 <a href={`/catalogue/${family.slug}`} class="card-mf group flex flex-col overflow-hidden transition-colors hover:border-(--color-forge-500)/60">

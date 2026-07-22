@@ -21,6 +21,9 @@ import { SITE } from "../data/site.js";
     <p class="mt-5 max-w-xl text-balance text-lg leading-relaxed text-(--color-mist)">
       Plus votre brief est précis, plus notre première réponse le sera. Comptez 5 minutes — l'étude technique qui suit est gratuite et sans engagement.
     </p>
+    <p id="mf-ref-banner" class="mt-5 hidden max-w-xl rounded-lg border border-(--color-forge-500)/40 bg-(--color-forge-500)/10 px-4 py-3 text-sm text-(--color-paper)">
+      Référence <strong id="mf-ref-banner-code" class="text-(--color-forge-400)"></strong> pré-remplie ci-dessous — complétez le reste pour lancer l'étude.
+    </p>
   </section>
 
   <section class="container-mf pb-24">
@@ -133,6 +136,12 @@ import { SITE } from "../data/site.js";
   if (ref) {
     const refInput = document.getElementById("mf-ref-input");
     if (refInput) refInput.value = ref;
+    const banner = document.getElementById("mf-ref-banner");
+    const bannerCode = document.getElementById("mf-ref-banner-code");
+    if (banner && bannerCode) {
+      bannerCode.textContent = ref;
+      banner.classList.remove("hidden");
+    }
   }
 
   const form = document.getElementById("mf-config-form");

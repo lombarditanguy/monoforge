@@ -33,6 +33,7 @@ export const FAMILIES = [
     short: "Poids lourd",
     description:
       "Jantes forgées pour utilitaires et poids lourds, du 20 au 28 pouces, pensées pour la charge et la durée.",
+    cover: "dxh4-25",
   },
 ];
 
