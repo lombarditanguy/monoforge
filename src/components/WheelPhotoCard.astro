@@ -6,7 +6,7 @@ const { item } = Astro.props;
 <a
   href={`/catalogue/${item.family}/${item.slug}`}
   data-wheel-code={item.code.toLowerCase()}
-  class="wheel-card group block overflow-hidden rounded-lg border border-(--color-line) bg-(--color-surface) transition-colors hover:border-(--color-forge-500)/60"
+  class="wheel-card group block overflow-hidden rounded-lg border border-(--color-line) bg-(--color-surface) transition-all duration-300 hover:-translate-y-1 hover:border-(--color-forge-500)/60 hover:shadow-[0_16px_32px_-12px_rgba(0,0,0,0.55)]"
 >
   <div class="relative aspect-square overflow-hidden bg-(--color-surface-2)">
     <img
@@ -15,7 +15,7 @@ const { item } = Astro.props;
       loading="lazy"
       width="300"
       height="300"
-      class="wheel-card-img h-full w-full object-cover"
+      class="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.06]"
     />
     <div class="pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-(--color-ink)/90 to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100"></div>
     <span class="pointer-events-none absolute bottom-2.5 left-1/2 flex -translate-x-1/2 items-center gap-1 text-xs font-semibold text-(--color-forge-400) opacity-0 transition-opacity duration-200 group-hover:opacity-100">
@@ -25,23 +25,3 @@ const { item } = Astro.props;
   </div>
   <p class="px-3 py-2.5 text-center font-display text-sm font-bold text-(--color-paper)">{item.code}</p>
 </a>
-
-<style>
-  .wheel-card-img {
-    transition: transform 0.35s ease-out;
-    transform-origin: center;
-  }
-  .wheel-card:hover .wheel-card-img {
-    animation: mf-wheel-spin 2.2s linear infinite;
-  }
-  @keyframes mf-wheel-spin {
-    from { transform: scale(1.07) rotate(0deg); }
-    to { transform: scale(1.07) rotate(360deg); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .wheel-card:hover .wheel-card-img {
-      animation: none;
-      transform: scale(1.03);
-    }
-  }
-</style>
