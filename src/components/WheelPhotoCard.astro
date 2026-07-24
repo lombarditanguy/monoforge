@@ -6,7 +6,7 @@ const { item } = Astro.props;
 <a
   href={`/catalogue/${item.family}/${item.slug}`}
   data-wheel-code={item.code.toLowerCase()}
-  data-wheel-color={item.color || ""}
+  data-wheel-style={item.spokeStyle || ""}
   class="wheel-card group block overflow-hidden rounded-lg border border-(--color-line) bg-(--color-surface) transition-all duration-300 hover:-translate-y-1 hover:border-(--color-forge-500)/60 hover:shadow-[0_16px_32px_-12px_rgba(0,0,0,0.55)]"
 >
   <div class="relative aspect-square overflow-hidden bg-(--color-surface-2)">
