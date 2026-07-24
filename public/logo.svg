@@ -9,12 +9,12 @@
     <polygon points="246.0,312.7 164.5,435.6 113.4,398.6 205.1,283.0" />
     <polygon points="199.0,264.0 56.9,224.5 76.4,164.5 214.6,216.0" />
   </g>
-  <circle cx="256" cy="256" r="73.6" fill="#0a0a0b" stroke="#ff5a1f" stroke-width="41.6"/>
+  <circle cx="256" cy="256" r="60.8" fill="#0a0a0b" stroke="#ff5a1f" stroke-width="15"/>
   <g fill="#ff7a45">
-    <circle cx="308.7" cy="183.5" r="14.4"/>
-    <circle cx="341.2" cy="283.7" r="14.4"/>
-    <circle cx="256.0" cy="345.6" r="14.4"/>
-    <circle cx="170.8" cy="283.7" r="14.4"/>
-    <circle cx="203.3" cy="183.5" r="14.4"/>
+    <circle cx="308.7" cy="183.5" r="13.6"/>
+    <circle cx="341.2" cy="283.7" r="13.6"/>
+    <circle cx="256.0" cy="345.6" r="13.6"/>
+    <circle cx="170.8" cy="283.7" r="13.6"/>
+    <circle cx="203.3" cy="183.5" r="13.6"/>
   </g>
 </svg>
