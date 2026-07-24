@@ -1,6 +1,5 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import WheelGraphic from "../components/WheelGraphic.astro";
 import FamilyCard from "../components/FamilyCard.astro";
 import CTASection from "../components/CTASection.astro";
 import FaqList from "../components/FaqList.astro";
@@ -61,10 +60,18 @@ const homeFaqs = [
         </dl>
       </div>
 
-      <div class="relative mx-auto flex aspect-square w-full max-w-md items-center justify-center">
-        <div class="absolute inset-0 rounded-full border border-(--color-line)"></div>
-        <div class="absolute inset-8 rounded-full border border-(--color-line) opacity-60"></div>
-        <WheelGraphic spokes={12} spokeStyle="turbine" sizeClass="w-[420px]" spin={true} />
+      <div class="relative mx-auto w-full max-w-lg overflow-hidden rounded-lg border border-(--color-line)">
+        <video
+          class="aspect-video w-full object-cover"
+          src="/hero-forge.mp4"
+          poster="/hero-forge-poster.jpg"
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="auto"
+          aria-label="Une jante forgée MONOFORGE prend forme, animation"
+        ></video>
       </div>
     </div>
   </section>
