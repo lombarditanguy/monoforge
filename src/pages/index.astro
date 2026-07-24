@@ -28,10 +28,10 @@ const homeFaqs = [
   description="MONOFORGE conçoit des jantes forgées 100% sur mesure : toutes tailles, tous déports, et dessin de bâtons personnalisable à la demande. Étude technique gratuite."
   jsonLd={faqLd(homeFaqs)}
 >
-  <!-- HERO -->
-  <section class="relative flex min-h-[560px] items-center overflow-hidden md:min-h-[680px]">
+  <!-- HERO VIDEO -->
+  <section class="relative overflow-hidden bg-(--color-ink)">
     <video
-      class="absolute inset-0 h-full w-full object-cover"
+      class="aspect-video w-full object-cover"
       src="/hero-forge.mp4"
       poster="/hero-forge-poster.jpg"
       autoplay
@@ -41,16 +41,17 @@ const homeFaqs = [
       preload="auto"
       aria-label="Une jante forgée MONOFORGE prend forme, animation"
     ></video>
-    <div class="absolute inset-0 bg-gradient-to-r from-(--color-ink)/95 via-(--color-ink)/55 to-transparent"></div>
-    <div class="absolute inset-0 bg-gradient-to-t from-(--color-ink)/70 via-transparent to-transparent"></div>
+  </section>
 
-    <div class="container-mf relative pt-14 pb-20 md:pt-24 md:pb-32">
+  <!-- HERO TEXT -->
+  <section class="relative">
+    <div class="container-mf pt-14 pb-20 md:pt-16 md:pb-24">
       <div class="max-w-2xl">
         <p class="chip">Fabrication à la demande — aluminium forgé</p>
-        <h1 class="mt-6 text-balance font-display text-4xl font-bold leading-[1.05] text-(--color-paper) drop-shadow-[0_2px_16px_rgba(0,0,0,0.65)] sm:text-5xl lg:text-6xl">
+        <h1 class="mt-6 text-balance font-display text-4xl font-bold leading-[1.05] text-(--color-paper) sm:text-5xl lg:text-6xl">
           Des jantes forgées <span class="text-(--color-forge-400)">à votre dessin</span>, pas au dessin du catalogue.
         </h1>
-        <p class="mt-6 max-w-lg text-balance text-lg leading-relaxed text-(--color-mist) drop-shadow-[0_1px_10px_rgba(0,0,0,0.65)]">
+        <p class="mt-6 max-w-lg text-balance text-lg leading-relaxed text-(--color-mist)">
           Toute taille. Toute largeur. Et, à la différence de tous les autres fabricants sur mesure, la forme même des bâtons peut être redessinée pour votre projet. C'est notre seule règle : zéro compromis sur votre exigence.
         </p>
         <div class="mt-9 flex flex-col gap-4 sm:flex-row">
