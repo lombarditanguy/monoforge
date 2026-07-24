@@ -6,7 +6,7 @@
 
 - [Accueil](https://www.monoforge.fr/) : présentation générale, différenciation face aux fabricants "sur mesure" classiques.
 - [Sur-mesure](https://www.monoforge.fr/sur-mesure) : détail de ce qui est personnalisable (dimensions, dessin, finition) et du parcours projet en 6 étapes.
-- [Catalogue](https://www.monoforge.fr/catalogue) : 8 dessins de base (monobloc et multi-pièces), chacun redimensionnable et redessinable.
+- [Catalogue](https://www.monoforge.fr/catalogue) : 297 références en photo réparties en 4 familles (monobloc, multi-pièces, tout-terrain, poids lourd), chacune redimensionnable et redessinable — un aperçu du savoir-faire de l'atelier partenaire, pas un stock figé.
 - [Savoir-faire](https://www.monoforge.fr/savoir-faire) : explication du forgeage vs la coulée, différence monobloc/multi-pièces, matière et contrôle qualité.
 - [FAQ](https://www.monoforge.fr/faq) : réponses détaillées sur le dessin, les tailles, les délais, l'homologation et les prix.
 - [Journal](https://www.monoforge.fr/journal) : guides sur le forgeage, le choix des tailles, les architectures et les délais.
@@ -17,6 +17,7 @@
 
 - Différenciateur principal : la forme des bâtons est modifiable sur demande, pas seulement la taille — capacité rare chez les fabricants de jantes forgées sur mesure.
 - Gamme de tailles : 15" à 26", sans référence de catalogue figée.
-- Deux architectures proposées : monobloc (léger, rigide) et multi-pièces 2 ou 3 parties (dish profond, modulaire).
+- Deux architectures de construction : monobloc (léger, rigide, forgé en une pièce) et multi-pièces 2 ou 3 parties (dish profond, modulaire).
+- Catalogue organisé en 4 familles (297 références en photo) : monobloc, multi-pièces, tout-terrain (renforts beadlock) et poids lourd — chaque photo montre un dessin, pas une taille figée.
 - Le prix n'est jamais affiché de façon générique : il dépend de la taille, du dessin et de la finition, communiqué après étude technique gratuite.
 - Pour un usage route, une configuration sur mesure peut nécessiter une démarche d'homologation individuelle (réception à titre isolé en France), selon la réglementation en vigueur.

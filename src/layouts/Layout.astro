@@ -32,13 +32,23 @@ const organizationLd = {
   "@id": `${SITE.url}/#organization`,
   name: SITE.name,
   url: SITE.url,
+  logo: new URL("/og-image.svg", SITE.url).toString(),
+  image: new URL("/og-image.svg", SITE.url).toString(),
   description: SITE.description,
   slogan: SITE.claim,
+  foundingDate: SITE.founded,
   areaServed: "FR",
   address: {
     "@type": "PostalAddress",
     addressLocality: SITE.addressLocality,
     addressCountry: SITE.addressCountry,
+  },
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "customer service",
+    email: SITE.email,
+    areaServed: "FR",
+    availableLanguage: "French",
   },
   makesOffer: {
     "@type": "Offer",
