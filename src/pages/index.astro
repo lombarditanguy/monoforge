@@ -30,17 +30,19 @@ const homeFaqs = [
 >
   <!-- HERO VIDEO -->
   <section id="hero-video-section" class="relative overflow-hidden bg-(--color-ink)">
-    <video
-      id="hero-video"
-      class="h-[42vh] w-full object-cover sm:h-[52vh] md:h-[64vh]"
-      src="/hero-forge.mp4"
-      poster="/hero-forge-poster.jpg"
-      autoplay
-      muted
-      playsinline
-      preload="auto"
-      aria-label="Une jante forgée MONOFORGE prend forme, animation"
-    ></video>
+    <div class="container-mf py-8 md:py-12">
+      <video
+        id="hero-video"
+        class="aspect-video max-h-[60vh] w-full object-contain"
+        src="/hero-forge.mp4"
+        poster="/hero-forge-poster.jpg"
+        autoplay
+        muted
+        playsinline
+        preload="auto"
+        aria-label="Une jante forgée MONOFORGE prend forme, animation"
+      ></video>
+    </div>
   </section>
 
   <!-- HERO TEXT -->
