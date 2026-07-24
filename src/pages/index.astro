@@ -29,14 +29,14 @@ const homeFaqs = [
   jsonLd={faqLd(homeFaqs)}
 >
   <!-- HERO VIDEO -->
-  <section class="relative overflow-hidden bg-(--color-ink)">
+  <section id="hero-video-section" class="relative overflow-hidden bg-(--color-ink)">
     <video
-      class="aspect-video w-full object-cover"
+      id="hero-video"
+      class="h-[42vh] w-full object-cover sm:h-[52vh] md:h-[64vh]"
       src="/hero-forge.mp4"
       poster="/hero-forge-poster.jpg"
       autoplay
       muted
-      loop
       playsinline
       preload="auto"
       aria-label="Une jante forgée MONOFORGE prend forme, animation"
@@ -250,3 +250,28 @@ const homeFaqs = [
     description="L'étude technique est gratuite et sans engagement. Vous recevez un plan validé avant tout forgeage."
   />
 </Layout>
+
+<style>
+  #hero-video-section {
+    transition: height 0.7s ease-in-out, opacity 0.6s ease-in-out;
+  }
+</style>
+
+<script>
+  const section = document.getElementById("hero-video-section");
+  const video = document.getElementById("hero-video") as HTMLVideoElement | null;
+
+  if (section && video) {
+    video.addEventListener("ended", () => {
+      section.style.height = `${section.getBoundingClientRect().height}px`;
+      section.getBoundingClientRect();
+      section.style.opacity = "0";
+      window.setTimeout(() => {
+        section.style.height = "0px";
+      }, 600);
+      window.setTimeout(() => {
+        section.style.display = "none";
+      }, 1300);
+    });
+  }
+</script>
