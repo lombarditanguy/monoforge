@@ -29,10 +29,23 @@ const homeFaqs = [
   jsonLd={faqLd(homeFaqs)}
 >
   <!-- HERO -->
-  <section class="container-mf relative overflow-hidden pt-14 pb-20 md:pt-20 md:pb-28">
-    <div class="pointer-events-none absolute -right-40 -top-40 h-[32rem] w-[32rem] rounded-full bg-(--color-forge-500)/10 blur-[140px]" aria-hidden="true"></div>
-    <div class="relative grid grid-cols-1 items-center gap-16 lg:grid-cols-2">
-      <div>
+  <section class="relative flex min-h-[560px] items-center overflow-hidden md:min-h-[680px]">
+    <video
+      class="absolute inset-0 h-full w-full object-cover"
+      src="/hero-forge.mp4"
+      poster="/hero-forge-poster.jpg"
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="auto"
+      aria-label="Une jante forgée MONOFORGE prend forme, animation"
+    ></video>
+    <div class="absolute inset-0 bg-gradient-to-r from-(--color-ink) via-(--color-ink)/85 to-(--color-ink)/35"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-(--color-ink) via-transparent to-(--color-ink)/40"></div>
+
+    <div class="container-mf relative pt-14 pb-20 md:pt-24 md:pb-32">
+      <div class="max-w-2xl">
         <p class="chip">Fabrication à la demande — aluminium forgé</p>
         <h1 class="mt-6 text-balance font-display text-4xl font-bold leading-[1.05] text-(--color-paper) sm:text-5xl lg:text-6xl">
           Des jantes forgées <span class="text-(--color-forge-400)">à votre dessin</span>, pas au dessin du catalogue.
@@ -58,20 +71,6 @@ const homeFaqs = [
             <dd class="mt-1 font-display text-2xl font-bold text-(--color-paper)">Alu forgé</dd>
           </div>
         </dl>
-      </div>
-
-      <div class="relative mx-auto w-full max-w-lg overflow-hidden rounded-lg border border-(--color-line)">
-        <video
-          class="aspect-video w-full object-cover"
-          src="/hero-forge.mp4"
-          poster="/hero-forge-poster.jpg"
-          autoplay
-          muted
-          loop
-          playsinline
-          preload="auto"
-          aria-label="Une jante forgée MONOFORGE prend forme, animation"
-        ></video>
       </div>
     </div>
   </section>
