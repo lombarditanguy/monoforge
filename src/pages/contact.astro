@@ -3,6 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import Breadcrumbs from "../components/Breadcrumbs.astro";
 import { breadcrumbLd } from "../utils/seo.js";
 import { SITE } from "../data/site.js";
+import EmailLink from "../components/EmailLink.astro";
 ---
 
 <Layout
@@ -23,7 +24,7 @@ import { SITE } from "../data/site.js";
       <dl class="mt-12 space-y-8">
         <div>
           <dt class="text-xs uppercase tracking-widest text-(--color-fog)">Email</dt>
-          <dd class="mt-1"><a href={`mailto:${SITE.email}`} class="font-display text-xl font-bold text-(--color-paper) hover:text-(--color-forge-400)">{SITE.email}</a></dd>
+          <dd class="mt-1"><EmailLink class="font-display text-xl font-bold text-(--color-paper) hover:text-(--color-forge-400)" /></dd>
         </div>
         <div>
           <dt class="text-xs uppercase tracking-widest text-(--color-fog)">Téléphone</dt>

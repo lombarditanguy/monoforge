@@ -5,7 +5,7 @@
 interface Props {
   spokes?: number;
   spokeStyle?: "straight" | "mesh" | "double" | "turbine" | "y" | "disc" | "wide";
-  size?: number;
+  sizeClass?: string;
   accent?: boolean;
   class?: string;
   spin?: boolean;
@@ -14,7 +14,7 @@ interface Props {
 const {
   spokes = 8,
   spokeStyle = "straight",
-  size = 320,
+  sizeClass = "w-80",
   accent = true,
   class: className = "",
   spin = false,
@@ -112,7 +112,7 @@ for (let i = 0; i < spokes; i++) {
 const svgMarkup = [...overlays, ...lines].join("");
 ---
 
-<div class={`relative aspect-square ${className}`} style={`width:${size}px;max-width:100%;`}>
+<div class={`relative aspect-square max-w-full ${sizeClass} ${className}`}>
   <svg
     viewBox="0 0 320 320"
     class={spin ? "animate-[spin_38s_linear_infinite]" : ""}

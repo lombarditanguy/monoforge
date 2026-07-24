@@ -25,7 +25,7 @@ const homeFaqs = [
 ---
 
 <Layout
-  title="MONOFORGE — Jantes forgées sur mesure, toute taille et toute forme"
+  title="MONOFORGE — Jantes forgées sur mesure, toute taille"
   description="MONOFORGE conçoit des jantes forgées 100% sur mesure : toutes tailles, tous déports, et dessin de bâtons personnalisable à la demande. Étude technique gratuite."
   jsonLd={faqLd(homeFaqs)}
 >
@@ -64,7 +64,7 @@ const homeFaqs = [
       <div class="relative mx-auto flex aspect-square w-full max-w-md items-center justify-center">
         <div class="absolute inset-0 rounded-full border border-(--color-line)"></div>
         <div class="absolute inset-8 rounded-full border border-(--color-line) opacity-60"></div>
-        <WheelGraphic spokes={12} spokeStyle="turbine" size={420} spin={true} />
+        <WheelGraphic spokes={12} spokeStyle="turbine" sizeClass="w-[420px]" spin={true} />
       </div>
     </div>
   </section>
@@ -104,6 +104,41 @@ const homeFaqs = [
       </div>
     </div>
   </section>
+
+  <!-- WHO IT'S FOR -->
+  <section class="container-mf py-24">
+    <div class="grid grid-cols-1 gap-14 lg:grid-cols-[minmax(0,22rem)_1fr]">
+      <div>
+        <p class="section-label">À qui s'adresse ce service</p>
+        <h2 class="mt-4 text-balance font-display text-3xl font-bold text-(--color-paper) md:text-4xl">
+          Un service habituellement réservé aux constructeurs.
+        </h2>
+        <p class="mt-5 text-sm leading-relaxed text-(--color-mist)">
+          Le dessin de jante sur mesure, avec redéfinition complète des bâtons, est classiquement un outil de constructeur ou de préparateur haut de gamme. MONOFORGE ouvre cette méthode de travail aux particuliers et aux ateliers, sans minimum de série imposé.
+        </p>
+      </div>
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <div class="card-mf p-8">
+          <h3 class="font-display text-lg font-bold text-(--color-paper)">Restauration & youngtimers</h3>
+          <p class="mt-2 text-sm leading-relaxed text-(--color-mist)">Reproduction fidèle d'un dessin d'époque introuvable au catalogue, dans un diamètre et un déport qui n'existent plus chez les fabricants d'origine.</p>
+        </div>
+        <div class="card-mf p-8">
+          <h3 class="font-display text-lg font-bold text-(--color-paper)">Préparation & performance</h3>
+          <p class="mt-2 text-sm leading-relaxed text-(--color-mist)">Jantes dimensionnées pour dégager de gros étriers de frein, un carrossage marqué ou un montage pneumatique spécifique, sans compromis sur le dessin.</p>
+        </div>
+        <div class="card-mf p-8">
+          <h3 class="font-display text-lg font-bold text-(--color-paper)">SUV, pick-up & tout-terrain</h3>
+          <p class="mt-2 text-sm leading-relaxed text-(--color-mist)">Jantes beadlock ou renforcées, calculées pour la charge et le déport réels du véhicule, pas pour une gamme générique de jante de série.</p>
+        </div>
+        <div class="card-mf p-8">
+          <h3 class="font-display text-lg font-bold text-(--color-paper)">Ateliers & préparateurs</h3>
+          <p class="mt-2 text-sm leading-relaxed text-(--color-mist)">Un interlocuteur technique unique pour vos projets clients, du plan coté à l'accompagnement sur les démarches d'homologation si votre configuration l'exige.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="hairline"></div>
 
   <!-- COMPARISON TABLE (GEO-friendly extractable facts) -->
   <section class="container-mf py-10">

@@ -3,6 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import Breadcrumbs from "../components/Breadcrumbs.astro";
 import { breadcrumbLd } from "../utils/seo.js";
 import { SITE } from "../data/site.js";
+import EmailLink from "../components/EmailLink.astro";
 ---
 
 <Layout
@@ -32,12 +33,12 @@ import { SITE } from "../data/site.js";
       <h2>Durée de conservation</h2>
       <p>Les échanges liés à un projet sont conservés pendant la durée nécessaire à son traitement, puis à des fins de garantie et d'obligations légales le cas échéant.</p>
 
-      <h2>Cookies</h2>
-      <p>Ce site n'utilise pas de cookies publicitaires ni de traceurs tiers à des fins de profilage. [À compléter si un outil de mesure d'audience est ajouté ultérieurement.]</p>
+      <h2>Cookies et mesure d'audience</h2>
+      <p>Ce site n'utilise pas de cookies publicitaires ni de traceurs tiers à des fins de profilage. Il utilise Vercel Web Analytics, un outil de mesure d'audience qui ne dépose pas de cookie et n'identifie pas individuellement les visiteurs : il ne nécessite pas de consentement préalable au sens de la RGPD.</p>
 
       <h2>Vos droits</h2>
       <p>
-        Conformément au Règlement Général sur la Protection des Données (RGPD), vous disposez d'un droit d'accès, de rectification et de suppression de vos données. Pour l'exercer, contactez-nous à <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+        Conformément au Règlement Général sur la Protection des Données (RGPD), vous disposez d'un droit d'accès, de rectification et de suppression de vos données. Pour l'exercer, contactez-nous à <EmailLink />.
       </p>
     </div>
   </section>

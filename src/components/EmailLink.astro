@@ -1,0 +1,32 @@
+---
+// Rend l'adresse e-mail lisible et cliquable pour un visiteur, mais jamais
+// comme une chaine "mot@mot.tld" complete dans le HTML statique -- ca evite
+// qu'elle soit moissonnee automatiquement par les robots collecteurs de
+// spam qui scannent le code source.
+import { SITE } from "../data/site.js";
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+const [user, domain] = SITE.email.split("@");
+---
+
+<a
+  href="#"
+  data-email-user={user}
+  data-email-domain={domain}
+  class={`mf-email-link ${className}`}
+>{user}<span aria-hidden="true">&nbsp;[at]&nbsp;</span>{domain}</a>
+
+<script>
+  document.querySelectorAll("a.mf-email-link").forEach((el) => {
+    const user = el.getAttribute("data-email-user");
+    const domain = el.getAttribute("data-email-domain");
+    if (!user || !domain) return;
+    const email = `${user}@${domain}`;
+    el.setAttribute("href", `mailto:${email}`);
+    el.textContent = email;
+  });
+</script>

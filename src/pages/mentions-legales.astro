@@ -3,6 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import Breadcrumbs from "../components/Breadcrumbs.astro";
 import { breadcrumbLd } from "../utils/seo.js";
 import { SITE } from "../data/site.js";
+import EmailLink from "../components/EmailLink.astro";
 ---
 
 <Layout
@@ -29,7 +30,7 @@ import { SITE } from "../data/site.js";
         SIRET : [à compléter]<br />
         RCS : [à compléter]<br />
         Directeur de la publication : [nom à compléter]<br />
-        Contact : <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+        Contact : <EmailLink />
       </p>
 
       <h2>Hébergement</h2>

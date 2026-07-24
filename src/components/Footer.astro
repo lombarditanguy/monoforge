@@ -1,5 +1,6 @@
 ---
 import { SITE } from "../data/site.js";
+import EmailLink from "./EmailLink.astro";
 const year = new Date().getFullYear();
 ---
 
@@ -28,7 +29,7 @@ const year = new Date().getFullYear();
     <div>
       <p class="section-label mb-4">Contact</p>
       <ul class="space-y-2.5 text-sm text-(--color-mist)">
-        <li><a href={`mailto:${SITE.email}`} class="hover:text-(--color-paper)">{SITE.email}</a></li>
+        <li><EmailLink class="hover:text-(--color-paper)" /></li>
         <li>{SITE.phoneDisplay}</li>
         <li>{SITE.hoursNote}</li>
         <li><a href="/configurateur" class="mt-1 inline-block text-(--color-forge-400) hover:text-(--color-forge-300)">Démarrer un projet →</a></li>
