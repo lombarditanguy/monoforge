@@ -33,7 +33,7 @@ const homeFaqs = [
     <div class="container-mf py-8 md:py-12">
       <video
         id="hero-video"
-        class="aspect-video max-h-[60vh] w-full object-contain"
+        class="hero-video-mask aspect-video max-h-[60vh] w-full object-contain"
         src="/hero-forge.mp4"
         poster="/hero-forge-poster.jpg"
         autoplay
@@ -256,6 +256,11 @@ const homeFaqs = [
 <style>
   #hero-video-section {
     transition: height 0.7s ease-in-out, opacity 0.6s ease-in-out;
+  }
+
+  .hero-video-mask {
+    -webkit-mask-image: radial-gradient(ellipse farthest-side at center, black 45%, transparent 100%);
+    mask-image: radial-gradient(ellipse farthest-side at center, black 45%, transparent 100%);
   }
 </style>
 
