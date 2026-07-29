@@ -1,6 +1,6 @@
-# MONOFORGE — site vitrine
+# KESSLER WHEELS — site vitrine
 
-Site vitrine pour MONOFORGE, jantes forgées 100% sur mesure (toute taille, dessin des bâtons personnalisable). Construit avec [Astro](https://astro.build) + Tailwind CSS v4, en full statique (SEO/performance maximale), sans backend.
+Site vitrine pour KESSLER WHEELS, jantes forgées 100% sur mesure (toute taille, dessin des bâtons personnalisable). Construit avec [Astro](https://astro.build) + Tailwind CSS v4, en full statique (SEO/performance maximale), sans backend.
 
 ## Développement
 
@@ -31,7 +31,7 @@ Ces éléments sont volontairement des placeholders identifiables (voir aussi le
 3. **CGV** (`src/pages/cgv.astro`) : modalités d'acompte, garanties, juridiction — à faire relire par un professionnel du droit.
 4. **Formulaire configurateur** : fonctionne actuellement en `mailto:` (aucun backend). Pour un vrai formulaire (sans ouvrir le client mail de l'utilisateur), brancher un service comme Formspree, Resend ou une fonction serverless.
 5. **Photos produit réelles** pour remplacer/compléter les illustrations SVG dès que le fournisseur peut en fournir.
-6. **Nom de domaine** : le site est configuré sur `https://www.monoforge.fr` à titre d'exemple — à ajuster si le domaine final diffère.
+6. **Nom de domaine** : le site est configuré sur `https://www.kesslerwheels.fr` — vérifier que le domaine est bien réservé et pointé (DNS + Vercel) avant mise en ligne.
 
 ## Déploiement
 

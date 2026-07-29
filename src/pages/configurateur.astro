@@ -4,6 +4,7 @@ import Breadcrumbs from "../components/Breadcrumbs.astro";
 import { breadcrumbLd } from "../utils/seo.js";
 import { FAMILIES } from "../data/catalog.js";
 import { SITE } from "../data/site.js";
+import { VEHICLE_BRANDS } from "../data/vehicles.js";
 ---
 
 <Layout
@@ -33,19 +34,43 @@ import { SITE } from "../data/site.js";
           <legend class="section-label mb-5">Votre véhicule</legend>
           <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <label class="block">
-              <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Marque &amp; modèle *</span>
-              <input required name="vehicule" type="text" placeholder="Ex : Porsche 992 GT3" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) placeholder:text-(--color-fog) focus:border-(--color-forge-500) focus:outline-none" />
+              <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Marque *</span>
+              <select required id="mf-brand" name="marque" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) focus:border-(--color-forge-500) focus:outline-none">
+                <option value="">Sélectionnez une marque</option>
+                {VEHICLE_BRANDS.map((b) => <option value={b.brand}>{b.brand}</option>)}
+                <option value="Autre">Autre / non listée</option>
+              </select>
             </label>
             <label class="block">
-              <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Année</span>
-              <input name="annee" type="text" placeholder="Ex : 2023" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) placeholder:text-(--color-fog) focus:border-(--color-forge-500) focus:outline-none" />
+              <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Modèle *</span>
+              <select required id="mf-model" name="modele" disabled class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) focus:border-(--color-forge-500) focus:outline-none disabled:opacity-50">
+                <option value="">Choisissez d'abord une marque</option>
+              </select>
+            </label>
+            <label class="block">
+              <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Génération / phase *</span>
+              <select required id="mf-generation" name="generation" disabled class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) focus:border-(--color-forge-500) focus:outline-none disabled:opacity-50">
+                <option value="">Choisissez d'abord un modèle</option>
+              </select>
+            </label>
+            <label class="block">
+              <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Année *</span>
+              <select required id="mf-year" name="annee" disabled class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) focus:border-(--color-forge-500) focus:outline-none disabled:opacity-50">
+                <option value="">Choisissez d'abord une génération</option>
+              </select>
+            </label>
+          </div>
+          <div id="mf-manual-vehicule" class="mt-5 hidden">
+            <label class="block">
+              <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Précisez votre véhicule (marque, modèle, année)</span>
+              <input name="vehicule_manuel" type="text" placeholder="Ex : Porsche 992 GT3, 2023" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) placeholder:text-(--color-fog) focus:border-(--color-forge-500) focus:outline-none" />
             </label>
           </div>
         </fieldset>
 
         <fieldset>
           <legend class="section-label mb-5">Tailles souhaitées</legend>
-          <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
+          <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-4">
             <label class="block">
               <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Diamètre</span>
               <input name="diametre" type="text" placeholder="Ex : 20&quot; AV / 21&quot; AR" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) placeholder:text-(--color-fog) focus:border-(--color-forge-500) focus:outline-none" />
@@ -57,6 +82,11 @@ import { SITE } from "../data/site.js";
             <label class="block">
               <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Déport souhaité</span>
               <input name="deport" type="text" placeholder="Si connu, sinon on calcule" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) placeholder:text-(--color-fog) focus:border-(--color-forge-500) focus:outline-none" />
+            </label>
+            <label class="block">
+              <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Entraxe</span>
+              <input id="mf-entraxe" name="entraxe" type="text" placeholder="Auto-rempli selon le véhicule" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) placeholder:text-(--color-fog) focus:border-(--color-forge-500) focus:outline-none" />
+              <span class="mt-1 block text-xs text-(--color-fog)">Pré-rempli automatiquement, modifiable si besoin (adaptateur, etc.)</span>
             </label>
           </div>
         </fieldset>
@@ -86,7 +116,14 @@ import { SITE } from "../data/site.js";
           <legend class="section-label mb-5">Votre projet</legend>
           <label class="block">
             <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Décrivez votre projet, vos contraintes, vos délais *</span>
-            <textarea required name="message" rows="5" placeholder="Usage route ou piste, gros freinage, garde au sol visée, délai souhaité..." class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) placeholder:text-(--color-fog) focus:border-(--color-forge-500) focus:outline-none"></textarea>
+            <textarea required name="message" rows="5" placeholder="Usage route ou piste, gros freinage, garde au sol visée, délai souhaité, gravure éventuelle..." class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) placeholder:text-(--color-fog) focus:border-(--color-forge-500) focus:outline-none"></textarea>
+          </label>
+          <label class="mt-5 block">
+            <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Photos ou références (facultatif)</span>
+            <input id="mf-attachments" name="attachments" type="file" multiple accept="image/*,.pdf" class="block w-full text-sm text-(--color-mist) file:mr-4 file:rounded file:border-0 file:bg-(--color-forge-500) file:px-4 file:py-2 file:text-sm file:font-semibold file:text-(--color-ink) hover:file:bg-(--color-forge-400)" />
+            <span id="mf-attachments-note" class="mt-1.5 block text-xs text-(--color-fog)">
+              Envoi automatique des pièces jointes en cours d'activation : pour l'instant, joignez vos fichiers directement dans l'email qui s'ouvre après l'envoi du formulaire.
+            </span>
           </label>
         </fieldset>
 
@@ -130,7 +167,7 @@ import { SITE } from "../data/site.js";
   </section>
 </Layout>
 
-<script define:vars={{ email: SITE.email }}>
+<script define:vars={{ email: SITE.email, brands: VEHICLE_BRANDS }}>
   const params = new URLSearchParams(window.location.search);
   const ref = params.get("ref");
   if (ref) {
@@ -144,15 +181,111 @@ import { SITE } from "../data/site.js";
     }
   }
 
+  // --- Cascading vehicle dropdowns (brand -> model -> generation -> year), + entraxe auto-fill ---
+  const brandSelect = document.getElementById("mf-brand");
+  const modelSelect = document.getElementById("mf-model");
+  const generationSelect = document.getElementById("mf-generation");
+  const yearSelect = document.getElementById("mf-year");
+  const entraxeInput = document.getElementById("mf-entraxe");
+  const manualVehicleWrap = document.getElementById("mf-manual-vehicule");
+
+  function resetSelect(select, placeholder, disabled) {
+    select.innerHTML = "";
+    const opt = document.createElement("option");
+    opt.value = "";
+    opt.textContent = placeholder;
+    select.appendChild(opt);
+    select.disabled = disabled;
+  }
+
+  brandSelect?.addEventListener("change", () => {
+    const brandName = brandSelect.value;
+    resetSelect(modelSelect, "Choisissez d'abord une marque", true);
+    resetSelect(generationSelect, "Choisissez d'abord un modèle", true);
+    resetSelect(yearSelect, "Choisissez d'abord une génération", true);
+    entraxeInput.value = "";
+
+    if (brandName === "Autre") {
+      manualVehicleWrap.classList.remove("hidden");
+      return;
+    }
+    manualVehicleWrap.classList.add("hidden");
+    if (!brandName) return;
+
+    const brand = brands.find((b) => b.brand === brandName);
+    if (!brand) return;
+    resetSelect(modelSelect, "Sélectionnez un modèle", false);
+    brand.models.forEach((m) => {
+      const opt = document.createElement("option");
+      opt.value = m.model;
+      opt.textContent = m.model;
+      modelSelect.appendChild(opt);
+    });
+  });
+
+  modelSelect?.addEventListener("change", () => {
+    const brandName = brandSelect.value;
+    const modelName = modelSelect.value;
+    resetSelect(generationSelect, "Choisissez d'abord un modèle", true);
+    resetSelect(yearSelect, "Choisissez d'abord une génération", true);
+    entraxeInput.value = "";
+    if (!modelName) return;
+
+    const brand = brands.find((b) => b.brand === brandName);
+    const model = brand?.models.find((m) => m.model === modelName);
+    if (!model) return;
+    resetSelect(generationSelect, "Sélectionnez une génération", false);
+    model.generations.forEach((g) => {
+      const opt = document.createElement("option");
+      opt.value = g.id;
+      opt.textContent = g.label;
+      generationSelect.appendChild(opt);
+    });
+  });
+
+  generationSelect?.addEventListener("change", () => {
+    const brandName = brandSelect.value;
+    const modelName = modelSelect.value;
+    const genId = generationSelect.value;
+    resetSelect(yearSelect, "Choisissez d'abord une génération", true);
+    entraxeInput.value = "";
+    if (!genId) return;
+
+    const brand = brands.find((b) => b.brand === brandName);
+    const model = brand?.models.find((m) => m.model === modelName);
+    const generation = model?.generations.find((g) => g.id === genId);
+    if (!generation) return;
+
+    const endYear = generation.yearEnd || new Date().getFullYear();
+    resetSelect(yearSelect, "Sélectionnez une année", false);
+    for (let y = endYear; y >= generation.yearStart; y--) {
+      const opt = document.createElement("option");
+      opt.value = String(y);
+      opt.textContent = String(y);
+      yearSelect.appendChild(opt);
+    }
+    if (generation.boltPattern) entraxeInput.value = generation.boltPattern;
+  });
+
+  // --- Attachments: not wired to a real backend yet (mailto: can't carry files) ---
+  const attachmentsInput = document.getElementById("mf-attachments");
+
   const form = document.getElementById("mf-config-form");
   form?.addEventListener("submit", (e) => {
     e.preventDefault();
     const data = new FormData(form);
+    const brandName = data.get("marque");
+    const vehiculeLine =
+      brandName === "Autre"
+        ? String(data.get("vehicule_manuel") || "—")
+        : `${brandName || "—"} ${data.get("modele") || ""} — ${document.getElementById("mf-generation")?.selectedOptions[0]?.textContent || "—"} — ${data.get("annee") || "année non précisée"}`;
+
     const lines = [
-      `Véhicule : ${data.get("vehicule") || "—"} (${data.get("annee") || "année non précisée"})`,
+      `Véhicule : ${vehiculeLine}`,
       `Diamètre souhaité : ${data.get("diametre") || "—"}`,
       `Largeur souhaitée : ${data.get("largeur") || "—"}`,
       `Déport souhaité : ${data.get("deport") || "—"}`,
+      `Entraxe : ${data.get("entraxe") || "—"}`,
       `Famille recherchée : ${data.get("famille") || "—"}`,
       `Référence catalogue : ${data.get("reference") || "—"}`,
       `Finition envisagée : ${data.get("finition") || "—"}`,
@@ -163,7 +296,10 @@ import { SITE } from "../data/site.js";
       `Nom : ${data.get("nom") || "—"}`,
       `Email : ${data.get("email") || "—"}`,
     ];
-    const subject = encodeURIComponent(`Projet jantes sur mesure — ${data.get("reference") || data.get("vehicule") || "nouveau projet"}`);
+    if (attachmentsInput?.files?.length) {
+      lines.push("", `⚠ ${attachmentsInput.files.length} fichier(s) sélectionné(s) — à joindre manuellement dans cet email, l'envoi automatique n'est pas encore actif.`);
+    }
+    const subject = encodeURIComponent(`Projet jantes sur mesure — ${data.get("reference") || brandName || "nouveau projet"}`);
     const body = encodeURIComponent(lines.join("\n"));
     window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
   });

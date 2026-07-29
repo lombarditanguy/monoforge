@@ -4,7 +4,7 @@ import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  site: 'https://www.monoforge.fr',
+  site: 'https://www.kesslerwheels.fr',
   integrations: [sitemap()],
   vite: {
     plugins: [tailwindcss()],

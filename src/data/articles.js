@@ -15,7 +15,7 @@ export const articles = [
       <ul>
         <li><strong>Poids</strong> — à résistance égale, une jante forgée peut être plus légère qu'une jante coulée, car on peut réduire l'épaisseur sans perdre en solidité.</li>
         <li><strong>Résistance à l'impact</strong> — le grain resserré du forgeage encaisse mieux les chocs (nid de poule, trottoir) sans propager de fissure aussi facilement qu'une pièce coulée.</li>
-        <li><strong>Finesse de dessin</strong> — c'est ce qui nous intéresse chez MONOFORGE : la résistance intrinsèque du forgeage permet des bâtons plus fins et des dessins plus travaillés, y compris sur mesure.</li>
+        <li><strong>Finesse de dessin</strong> — c'est ce qui nous intéresse chez KESSLER WHEELS : la résistance intrinsèque du forgeage permet des bâtons plus fins et des dessins plus travaillés, y compris sur mesure.</li>
       </ul>
       <h2>Et le prix ?</h2>
       <p>Le forgeage reste plus coûteux que la coulée : presses lourdes, usinage plus important, séries plus courtes. C'est le compromis assumé d'un produit pensé pour la performance et la durabilité plutôt que pour le volume.</p>
