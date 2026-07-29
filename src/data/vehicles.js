@@ -14,10 +14,14 @@
 //   été vérifiés en croisant au moins deux sources en ligne au moment de la
 //   recherche.
 // - BMW, Mercedes-Benz, Audi, Porsche, Volkswagen (marques allemandes premium,
-//   coeur de clientèle jantes forgées) n'ont PAS pu être vérifiées en ligne
-//   cette session (l'agent de recherche dédié a été interrompu par une limite
-//   de session avant de commencer) — données issues de connaissances générales
-//   sur l'automobile, à vérifier en priorité avant mise en production.
+//   coeur de clientèle jantes forgées) : l'agent de recherche dédié a été
+//   interrompu par une limite de session avant de commencer, mais les entraxes
+//   "pivots" ont depuis été vérifiés manuellement (recherche croisée) : BMW
+//   5x120 (E-series) -> 5x112 (G-series depuis G20), Mercedes 5x112 (W203 à
+//   W213), VW Golf 5x100 (Mk4) -> 5x112 (Mk5+), Porsche 911/Cayman/Boxster/
+//   Cayenne/Panamera 5x130, Porsche Macan 5x112. Les années précises de
+//   génération/phase et les modèles Audi restent à vérifier avant mise en
+//   production.
 // - Citroën C5/C3 Aircross/C5 Aircross, Alfa Romeo, Fiat, Mazda, Subaru,
 //   Mitsubishi, Hyundai, Kia, Lexus, et Jaguar : recherche en ligne épuisée en
 //   cours de session (quota partagé), données issues de connaissances
