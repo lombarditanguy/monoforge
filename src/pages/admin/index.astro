@@ -1,0 +1,54 @@
+---
+export const prerender = false;
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import { sql } from "../../lib/db.js";
+
+let counts = { clients: 0, factures: 0, brouillons: 0 };
+let dbError = null;
+try {
+  const [clientsRow] = await sql`select count(*)::int as n from clients`;
+  const [facturesRow] = await sql`select count(*)::int as n from invoices`;
+  const [brouillonsRow] = await sql`select count(*)::int as n from invoices where statut = 'brouillon'`;
+  counts = { clients: clientsRow.n, factures: facturesRow.n, brouillons: brouillonsRow.n };
+} catch (err) {
+  dbError = err.message;
+}
+---
+
+<AdminLayout title="Tableau de bord">
+  <h1>Tableau de bord</h1>
+
+  {dbError && (
+    <div class="notice">
+      <strong>Base de données non connectée.</strong> {dbError}
+      <br />
+      Va sur <code>/admin/setup</code> une fois la base activée côté Vercel pour initialiser les tables.
+    </div>
+  )}
+
+  {!dbError && (
+    <div class="field-row">
+      <div class="card">
+        <p class="muted" style="margin:0 0 .3rem;font-size:.8rem">Clients</p>
+        <p style="margin:0;font-size:2rem;font-weight:700">{counts.clients}</p>
+      </div>
+      <div class="card">
+        <p class="muted" style="margin:0 0 .3rem;font-size:.8rem">Factures</p>
+        <p style="margin:0;font-size:2rem;font-weight:700">{counts.factures}</p>
+      </div>
+      <div class="card">
+        <p class="muted" style="margin:0 0 .3rem;font-size:.8rem">Brouillons</p>
+        <p style="margin:0;font-size:2rem;font-weight:700">{counts.brouillons}</p>
+      </div>
+    </div>
+  )}
+
+  <div class="card">
+    <p class="muted" style="margin-top:0">Accès rapides</p>
+    <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+      <a class="btn" href="/admin/factures/nouveau">Nouvelle facture</a>
+      <a class="btn btn-outline" href="/admin/clients/nouveau">Nouveau client</a>
+      <a class="btn btn-outline" href="/admin/prix">Gérer les prix</a>
+    </div>
+  </div>
+</AdminLayout>

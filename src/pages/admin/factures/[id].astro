@@ -1,0 +1,122 @@
+---
+export const prerender = false;
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import { sql } from "../../../lib/db.js";
+
+const { id } = Astro.params;
+
+let invoice = null;
+let items = [];
+let clients = [];
+let dbError = null;
+try {
+  const rows = await sql`select * from invoices where id = ${Number(id)}`;
+  invoice = rows[0] || null;
+  if (invoice) {
+    items = await sql`select * from invoice_items where invoice_id = ${Number(id)} order by position asc`;
+    clients = await sql`select id, nom from clients order by nom asc`;
+  }
+} catch (err) {
+  dbError = err.message;
+}
+
+const totalHt = items.reduce((sum, it) => sum + Number(it.quantite) * Number(it.prix_unitaire_ht), 0);
+const totalTva = invoice ? totalHt * (Number(invoice.taux_tva) / 100) : 0;
+const totalTtc = totalHt + totalTva;
+---
+
+<AdminLayout title={invoice ? invoice.numero : "Facture"}>
+  {dbError && <div class="notice">{dbError}</div>}
+  {!dbError && !invoice && <p>Facture introuvable.</p>}
+
+  {invoice && (
+    <>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+        <h1 style="margin:0">{invoice.numero}</h1>
+        <a class="btn btn-outline" href={`/api/admin/factures/${invoice.id}/pdf`} target="_blank">Télécharger le PDF</a>
+      </div>
+
+      <div class="notice">
+        Les mentions légales (SIRET, forme juridique, TVA intracommunautaire) sont encore des
+        placeholders sur ce PDF — à compléter dans <code>src/data/site.js</code> avant d'envoyer une
+        vraie facture à un client.
+      </div>
+
+      <div class="card">
+        <form method="POST" action="/api/admin/factures">
+          <input type="hidden" name="id" value={invoice.id} />
+          <div class="field-row">
+            <div>
+              <label for="client_id">Client</label>
+              <select id="client_id" name="client_id">
+                <option value="">— Sans client lié —</option>
+                {clients.map((c) => (
+                  <option value={c.id} selected={c.id === invoice.client_id}>{c.nom}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label for="date_emission">Date d'émission</label>
+              <input id="date_emission" name="date_emission" type="date" value={new Date(invoice.date_emission).toISOString().slice(0, 10)} />
+            </div>
+            <div>
+              <label for="statut">Statut</label>
+              <select id="statut" name="statut">
+                <option value="brouillon" selected={invoice.statut === "brouillon"}>Brouillon</option>
+                <option value="envoyee" selected={invoice.statut === "envoyee"}>Envoyée</option>
+                <option value="payee" selected={invoice.statut === "payee"}>Payée</option>
+              </select>
+            </div>
+            <div>
+              <label for="taux_tva">Taux TVA (%)</label>
+              <input id="taux_tva" name="taux_tva" type="number" step="0.01" value={invoice.taux_tva} />
+            </div>
+          </div>
+
+          <p class="muted" style="margin:1.5rem 0 .5rem">Lignes de facture</p>
+          <div id="items">
+            {items.map((it) => (
+              <div class="item-row" style="display:grid;grid-template-columns:1fr 6rem 8rem;gap:.6rem;margin-bottom:.6rem">
+                <input name="item_description" value={it.description} placeholder="Description" />
+                <input name="item_quantite" type="number" step="0.01" value={it.quantite} placeholder="Qté" />
+                <input name="item_prix" type="number" step="0.01" value={it.prix_unitaire_ht} placeholder="Prix unitaire HT" />
+              </div>
+            ))}
+            {items.length === 0 && (
+              <div class="item-row" style="display:grid;grid-template-columns:1fr 6rem 8rem;gap:.6rem;margin-bottom:.6rem">
+                <input name="item_description" placeholder="Description" />
+                <input name="item_quantite" type="number" step="0.01" value="1" placeholder="Qté" />
+                <input name="item_prix" type="number" step="0.01" placeholder="Prix unitaire HT" />
+              </div>
+            )}
+          </div>
+          <button type="button" id="add-item" class="btn btn-outline" style="margin-bottom:1rem">+ Ajouter une ligne</button>
+
+          <p class="muted" style="text-align:right">
+            Total HT : {totalHt.toFixed(2)} € — TVA : {totalTva.toFixed(2)} € — <strong style="color:#f3f1ec">Total TTC : {totalTtc.toFixed(2)} €</strong>
+          </p>
+
+          <label for="notes">Notes / conditions</label>
+          <textarea id="notes" name="notes" rows="3">{invoice.notes || ""}</textarea>
+
+          <button class="btn" type="submit">Enregistrer</button>
+        </form>
+      </div>
+    </>
+  )}
+
+  <script>
+    document.getElementById("add-item")?.addEventListener("click", () => {
+      const items = document.getElementById("items");
+      const row = document.createElement("div");
+      row.className = "item-row";
+      row.style.cssText = "display:grid;grid-template-columns:1fr 6rem 8rem;gap:.6rem;margin-bottom:.6rem";
+      row.innerHTML = `
+        <input name="item_description" placeholder="Description" />
+        <input name="item_quantite" type="number" step="0.01" value="1" placeholder="Qté" />
+        <input name="item_prix" type="number" step="0.01" placeholder="Prix unitaire HT" />
+      `;
+      items?.appendChild(row);
+    });
+  </script>
+</AdminLayout>

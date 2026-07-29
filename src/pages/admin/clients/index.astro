@@ -1,0 +1,51 @@
+---
+export const prerender = false;
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import { sql } from "../../../lib/db.js";
+
+let clients = [];
+let dbError = null;
+try {
+  clients = await sql`select id, nom, email, telephone, created_at from clients order by nom asc`;
+} catch (err) {
+  dbError = err.message;
+}
+---
+
+<AdminLayout title="Clients">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+    <h1 style="margin:0">Clients</h1>
+    <a class="btn" href="/admin/clients/nouveau">+ Nouveau client</a>
+  </div>
+
+  {dbError && <div class="notice">{dbError}</div>}
+
+  {!dbError && (
+    <div class="card">
+      {clients.length === 0 ? (
+        <p class="muted">Aucun client pour l'instant.</p>
+      ) : (
+        <table>
+          <thead>
+            <tr>
+              <th>Nom</th>
+              <th>Email</th>
+              <th>Téléphone</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {clients.map((c) => (
+              <tr>
+                <td>{c.nom}</td>
+                <td>{c.email || "—"}</td>
+                <td>{c.telephone || "—"}</td>
+                <td><a href={`/admin/clients/${c.id}`} style="color:#ff5a1f">Voir →</a></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+  )}
+</AdminLayout>

@@ -1,0 +1,56 @@
+---
+export const prerender = false;
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import { sql } from "../../../lib/db.js";
+
+let factures = [];
+let dbError = null;
+try {
+  factures = await sql`
+    select i.id, i.numero, i.statut, i.date_emission, c.nom as client_nom,
+      coalesce(sum(it.quantite * it.prix_unitaire_ht), 0) as total_ht
+    from invoices i
+    left join clients c on c.id = i.client_id
+    left join invoice_items it on it.invoice_id = i.id
+    group by i.id, c.nom
+    order by i.date_emission desc, i.id desc
+  `;
+} catch (err) {
+  dbError = err.message;
+}
+---
+
+<AdminLayout title="Factures">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+    <h1 style="margin:0">Factures</h1>
+    <a class="btn" href="/admin/factures/nouveau">+ Nouvelle facture</a>
+  </div>
+
+  {dbError && <div class="notice">{dbError}</div>}
+
+  {!dbError && (
+    <div class="card">
+      {factures.length === 0 ? (
+        <p class="muted">Aucune facture pour l'instant.</p>
+      ) : (
+        <table>
+          <thead>
+            <tr><th>Numéro</th><th>Client</th><th>Date</th><th>Statut</th><th>Total HT</th><th></th></tr>
+          </thead>
+          <tbody>
+            {factures.map((f) => (
+              <tr>
+                <td>{f.numero}</td>
+                <td>{f.client_nom || "—"}</td>
+                <td>{new Date(f.date_emission).toLocaleDateString("fr-FR")}</td>
+                <td>{f.statut}</td>
+                <td>{Number(f.total_ht).toFixed(2)} €</td>
+                <td><a href={`/admin/factures/${f.id}`} style="color:#ff5a1f">Voir →</a></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+  )}
+</AdminLayout>

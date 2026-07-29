@@ -1,6 +1,6 @@
 # KESSLER WHEELS — site vitrine
 
-Site vitrine pour KESSLER WHEELS, jantes forgées 100% sur mesure (toute taille, dessin des bâtons personnalisable). Construit avec [Astro](https://astro.build) + Tailwind CSS v4, en full statique (SEO/performance maximale), sans backend.
+Site vitrine pour KESSLER WHEELS, jantes forgées 100% sur mesure (toute taille, dessin des bâtons personnalisable). Construit avec [Astro](https://astro.build) + Tailwind CSS v4. Les pages publiques restent 100% statiques (SEO/performance maximale) ; une partie `/admin` protégée par mot de passe gère clients, prix et factures via une base Postgres (Neon, intégrée à Vercel).
 
 ## Développement
 
@@ -35,4 +35,17 @@ Ces éléments sont volontairement des placeholders identifiables (voir aussi le
 
 ## Déploiement
 
-Le site est 100% statique (`output: "static"` dans `astro.config.mjs`) : il peut être déployé sur Vercel, Netlify, Cloudflare Pages ou tout hébergeur statique, sans configuration serveur particulière.
+Les pages publiques restent statiques, mais `/admin/*` et les routes `/api/admin/*` sont rendues côté serveur (adaptateur `@astrojs/vercel`) : **le site doit être déployé sur Vercel** (Netlify/Cloudflare nécessiteraient un adaptateur différent pour la partie admin).
+
+## Mise en route de l'espace admin (`/admin`)
+
+L'espace admin (clients, prix/coefficients, factures) a besoin de deux choses côté Vercel avant de fonctionner : une base de données et deux variables d'environnement.
+
+1. **Base de données** : dans le dashboard Vercel du projet → onglet *Storage* → *Create Database* → choisir **Postgres (Neon)**. Une fois créée et liée au projet, Vercel ajoute automatiquement une variable `DATABASE_URL` (ou `POSTGRES_URL`) — rien à copier-coller manuellement.
+2. **Variables d'environnement** à ajouter dans *Settings → Environment Variables* :
+   - `ADMIN_PASSWORD_HASH` : hash bcrypt du mot de passe admin. Pour en générer un : `node -e "console.log(require('bcryptjs').hashSync('TON_MOT_DE_PASSE', 10))"` (à lancer en local avec `npm install` fait), puis copier la sortie.
+   - `ADMIN_SESSION_SECRET` : une chaîne aléatoire longue (ex. `openssl rand -hex 32`), sert à signer les sessions de connexion.
+3. **Redéployer** le projet pour que les nouvelles variables soient prises en compte.
+4. Aller sur `https://tondomaine/admin/setup`, se connecter, cliquer sur *Initialiser / vérifier les tables* — crée les tables `clients`, `invoices`, `invoice_items`, `price_bases`, `coefficients` si elles n'existent pas encore. Sans risque à relancer plus tard.
+
+**Facturation — à compléter avant d'envoyer une vraie facture** : les factures générées (`/admin/factures/:id` → *Télécharger le PDF*) utilisent les mentions légales de `src/data/site.js` (`siret`, `tvaIntracom`, `legalName`, `addressRegion`...), actuellement des placeholders. La loi française impose des mentions obligatoires précises sur les factures (SIRET, forme juridique, TVA, numérotation séquentielle continue — déjà gérée automatiquement) : remplace les placeholders et fais idéalement valider le format par un comptable avant le premier envoi réel.

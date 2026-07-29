@@ -1,0 +1,86 @@
+---
+export const prerender = false;
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import { sql } from "../../../lib/db.js";
+
+const preselectedClientId = Astro.url.searchParams.get("client_id");
+
+let clients = [];
+let dbError = null;
+try {
+  clients = await sql`select id, nom from clients order by nom asc`;
+} catch (err) {
+  dbError = err.message;
+}
+
+const today = new Date().toISOString().slice(0, 10);
+---
+
+<AdminLayout title="Nouvelle facture">
+  <h1>Nouvelle facture</h1>
+  {dbError && <div class="notice">{dbError}</div>}
+
+  {!dbError && (
+    <div class="card">
+      <form method="POST" action="/api/admin/factures" id="invoice-form">
+        <div class="field-row">
+          <div>
+            <label for="client_id">Client</label>
+            <select id="client_id" name="client_id">
+              <option value="">— Sans client lié —</option>
+              {clients.map((c) => (
+                <option value={c.id} selected={String(c.id) === preselectedClientId}>{c.nom}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label for="date_emission">Date d'émission</label>
+            <input id="date_emission" name="date_emission" type="date" value={today} />
+          </div>
+          <div>
+            <label for="statut">Statut</label>
+            <select id="statut" name="statut">
+              <option value="brouillon">Brouillon</option>
+              <option value="envoyee">Envoyée</option>
+              <option value="payee">Payée</option>
+            </select>
+          </div>
+          <div>
+            <label for="taux_tva">Taux TVA (%)</label>
+            <input id="taux_tva" name="taux_tva" type="number" step="0.01" value="20" />
+          </div>
+        </div>
+
+        <p class="muted" style="margin:1.5rem 0 .5rem">Lignes de facture</p>
+        <div id="items">
+          <div class="item-row" style="display:grid;grid-template-columns:1fr 6rem 8rem;gap:.6rem;margin-bottom:.6rem">
+            <input name="item_description" placeholder="Description" />
+            <input name="item_quantite" type="number" step="0.01" value="1" placeholder="Qté" />
+            <input name="item_prix" type="number" step="0.01" placeholder="Prix unitaire HT" />
+          </div>
+        </div>
+        <button type="button" id="add-item" class="btn btn-outline" style="margin-bottom:1.5rem">+ Ajouter une ligne</button>
+
+        <label for="notes">Notes / conditions</label>
+        <textarea id="notes" name="notes" rows="3"></textarea>
+
+        <button class="btn" type="submit">Créer la facture</button>
+      </form>
+    </div>
+  )}
+
+  <script>
+    document.getElementById("add-item")?.addEventListener("click", () => {
+      const items = document.getElementById("items");
+      const row = document.createElement("div");
+      row.className = "item-row";
+      row.style.cssText = "display:grid;grid-template-columns:1fr 6rem 8rem;gap:.6rem;margin-bottom:.6rem";
+      row.innerHTML = `
+        <input name="item_description" placeholder="Description" />
+        <input name="item_quantite" type="number" step="0.01" value="1" placeholder="Qté" />
+        <input name="item_prix" type="number" step="0.01" placeholder="Prix unitaire HT" />
+      `;
+      items?.appendChild(row);
+    });
+  </script>
+</AdminLayout>

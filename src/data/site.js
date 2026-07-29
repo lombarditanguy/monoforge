@@ -12,6 +12,8 @@ export const SITE = {
   addressLocality: "France",
   addressRegion: "[Région à compléter]",
   addressCountry: "FR",
+  siret: "[SIRET à compléter]",
+  tvaIntracom: "[N° TVA intracommunautaire à compléter]",
   hoursNote: "Sur rendez-vous, du lundi au vendredi",
   instagram: "https://instagram.com/kesslerwheels", // [PLACEHOLDER]
   founded: "2026",

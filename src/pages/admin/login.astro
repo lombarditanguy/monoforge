@@ -1,0 +1,99 @@
+---
+export const prerender = false;
+
+const next = Astro.url.searchParams.get("next") || "/admin";
+const hasError = Astro.url.searchParams.get("error") === "1";
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Connexion admin — Kessler Wheels</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #0a0a0b;
+        color: #f3f1ec;
+        font-family: system-ui, sans-serif;
+      }
+      .card {
+        width: 100%;
+        max-width: 22rem;
+        padding: 2rem;
+        border: 1px solid #26262b;
+        border-radius: 0.5rem;
+        background: #131316;
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-bottom: 1.5rem;
+      }
+      .logo img:first-child {
+        height: 28px;
+        width: 28px;
+      }
+      .logo img:last-child {
+        height: 14px;
+        width: auto;
+      }
+      label {
+        display: block;
+        font-size: 0.85rem;
+        margin-bottom: 0.4rem;
+        color: #a9a9b2;
+      }
+      input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0.7rem 0.9rem;
+        border-radius: 0.35rem;
+        border: 1px solid #26262b;
+        background: #1c1c20;
+        color: #f3f1ec;
+        font-size: 0.95rem;
+        margin-bottom: 1.2rem;
+      }
+      button {
+        width: 100%;
+        padding: 0.75rem;
+        border: none;
+        border-radius: 0.35rem;
+        background: #ff5a1f;
+        color: #0a0a0b;
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+      }
+      .error {
+        color: #ff5a1f;
+        font-size: 0.85rem;
+        margin-bottom: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="logo">
+        <img src="/logo-icon.png" alt="" />
+        <img src="/logo-text.png" alt="Kessler Wheels" />
+      </div>
+      {hasError && <p class="error">Mot de passe incorrect.</p>}
+      <form method="POST" action="/api/admin/login">
+        <input type="hidden" name="next" value={next} />
+        <label for="password">Mot de passe administrateur</label>
+        <input id="password" name="password" type="password" required autofocus />
+        <button type="submit">Se connecter</button>
+      </form>
+    </div>
+  </body>
+</html>

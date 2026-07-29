@@ -1,0 +1,122 @@
+---
+export const prerender = false;
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import { sql } from "../../lib/db.js";
+
+let priceBases = [];
+let coefficients = [];
+let dbError = null;
+try {
+  priceBases = await sql`select * from price_bases order by famille asc`;
+  coefficients = await sql`select * from coefficients order by label asc`;
+} catch (err) {
+  dbError = err.message;
+}
+---
+
+<AdminLayout title="Prix & coefficients">
+  <h1>Prix & coefficients</h1>
+  {dbError && <div class="notice">{dbError}</div>}
+
+  {!dbError && (
+    <>
+      <div class="card">
+        <p class="muted" style="margin-top:0">
+          Prix de base HT par famille (matière première, temps de forgeage de référence). Le prix final
+          d'un devis se calcule en appliquant les coefficients pertinents (finition, complexité du dessin,
+          délai...) à ce prix de base.
+        </p>
+        <table>
+          <thead><tr><th>Famille</th><th>Libellé</th><th>Prix de base HT</th><th></th></tr></thead>
+          <tbody>
+            {priceBases.map((p) => (
+              <tr>
+                <td>{p.famille}</td>
+                <td>{p.label}</td>
+                <td>{Number(p.prix_base_ht).toFixed(2)} €</td>
+                <td>
+                  <form method="POST" action="/api/admin/prix" style="display:flex;gap:.4rem;align-items:center;margin:0">
+                    <input type="hidden" name="type" value="price_base" />
+                    <input type="hidden" name="id" value={p.id} />
+                    <input type="hidden" name="famille" value={p.famille} />
+                    <input type="hidden" name="label" value={p.label} />
+                    <input name="prix_base_ht" type="number" step="0.01" value={p.prix_base_ht} style="width:6rem;margin:0" />
+                    <button class="btn btn-outline" type="submit" style="padding:.4rem .7rem">Maj</button>
+                  </form>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <details style="margin-top:1rem">
+          <summary class="muted" style="cursor:pointer">+ Ajouter une famille de prix</summary>
+          <form method="POST" action="/api/admin/prix" style="margin-top:1rem">
+            <input type="hidden" name="type" value="price_base" />
+            <div class="field-row">
+              <div>
+                <label for="famille">Famille (slug)</label>
+                <input id="famille" name="famille" placeholder="monobloc" required />
+              </div>
+              <div>
+                <label for="label">Libellé</label>
+                <input id="label" name="label" placeholder="Monobloc — 1 pièce" required />
+              </div>
+              <div>
+                <label for="prix_base_ht">Prix de base HT</label>
+                <input id="prix_base_ht" name="prix_base_ht" type="number" step="0.01" required />
+              </div>
+            </div>
+            <button class="btn" type="submit">Ajouter</button>
+          </form>
+        </details>
+      </div>
+
+      <div class="card">
+        <p class="muted" style="margin-top:0">
+          Coefficients multiplicateurs (ex : finition poli miroir ×1.3, dessin inédit ×1.5...).
+        </p>
+        <table>
+          <thead><tr><th>Libellé</th><th>Coefficient</th><th>Description</th><th></th></tr></thead>
+          <tbody>
+            {coefficients.map((c) => (
+              <tr>
+                <td>{c.label}</td>
+                <td>×{Number(c.valeur).toFixed(2)}</td>
+                <td class="muted">{c.description || "—"}</td>
+                <td>
+                  <form method="POST" action="/api/admin/prix" style="display:flex;gap:.4rem;align-items:center;margin:0">
+                    <input type="hidden" name="type" value="coefficient" />
+                    <input type="hidden" name="id" value={c.id} />
+                    <input type="hidden" name="label" value={c.label} />
+                    <input type="hidden" name="description" value={c.description || ""} />
+                    <input name="valeur" type="number" step="0.01" value={c.valeur} style="width:5rem;margin:0" />
+                    <button class="btn btn-outline" type="submit" style="padding:.4rem .7rem">Maj</button>
+                  </form>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <details style="margin-top:1rem">
+          <summary class="muted" style="cursor:pointer">+ Ajouter un coefficient</summary>
+          <form method="POST" action="/api/admin/prix" style="margin-top:1rem">
+            <input type="hidden" name="type" value="coefficient" />
+            <div class="field-row">
+              <div>
+                <label for="c_label">Libellé</label>
+                <input id="c_label" name="label" placeholder="Poli miroir" required />
+              </div>
+              <div>
+                <label for="c_valeur">Coefficient</label>
+                <input id="c_valeur" name="valeur" type="number" step="0.01" value="1" required />
+              </div>
+            </div>
+            <label for="c_desc">Description</label>
+            <input id="c_desc" name="description" placeholder="Finition poli miroir haute brillance" />
+            <button class="btn" type="submit">Ajouter</button>
+          </form>
+        </details>
+      </div>
+    </>
+  )}
+</AdminLayout>

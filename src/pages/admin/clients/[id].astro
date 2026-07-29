@@ -1,0 +1,82 @@
+---
+export const prerender = false;
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import { sql } from "../../../lib/db.js";
+
+const { id } = Astro.params;
+
+let client = null;
+let factures = [];
+let dbError = null;
+try {
+  const rows = await sql`select * from clients where id = ${Number(id)}`;
+  client = rows[0] || null;
+  if (client) {
+    factures = await sql`select id, numero, statut, date_emission from invoices where client_id = ${Number(id)} order by date_emission desc`;
+  }
+} catch (err) {
+  dbError = err.message;
+}
+---
+
+<AdminLayout title={client ? client.nom : "Client"}>
+  {dbError && <div class="notice">{dbError}</div>}
+  {!dbError && !client && <p>Client introuvable.</p>}
+
+  {client && (
+    <>
+      <h1>{client.nom}</h1>
+
+      <div class="card">
+        <form method="POST" action="/api/admin/clients">
+          <input type="hidden" name="id" value={client.id} />
+          <label for="nom">Nom / raison sociale *</label>
+          <input id="nom" name="nom" required value={client.nom} />
+
+          <div class="field-row">
+            <div>
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" value={client.email || ""} />
+            </div>
+            <div>
+              <label for="telephone">Téléphone</label>
+              <input id="telephone" name="telephone" value={client.telephone || ""} />
+            </div>
+          </div>
+
+          <label for="adresse">Adresse</label>
+          <textarea id="adresse" name="adresse" rows="3">{client.adresse || ""}</textarea>
+
+          <label for="notes">Notes</label>
+          <textarea id="notes" name="notes" rows="3">{client.notes || ""}</textarea>
+
+          <button class="btn" type="submit">Enregistrer</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+          <p class="muted" style="margin:0">Factures de ce client</p>
+          <a class="btn btn-outline" href={`/admin/factures/nouveau?client_id=${client.id}`}>+ Nouvelle facture</a>
+        </div>
+        {factures.length === 0 ? (
+          <p class="muted">Aucune facture.</p>
+        ) : (
+          <table>
+            <thead><tr><th>Numéro</th><th>Date</th><th>Statut</th><th></th></tr></thead>
+            <tbody>
+              {factures.map((f) => (
+                <tr>
+                  <td>{f.numero}</td>
+                  <td>{new Date(f.date_emission).toLocaleDateString("fr-FR")}</td>
+                  <td>{f.statut}</td>
+                  <td><a href={`/admin/factures/${f.id}`} style="color:#ff5a1f">Voir →</a></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </>
+  )}
+</AdminLayout>
