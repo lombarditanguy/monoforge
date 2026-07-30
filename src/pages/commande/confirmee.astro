@@ -1,0 +1,38 @@
+---
+export const prerender = false;
+import Layout from "../../layouts/Layout.astro";
+import { SITE } from "../../data/site.js";
+import { isStripeConfigured, getStripe } from "../../lib/stripe.js";
+
+const sessionId = Astro.url.searchParams.get("session_id");
+let session = null;
+if (sessionId && isStripeConfigured()) {
+  try {
+    session = await getStripe().checkout.sessions.retrieve(sessionId);
+  } catch {
+    session = null;
+  }
+}
+---
+
+<Layout title="Commande confirmée" description="Votre commande a bien été enregistrée." noindex>
+  <section class="container-mf flex min-h-[50vh] flex-col items-center justify-center py-24 text-center">
+    <p class="chip">Paiement confirmé</p>
+    <h1 class="mt-6 max-w-xl text-balance font-display text-3xl font-bold text-(--color-paper) sm:text-4xl">
+      Merci, votre commande est enregistrée.
+    </h1>
+    <p class="mt-5 max-w-md text-balance leading-relaxed text-(--color-mist)">
+      {session
+        ? `Un email de confirmation vous a été envoyé à ${session.customer_details?.email || "votre adresse"}.`
+        : "Un email de confirmation vous sera envoyé sous peu."}
+      {" "}Notre bureau technique revient vers vous rapidement pour finaliser les cotes exactes de votre véhicule.
+    </p>
+    <div class="mt-9 flex flex-col gap-4 sm:flex-row">
+      <a href="/configurateur" class="btn btn-forge">Compléter les infos de mon véhicule</a>
+      <a href="/catalogue" class="btn btn-outline">Retour au catalogue</a>
+    </div>
+    <p class="mt-8 text-xs text-(--color-fog)">
+      Une question ? <a href={`mailto:${SITE.email}`} class="underline hover:text-(--color-mist)">{SITE.email}</a>
+    </p>
+  </section>
+</Layout>

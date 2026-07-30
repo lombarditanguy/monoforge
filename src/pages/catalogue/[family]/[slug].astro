@@ -67,37 +67,46 @@ const ld = [
 
       {hasPricing ? (
         <div class="mt-8 rounded-lg border border-(--color-line) bg-(--color-surface-2) p-5">
-          <p class="text-xs uppercase tracking-widest text-(--color-fog)">Prix indicatif</p>
+          <p class="text-xs uppercase tracking-widest text-(--color-fog)">Prix</p>
           <p id="mf-price-display" class="mt-1 font-display text-3xl font-bold text-(--color-paper)">
-            à partir de {startingPrice.toFixed(0)} € HT
+            {startingPrice.toFixed(0)} € HT
           </p>
-          <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <div>
-              <label for="mf-size-select" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Diamètre</label>
-              <select id="mf-size-select" class="w-full rounded-md border border-(--color-line) bg-(--color-surface) px-3 py-2 text-sm text-(--color-paper)">
-                {sizesData.map((s) => <option value={s.coefficient}>{s.taille}</option>)}
-              </select>
+          <form id="mf-checkout-form" method="POST" action="/api/checkout">
+            <input type="hidden" name="code" value={item.code} />
+            <input type="hidden" name="family" value={family.slug} />
+            <input type="hidden" name="slug" value={item.slug} />
+            <input type="hidden" id="mf-hidden-size-label" name="sizeLabel" value={sizesData[0]?.taille} />
+            <input type="hidden" id="mf-hidden-finish-label" name="finishLabel" value="Brut forgé" />
+            <input type="hidden" id="mf-hidden-qty" name="quantity" value="4" />
+            <input type="hidden" id="mf-hidden-unit-price" name="unitPriceHt" value={startingPrice.toFixed(2)} />
+            <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <div>
+                <label for="mf-size-select" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Diamètre</label>
+                <select id="mf-size-select" class="w-full rounded-md border border-(--color-line) bg-(--color-surface) px-3 py-2 text-sm text-(--color-paper)">
+                  {sizesData.map((s) => <option value={s.coefficient} data-label={s.taille}>{s.taille}</option>)}
+                </select>
+              </div>
+              <div>
+                <label for="mf-finish-select" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Finition</label>
+                <select id="mf-finish-select" class="w-full rounded-md border border-(--color-line) bg-(--color-surface) px-3 py-2 text-sm text-(--color-paper)">
+                  <option value="0" data-label="Brut forgé">Brut forgé (aucune finition)</option>
+                  {finishesData.map((f) => <option value={f.supplement} data-label={f.label}>{f.label}{f.supplement > 0 ? ` (+${f.supplement.toFixed(0)} €)` : ""}</option>)}
+                </select>
+              </div>
+              <div>
+                <label for="mf-qty-select" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Quantité</label>
+                <select id="mf-qty-select" class="w-full rounded-md border border-(--color-line) bg-(--color-surface) px-3 py-2 text-sm text-(--color-paper)">
+                  <option value="1">1 jante</option>
+                  <option value="2">2 jantes</option>
+                  <option value="4" selected>4 jantes (jeu complet)</option>
+                </select>
+              </div>
             </div>
-            <div>
-              <label for="mf-finish-select" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Finition</label>
-              <select id="mf-finish-select" class="w-full rounded-md border border-(--color-line) bg-(--color-surface) px-3 py-2 text-sm text-(--color-paper)">
-                <option value="0">Brut forgé (aucune finition)</option>
-                {finishesData.map((f) => <option value={f.supplement}>{f.label}{f.supplement > 0 ? ` (+${f.supplement.toFixed(0)} €)` : ""}</option>)}
-              </select>
-            </div>
-            <div>
-              <label for="mf-qty-select" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Quantité</label>
-              <select id="mf-qty-select" class="w-full rounded-md border border-(--color-line) bg-(--color-surface) px-3 py-2 text-sm text-(--color-paper)">
-                <option value="1">1 jante</option>
-                <option value="2">2 jantes</option>
-                <option value="4" selected>4 jantes (jeu complet)</option>
-              </select>
-            </div>
-          </div>
+            <button type="submit" class="btn btn-forge mt-5 w-full sm:w-auto">Commander et payer</button>
+          </form>
           <p class="mt-4 text-xs leading-relaxed text-(--color-fog)">
-            Estimation HT avant étude technique de votre véhicule (largeur, déport, complexité du dessin). Le prix
-            définitif est confirmé dans votre devis. Besoin d'une finition ou d'un dessin hors liste ? Précisez-le
-            dans les commentaires du configurateur.
+            Prix HT pour cette configuration. Besoin d'une finition, d'un dessin ou d'une contrainte technique
+            particulière qui ne figure pas ici ? <a href={`/configurateur?ref=${encodeURIComponent(item.code)}`} class="underline hover:text-(--color-mist)">Passez par le configurateur</a> pour nous décrire votre projet précisément.
           </p>
         </div>
       ) : null}
@@ -116,10 +125,14 @@ const ld = [
       </div>
 
       <div class="mt-10 flex flex-col gap-4 sm:flex-row">
-        <a href={`/configurateur?ref=${encodeURIComponent(item.code)}`} class="btn btn-forge">Demander cette référence</a>
+        {!hasPricing && (
+          <a href={`/configurateur?ref=${encodeURIComponent(item.code)}`} class="btn btn-forge">Demander cette référence</a>
+        )}
         <a href={`/catalogue/${family.slug}`} class="btn btn-outline">Voir toute la famille {family.short}</a>
       </div>
-      <p class="mt-4 text-xs text-(--color-fog)">Fabrication à la demande — prix communiqué après étude technique, selon taille, dessin et finition.</p>
+      {!hasPricing && (
+        <p class="mt-4 text-xs text-(--color-fog)">Fabrication à la demande — prix communiqué après étude technique, selon taille, dessin et finition.</p>
+      )}
     </div>
   </section>
 
@@ -143,12 +156,22 @@ const ld = [
       const finishSelect = document.getElementById("mf-finish-select");
       const qtySelect = document.getElementById("mf-qty-select");
       const display = document.getElementById("mf-price-display");
+      const hiddenSizeLabel = document.getElementById("mf-hidden-size-label");
+      const hiddenFinishLabel = document.getElementById("mf-hidden-finish-label");
+      const hiddenQty = document.getElementById("mf-hidden-qty");
+      const hiddenUnitPrice = document.getElementById("mf-hidden-unit-price");
+
       function recompute() {
         const sizeCoeff = Number(sizeSelect?.value || 1);
         const finishSupplement = Number(finishSelect?.value || 0);
         const qty = Number(qtySelect?.value || 1);
-        const total = (basePrice * sizeCoeff + finishSupplement) * qty;
+        const unitPrice = basePrice * sizeCoeff + finishSupplement;
+        const total = unitPrice * qty;
         if (display) display.textContent = `${total.toFixed(0)} € HT (${qty} jante${qty > 1 ? "s" : ""})`;
+        if (hiddenSizeLabel) hiddenSizeLabel.value = sizeSelect?.selectedOptions[0]?.dataset.label || "";
+        if (hiddenFinishLabel) hiddenFinishLabel.value = finishSelect?.selectedOptions[0]?.dataset.label || "";
+        if (hiddenQty) hiddenQty.value = String(qty);
+        if (hiddenUnitPrice) hiddenUnitPrice.value = unitPrice.toFixed(2);
       }
       sizeSelect?.addEventListener("change", recompute);
       finishSelect?.addEventListener("change", recompute);

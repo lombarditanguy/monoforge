@@ -49,3 +49,12 @@ L'espace admin (clients, prix/coefficients, factures) a besoin de deux choses c�
 4. Aller sur `https://tondomaine/admin/setup`, se connecter, cliquer sur *Initialiser / vérifier les tables* — crée les tables `clients`, `invoices`, `invoice_items`, `price_bases`, `coefficients` si elles n'existent pas encore. Sans risque à relancer plus tard.
 
 **Facturation — à compléter avant d'envoyer une vraie facture** : les factures générées (`/admin/factures/:id` → *Télécharger le PDF*) utilisent les mentions légales de `src/data/site.js` (`siret`, `tvaIntracom`, `legalName`, `addressRegion`...), actuellement des placeholders. La loi française impose des mentions obligatoires précises sur les factures (SIRET, forme juridique, TVA, numérotation séquentielle continue — déjà gérée automatiquement) : remplace les placeholders et fais idéalement valider le format par un comptable avant le premier envoi réel.
+
+## Paiement en ligne (Stripe)
+
+Chaque fiche produit du catalogue affiche un bouton *Commander et payer* (visible dès qu'un prix est configuré dans `/admin/prix`). Sans clé Stripe, ce bouton redirige simplement vers le configurateur — aucun paiement n'est tenté, rien de trompeur pour le client.
+
+1. Crée un compte sur [dashboard.stripe.com](https://dashboard.stripe.com) — un compte en mode test suffit pour essayer, le mode live nécessite ton SIRET.
+2. Récupère la clé secrète (*Développeurs → Clés API → Clé secrète*, commence par `sk_test_...` ou `sk_live_...`).
+3. Ajoute-la comme variable d'environnement Vercel : `STRIPE_SECRET_KEY`.
+4. Redéploie — le bouton ouvre alors une vraie page de paiement Stripe Checkout, et redirige vers `/commande/confirmee` après paiement.
