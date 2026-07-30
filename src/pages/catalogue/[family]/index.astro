@@ -82,7 +82,7 @@ const availableGroups = STYLE_GROUPS.map((g) => ({
     )}
     <p id="mf-catalog-count" class="mb-4 text-sm text-(--color-fog)">{items.length} références affichées</p>
     <div id="mf-catalog-grid" class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-      {items.map((item) => <WheelPhotoCard item={item} />)}
+      {items.map((item) => <WheelPhotoCard item={item} startingPrice={startingPrice} />)}
     </div>
     <p id="mf-catalog-empty" class="hidden py-16 text-center text-sm text-(--color-fog)">Aucune référence dans ce style pour l'instant.</p>
   </section>

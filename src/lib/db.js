@@ -102,17 +102,20 @@ const DEFAULT_FAMILIES = [
 
 const DEFAULT_SIZES = ["16", "17", "18", "19", "20", "21", "22", "23", "24"];
 
+// Prix d'achat HT approximatifs, convertis depuis le tableau tarifaire USD
+// du fournisseur (XINLAI) à ~0.92 USD->EUR — à ajuster avec le taux et les
+// tarifs réels le moment venu, ce ne sont que des valeurs de départ.
 const DEFAULT_FINISHES = [
-  "Peinture (coloris au choix)",
-  "Poli miroir",
-  "Cache moyeu alu — petit",
-  "Cache moyeu alu — grand",
-  "Cache moyeu alu — grand, formé",
-  "Brossé",
-  "Chromé",
-  "Lèvre carbone",
-  "Barrel habillé carbone",
-  "Dessin sur mesure / gravure",
+  { label: "Peinture (coloris au choix)", prixAchatHt: 28 }, // 30 USD
+  { label: "Poli miroir", prixAchatHt: 28 }, // 30 USD
+  { label: "Cache moyeu alu — petit", prixAchatHt: 18 }, // 20 USD
+  { label: "Cache moyeu alu — grand", prixAchatHt: 28 }, // 30 USD
+  { label: "Cache moyeu alu — grand, formé", prixAchatHt: 55 }, // 60 USD
+  { label: "Brossé", prixAchatHt: 28 }, // 30 USD
+  { label: "Chromé", prixAchatHt: 55 }, // 60 USD
+  { label: "Lèvre carbone", prixAchatHt: 178 }, // 193 USD
+  { label: "Barrel habillé carbone", prixAchatHt: 520 }, // 565 USD
+  { label: "Dessin sur mesure / gravure", prixAchatHt: 92 }, // 100 USD
 ];
 
 export async function initSchema() {
@@ -153,8 +156,18 @@ export async function initSchema() {
   if (Number(finishRows[0]?.count) === 0) {
     for (let i = 0; i < DEFAULT_FINISHES.length; i++) {
       await client.query(
-        "insert into finish_options (label, position) values ($1, $2)",
-        [DEFAULT_FINISHES[i], i]
+        "insert into finish_options (label, position, prix_achat_ht) values ($1, $2, $3)",
+        [DEFAULT_FINISHES[i].label, i, DEFAULT_FINISHES[i].prixAchatHt]
+      );
+    }
+  } else {
+    // Rattrape les lignes déjà créées (par une exécution précédente de
+    // /admin/setup) qui sont restées à 0 : ne touche jamais une valeur déjà
+    // personnalisée par l'admin.
+    for (const f of DEFAULT_FINISHES) {
+      await client.query(
+        "update finish_options set prix_achat_ht = $1 where label = $2 and prix_achat_ht = 0",
+        [f.prixAchatHt, f.label]
       );
     }
   }
