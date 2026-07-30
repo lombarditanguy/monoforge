@@ -35,15 +35,10 @@ const hasError = Astro.url.searchParams.get("error") === "1";
       .logo {
         display: flex;
         align-items: center;
-        gap: 0.6rem;
         margin-bottom: 1.5rem;
       }
-      .logo img:first-child {
-        height: 28px;
-        width: 28px;
-      }
-      .logo img:last-child {
-        height: 14px;
+      .logo img {
+        height: 44px;
         width: auto;
       }
       label {
@@ -84,8 +79,7 @@ const hasError = Astro.url.searchParams.get("error") === "1";
   <body>
     <div class="card">
       <div class="logo">
-        <img src="/logo-icon.png" alt="" />
-        <img src="/logo-text.png" alt="Kessler Wheels" />
+        <img src="/logo-full.png" alt="Kessler Wheels" />
       </div>
       {hasError && <p class="error">Mot de passe incorrect.</p>}
       <form method="POST" action="/api/admin/login">

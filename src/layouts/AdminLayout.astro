@@ -45,16 +45,11 @@ const nav = [
       .logo {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
         margin-bottom: 2rem;
         padding: 0 0.5rem;
       }
-      .logo img:first-child {
-        height: 24px;
-        width: 24px;
-      }
-      .logo img:last-child {
-        height: 12px;
+      .logo img {
+        height: 40px;
         width: auto;
       }
       nav a {
@@ -175,8 +170,7 @@ const nav = [
     <div class="shell">
       <aside>
         <div class="logo">
-          <img src="/logo-icon.png" alt="" />
-          <img src="/logo-text.png" alt="Kessler Wheels" />
+          <img src="/logo-full.png" alt="Kessler Wheels" />
         </div>
         <nav>
           {nav.map((item) => (
