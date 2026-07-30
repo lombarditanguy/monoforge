@@ -9,26 +9,38 @@
 // changent réellement à ce moment-là (pas pour un simple restylage esthétique).
 //
 // STATUT DE VÉRIFICATION (important avant mise en production) :
-// - Renault, Peugeot, Citroën C3/C4, Toyota, Honda, Nissan, et la quasi-totalité
-//   du groupe Mini/Land Rover/Ford/Jeep/Volvo/SEAT/Škoda/Opel (sauf Jaguar) ont
-//   été vérifiés en croisant au moins deux sources en ligne au moment de la
-//   recherche.
-// - BMW, Mercedes-Benz, Audi, Porsche, Volkswagen (marques allemandes premium,
-//   coeur de clientèle jantes forgées) : l'agent de recherche dédié a été
-//   interrompu par une limite de session avant de commencer, mais les entraxes
-//   "pivots" ont depuis été vérifiés manuellement (recherche croisée) : BMW
-//   5x120 (E-series) -> 5x112 (G-series depuis G20), Mercedes 5x112 (W203 à
-//   W213), VW Golf 5x100 (Mk4) -> 5x112 (Mk5+), Porsche 911/Cayman/Boxster/
-//   Cayenne/Panamera 5x130, Porsche Macan 5x112. Les années précises de
-//   génération/phase et les modèles Audi restent à vérifier avant mise en
-//   production.
-// - Citroën C5/C3 Aircross/C5 Aircross, Alfa Romeo, Fiat, Mazda, Subaru,
-//   Mitsubishi, Hyundai, Kia, Lexus, et Jaguar : recherche en ligne épuisée en
-//   cours de session (quota partagé), données issues de connaissances
-//   générales recoupées en interne (cohérence entre modèles à plateforme
-//   partagée) mais non re-vérifiées via une recherche fraîche. À vérifier
-//   avant mise en production, notamment sur les entraxes de bas de gamme
-//   Alfa/Fiat et les dates de fin de production les plus récentes (2023-2025).
+// - Renault, Peugeot, Citroën C3/C4, Toyota (modèles d'origine), Honda (modèles
+//   d'origine), Nissan, et la quasi-totalité du groupe Mini/Land Rover/Ford/
+//   Jeep/Volvo/SEAT/Škoda/Opel (sauf Jaguar) ont été vérifiés en croisant au
+//   moins deux sources en ligne au moment de la recherche initiale.
+// - BMW, Mercedes-Benz, Audi, Porsche, Volkswagen : les entraxes "pivots" ont
+//   été vérifiés via recherche croisée : BMW 5x120 (E-series) -> 5x112
+//   (G-series depuis G20), Mercedes 5x112 (W203 à W213), VW Golf 5x100 (Mk4)
+//   -> 5x112 (Mk5+), Porsche 911/Cayman/Boxster/Cayenne/Panamera 5x130,
+//   Porsche Macan/Taycan 5x112.
+// - Citroën C5/C3 Aircross/C5 Aircross, Alfa Romeo, Fiat, Mazda (modèles
+//   d'origine), Subaru (modèles d'origine), Mitsubishi (modèles d'origine),
+//   Hyundai (modèles d'origine), Kia (modèles d'origine), Lexus (modèles
+//   d'origine), et Jaguar : données issues de connaissances générales
+//   recoupées en interne (cohérence entre modèles à plateforme partagée) mais
+//   non re-vérifiées via une recherche fraîche.
+// - Tous les modèles ajoutés lors de l'approfondissement de la couverture
+//   (BMW Séries 2/4/6/7/8, X1/X2/X4/X6/X7, Z4, M2/M3/M4, i3/i4/iX ; Mercedes
+//   Classe B/S, CLA, CLS, GLA, GLB, GLE, GLS, SLK/SLC ; Audi A1/A5/A7/A8, Q2/
+//   Q3/Q4 e-tron/Q7/Q8, R8 ; VW up!/Touran/Sharan/T-Roc/T-Cross/Arteon/ID.3/
+//   ID.4/ID.5/Beetle/Scirocco ; Toyota Auris/Prius/Camry/Avensis/Land Cruiser/
+//   Hilux ; Honda Jazz/HR-V/S2000 ; Mazda2/6/CX-3/CX-30/CX-60/RX-8 ; Subaru
+//   Outback/XV-Crosstrek/Levorg ; Mitsubishi Space Star/Eclipse Cross/L200/
+//   3000GT ; Hyundai i10/i40/Bayon/Santa Fe/Ioniq 6 ; Kia Rio/Venga/Niro/
+//   Sorento/XCeed/EV9 ; Lexus ES/LS/GX-LX/UX/LC/CT ; Mini Clubman/Convertible/
+//   Paceman ; Škoda Superb/Kodiaq/Karoq/Kamiq/Scala) ont été compilés à partir
+//   de connaissances générales (mêmes plateformes/générations que les modèles
+//   déjà vérifiés de chaque marque), SANS recherche en ligne fraîche pour
+//   chaque modèle individuellement. Même niveau de confiance que la section
+//   ci-dessus ("non re-vérifiées") — à croiser avec une source (ex.
+//   wheel-size.com) avant mise en production, en particulier sur les entraxes
+//   4x114.3 vs 5x114.3 (transitions Honda/Hyundai/Kia) et les dates de fin de
+//   production les plus récentes.
 
 export const VEHICLE_BRANDS = [
   // ── Allemandes premium — NON vérifiées en ligne cette session ──
@@ -79,6 +91,114 @@ export const VEHICLE_BRANDS = [
           { id: "g05", label: "G05 (2018–présent)", yearStart: 2018, yearEnd: null, boltPattern: "5x112" },
         ],
       },
+      {
+        model: "Série 2",
+        generations: [
+          { id: "f22", label: "F22/F23 Coupé/Cabriolet (2014–2021)", yearStart: 2014, yearEnd: 2021, boltPattern: "5x120" },
+          { id: "f44", label: "F44 Gran Coupé (2019–présent)", yearStart: 2019, yearEnd: null, boltPattern: "5x112" },
+          { id: "g42", label: "G42 Coupé (2021–présent)", yearStart: 2021, yearEnd: null, boltPattern: "5x112" },
+        ],
+      },
+      {
+        model: "Série 4",
+        generations: [
+          { id: "f32", label: "F32/F33/F36 (2013–2020)", yearStart: 2013, yearEnd: 2020, boltPattern: "5x120" },
+          { id: "g22", label: "G22/G23/G26 (2020–présent)", yearStart: 2020, yearEnd: null, boltPattern: "5x112" },
+        ],
+      },
+      {
+        model: "Série 6",
+        generations: [
+          { id: "e63", label: "E63/E64 (2003–2010)", yearStart: 2003, yearEnd: 2010, boltPattern: "5x120" },
+          { id: "f06", label: "F06/F12/F13 (2011–2018)", yearStart: 2011, yearEnd: 2018, boltPattern: "5x120" },
+        ],
+      },
+      {
+        model: "Série 7",
+        generations: [
+          { id: "e65", label: "E65/E66 (2001–2008)", yearStart: 2001, yearEnd: 2008, boltPattern: "5x120" },
+          { id: "f01", label: "F01/F02 (2008–2015)", yearStart: 2008, yearEnd: 2015, boltPattern: "5x120" },
+          { id: "g11", label: "G11/G12 (2015–2022)", yearStart: 2015, yearEnd: 2022, boltPattern: "5x112" },
+          { id: "g70", label: "G70 (2022–présent)", yearStart: 2022, yearEnd: null, boltPattern: "5x112" },
+        ],
+      },
+      {
+        model: "Série 8",
+        generations: [{ id: "g14", label: "G14/G15/G16 (2018–présent)", yearStart: 2018, yearEnd: null, boltPattern: "5x112" }],
+      },
+      {
+        model: "X1",
+        generations: [
+          { id: "e84", label: "E84 (2009–2015)", yearStart: 2009, yearEnd: 2015, boltPattern: "5x120" },
+          { id: "f48", label: "F48 (2015–2022)", yearStart: 2015, yearEnd: 2022, boltPattern: "5x112" },
+          { id: "u11", label: "U11 (2022–présent)", yearStart: 2022, yearEnd: null, boltPattern: "5x112" },
+        ],
+      },
+      {
+        model: "X2",
+        generations: [{ id: "f39", label: "F39 (2018–présent)", yearStart: 2018, yearEnd: null, boltPattern: "5x112" }],
+      },
+      {
+        model: "X4",
+        generations: [
+          { id: "f26", label: "F26 (2014–2018)", yearStart: 2014, yearEnd: 2018, boltPattern: "5x120" },
+          { id: "g02", label: "G02 (2018–présent)", yearStart: 2018, yearEnd: null, boltPattern: "5x112" },
+        ],
+      },
+      {
+        model: "X6",
+        generations: [
+          { id: "e71", label: "E71 (2008–2014)", yearStart: 2008, yearEnd: 2014, boltPattern: "5x120" },
+          { id: "f16", label: "F16 (2014–2019)", yearStart: 2014, yearEnd: 2019, boltPattern: "5x120" },
+          { id: "g06", label: "G06 (2019–présent)", yearStart: 2019, yearEnd: null, boltPattern: "5x112" },
+        ],
+      },
+      {
+        model: "X7",
+        generations: [{ id: "g07", label: "G07 (2018–présent)", yearStart: 2018, yearEnd: null, boltPattern: "5x112" }],
+      },
+      {
+        model: "Z4",
+        generations: [
+          { id: "e85", label: "E85/E86 (2002–2008)", yearStart: 2002, yearEnd: 2008, boltPattern: "5x120" },
+          { id: "e89", label: "E89 (2009–2016)", yearStart: 2009, yearEnd: 2016, boltPattern: "5x120" },
+          { id: "g29", label: "G29 (2018–présent)", yearStart: 2018, yearEnd: null, boltPattern: "5x112" },
+        ],
+      },
+      {
+        model: "M2",
+        generations: [
+          { id: "f87", label: "F87 (2016–2021)", yearStart: 2016, yearEnd: 2021, boltPattern: "5x120" },
+          { id: "g87", label: "G87 (2023–présent)", yearStart: 2023, yearEnd: null, boltPattern: "5x120" },
+        ],
+      },
+      {
+        model: "M3",
+        generations: [
+          { id: "e90-m3", label: "E90/E92/E93 (2007–2013)", yearStart: 2007, yearEnd: 2013, boltPattern: "5x120" },
+          { id: "f80", label: "F80 (2014–2018)", yearStart: 2014, yearEnd: 2018, boltPattern: "5x120" },
+          { id: "g80", label: "G80 (2021–présent)", yearStart: 2021, yearEnd: null, boltPattern: "5x120" },
+        ],
+      },
+      {
+        model: "M4",
+        generations: [
+          { id: "f82", label: "F82/F83 (2014–2020)", yearStart: 2014, yearEnd: 2020, boltPattern: "5x120" },
+          { id: "g82", label: "G82/G83 (2021–présent)", yearStart: 2021, yearEnd: null, boltPattern: "5x120" },
+        ],
+      },
+      {
+        model: "i3",
+        generations: [{ id: "i01", label: "I01 (2013–2022)", yearStart: 2013, yearEnd: 2022, boltPattern: "5x112" }],
+      },
+      {
+        model: "i4",
+        generations: [{ id: "g26-i4", label: "G26 (2021–présent)", yearStart: 2021, yearEnd: null, boltPattern: "5x112" }],
+      },
+      {
+        model: "iX",
+        generations: [{ id: "i20", label: "I20 (2021–présent)", yearStart: 2021, yearEnd: null, boltPattern: "5x112" }],
+      },
     ],
   },
   {
@@ -115,6 +235,70 @@ export const VEHICLE_BRANDS = [
         generations: [
           { id: "x253", label: "X253 (2015–2022)", yearStart: 2015, yearEnd: 2022, boltPattern: "5x112" },
           { id: "x254", label: "X254 (2022–présent)", yearStart: 2022, yearEnd: null, boltPattern: "5x112" },
+        ],
+      },
+      {
+        model: "Classe B",
+        generations: [
+          { id: "w245", label: "W245 (2005–2011)", yearStart: 2005, yearEnd: 2011, boltPattern: "5x112" },
+          { id: "w246", label: "W246 (2011–2018)", yearStart: 2011, yearEnd: 2018, boltPattern: "5x112" },
+          { id: "w247", label: "W247 (2018–présent)", yearStart: 2018, yearEnd: null, boltPattern: "5x112" },
+        ],
+      },
+      {
+        model: "Classe S",
+        generations: [
+          { id: "w220", label: "W220 (1998–2005)", yearStart: 1998, yearEnd: 2005, boltPattern: "5x112" },
+          { id: "w221", label: "W221 (2005–2013)", yearStart: 2005, yearEnd: 2013, boltPattern: "5x112" },
+          { id: "w222", label: "W222 (2013–2020)", yearStart: 2013, yearEnd: 2020, boltPattern: "5x112" },
+          { id: "w223", label: "W223 (2020–présent)", yearStart: 2020, yearEnd: null, boltPattern: "5x112" },
+        ],
+      },
+      {
+        model: "CLA",
+        generations: [
+          { id: "c117", label: "C117 (2013–2019)", yearStart: 2013, yearEnd: 2019, boltPattern: "5x112" },
+          { id: "c118", label: "C118 (2019–présent)", yearStart: 2019, yearEnd: null, boltPattern: "5x112" },
+        ],
+      },
+      {
+        model: "CLS",
+        generations: [
+          { id: "c219", label: "C219 (2004–2010)", yearStart: 2004, yearEnd: 2010, boltPattern: "5x112" },
+          { id: "c218", label: "C218 (2010–2017)", yearStart: 2010, yearEnd: 2017, boltPattern: "5x112" },
+          { id: "c257", label: "C257 (2018–2023)", yearStart: 2018, yearEnd: 2023, boltPattern: "5x112" },
+        ],
+      },
+      {
+        model: "GLA",
+        generations: [
+          { id: "x156", label: "X156 (2013–2020)", yearStart: 2013, yearEnd: 2020, boltPattern: "5x112" },
+          { id: "h247", label: "H247 (2020–présent)", yearStart: 2020, yearEnd: null, boltPattern: "5x112" },
+        ],
+      },
+      {
+        model: "GLB",
+        generations: [{ id: "x247", label: "X247 (2019–présent)", yearStart: 2019, yearEnd: null, boltPattern: "5x112" }],
+      },
+      {
+        model: "GLE",
+        generations: [
+          { id: "w166", label: "W166 (ML puis GLE, 2011–2019)", yearStart: 2011, yearEnd: 2019, boltPattern: "5x112" },
+          { id: "v167", label: "V167 (2019–présent)", yearStart: 2019, yearEnd: null, boltPattern: "5x112" },
+        ],
+      },
+      {
+        model: "GLS",
+        generations: [
+          { id: "x166", label: "X166 (2015–2019)", yearStart: 2015, yearEnd: 2019, boltPattern: "5x112" },
+          { id: "x167", label: "X167 (2019–présent)", yearStart: 2019, yearEnd: null, boltPattern: "5x112" },
+        ],
+      },
+      {
+        model: "SLK / SLC",
+        generations: [
+          { id: "r171", label: "R171 (2004–2011)", yearStart: 2004, yearEnd: 2011, boltPattern: "5x112" },
+          { id: "r172", label: "R172 SLK/SLC (2011–2020)", yearStart: 2011, yearEnd: 2020, boltPattern: "5x112" },
         ],
       },
     ],
@@ -163,6 +347,68 @@ export const VEHICLE_BRANDS = [
           { id: "8s", label: "8S (2014–2023)", yearStart: 2014, yearEnd: 2023, boltPattern: "5x112" },
         ],
       },
+      {
+        model: "A1",
+        generations: [
+          { id: "8x", label: "8X (2010–2018)", yearStart: 2010, yearEnd: 2018, boltPattern: "5x100" },
+          { id: "gb", label: "GB (2018–présent)", yearStart: 2018, yearEnd: null, boltPattern: "5x100" },
+        ],
+      },
+      {
+        model: "A5",
+        generations: [
+          { id: "8t", label: "8T (2007–2016)", yearStart: 2007, yearEnd: 2016, boltPattern: "5x112" },
+          { id: "f5", label: "F5 (2016–présent)", yearStart: 2016, yearEnd: null, boltPattern: "5x112" },
+        ],
+      },
+      {
+        model: "A7",
+        generations: [
+          { id: "4g", label: "4G (2010–2018)", yearStart: 2010, yearEnd: 2018, boltPattern: "5x112" },
+          { id: "4k", label: "4K (2018–présent)", yearStart: 2018, yearEnd: null, boltPattern: "5x112" },
+        ],
+      },
+      {
+        model: "A8",
+        generations: [
+          { id: "d3", label: "D3 (2002–2010)", yearStart: 2002, yearEnd: 2010, boltPattern: "5x112" },
+          { id: "d4", label: "D4 (2010–2017)", yearStart: 2010, yearEnd: 2017, boltPattern: "5x112" },
+          { id: "d5", label: "D5 (2017–présent)", yearStart: 2017, yearEnd: null, boltPattern: "5x112" },
+        ],
+      },
+      {
+        model: "Q2",
+        generations: [{ id: "ga", label: "GA (2016–présent)", yearStart: 2016, yearEnd: null, boltPattern: "5x112" }],
+      },
+      {
+        model: "Q3",
+        generations: [
+          { id: "8u", label: "8U (2011–2018)", yearStart: 2011, yearEnd: 2018, boltPattern: "5x112" },
+          { id: "f3", label: "F3 (2018–présent)", yearStart: 2018, yearEnd: null, boltPattern: "5x112" },
+        ],
+      },
+      {
+        model: "Q4 e-tron",
+        generations: [{ id: "fz", label: "FZ (2021–présent)", yearStart: 2021, yearEnd: null, boltPattern: "5x112" }],
+      },
+      {
+        model: "Q7",
+        generations: [
+          { id: "4l", label: "4L (2005–2015)", yearStart: 2005, yearEnd: 2015, boltPattern: "5x130" },
+          { id: "4m", label: "4M (2015–présent)", yearStart: 2015, yearEnd: null, boltPattern: "5x112" },
+        ],
+      },
+      {
+        model: "Q8",
+        generations: [{ id: "4m-q8", label: "4M (2018–présent)", yearStart: 2018, yearEnd: null, boltPattern: "5x112" }],
+      },
+      {
+        model: "R8",
+        generations: [
+          { id: "42", label: "Type 42 (2006–2015)", yearStart: 2006, yearEnd: 2015, boltPattern: "5x112" },
+          { id: "4s", label: "Type 4S (2015–2023)", yearStart: 2015, yearEnd: 2023, boltPattern: "5x112" },
+        ],
+      },
     ],
   },
   {
@@ -206,6 +452,10 @@ export const VEHICLE_BRANDS = [
           { id: "971", label: "971 (2016–présent)", yearStart: 2016, yearEnd: null, boltPattern: "5x130" },
         ],
       },
+      {
+        model: "Taycan",
+        generations: [{ id: "y1a", label: "Y1A (2019–présent)", yearStart: 2019, yearEnd: null, boltPattern: "5x112" }],
+      },
     ],
   },
   {
@@ -243,6 +493,59 @@ export const VEHICLE_BRANDS = [
           { id: "tiguan-5n", label: "Tiguan 5N (2007–2016)", yearStart: 2007, yearEnd: 2016, boltPattern: "5x112" },
           { id: "tiguan-ad1", label: "Tiguan AD1 (2016–présent)", yearStart: 2016, yearEnd: null, boltPattern: "5x112" },
         ],
+      },
+      {
+        model: "up!",
+        generations: [{ id: "up-1", label: "up! (2011–2023)", yearStart: 2011, yearEnd: 2023, boltPattern: "4x100" }],
+      },
+      {
+        model: "Touran",
+        generations: [
+          { id: "touran-1t", label: "Touran 1T (2003–2015)", yearStart: 2003, yearEnd: 2015, boltPattern: "5x112" },
+          { id: "touran-5t", label: "Touran 5T (2015–présent)", yearStart: 2015, yearEnd: null, boltPattern: "5x112" },
+        ],
+      },
+      {
+        model: "Sharan",
+        generations: [
+          { id: "sharan-7m", label: "Sharan 7M (1995–2010)", yearStart: 1995, yearEnd: 2010, boltPattern: "5x100" },
+          { id: "sharan-7n", label: "Sharan 7N (2010–2022)", yearStart: 2010, yearEnd: 2022, boltPattern: "5x112" },
+        ],
+      },
+      {
+        model: "T-Roc",
+        generations: [{ id: "t-roc-a1", label: "A1 (2017–présent)", yearStart: 2017, yearEnd: null, boltPattern: "5x112" }],
+      },
+      {
+        model: "T-Cross",
+        generations: [{ id: "t-cross-c1", label: "C1 (2019–présent)", yearStart: 2019, yearEnd: null, boltPattern: "5x100" }],
+      },
+      {
+        model: "Arteon",
+        generations: [{ id: "arteon-3h", label: "3H (2017–présent)", yearStart: 2017, yearEnd: null, boltPattern: "5x112" }],
+      },
+      {
+        model: "ID.3",
+        generations: [{ id: "id3", label: "ID.3 (2019–présent)", yearStart: 2019, yearEnd: null, boltPattern: "5x112" }],
+      },
+      {
+        model: "ID.4",
+        generations: [{ id: "id4", label: "ID.4 (2020–présent)", yearStart: 2020, yearEnd: null, boltPattern: "5x112" }],
+      },
+      {
+        model: "ID.5",
+        generations: [{ id: "id5", label: "ID.5 (2021–présent)", yearStart: 2021, yearEnd: null, boltPattern: "5x112" }],
+      },
+      {
+        model: "Beetle",
+        generations: [
+          { id: "beetle-9c", label: "New Beetle 9C (1997–2010)", yearStart: 1997, yearEnd: 2010, boltPattern: "5x100" },
+          { id: "beetle-a5", label: "Beetle A5 (2011–2019)", yearStart: 2011, yearEnd: 2019, boltPattern: "5x112" },
+        ],
+      },
+      {
+        model: "Scirocco",
+        generations: [{ id: "scirocco-3", label: "Scirocco III (2008–2017)", yearStart: 2008, yearEnd: 2017, boltPattern: "5x112" }],
       },
     ],
   },
@@ -481,6 +784,45 @@ export const VEHICLE_BRANDS = [
           { id: "rav4-xa50", label: "RAV4 XA50 (2019–présent)", yearStart: 2019, yearEnd: null, boltPattern: "5x114.3" },
         ],
       },
+      {
+        model: "Auris",
+        generations: [
+          { id: "auris-e150", label: "Auris E150 (2007–2012)", yearStart: 2007, yearEnd: 2012, boltPattern: "5x114.3" },
+          { id: "auris-e180", label: "Auris E180 (2012–2018)", yearStart: 2012, yearEnd: 2018, boltPattern: "5x114.3" },
+        ],
+      },
+      {
+        model: "Prius",
+        generations: [
+          { id: "prius-xw30", label: "Prius XW30 (2009–2015)", yearStart: 2009, yearEnd: 2015, boltPattern: "5x114.3" },
+          { id: "prius-xw50", label: "Prius XW50 (2015–2022)", yearStart: 2015, yearEnd: 2022, boltPattern: "5x114.3" },
+          { id: "prius-xw60", label: "Prius XW60 (2023–présent)", yearStart: 2023, yearEnd: null, boltPattern: "5x114.3" },
+        ],
+      },
+      {
+        model: "Camry",
+        generations: [{ id: "camry-xv70", label: "Camry XV70 (2018–présent)", yearStart: 2018, yearEnd: null, boltPattern: "5x114.3" }],
+      },
+      {
+        model: "Avensis",
+        generations: [
+          { id: "avensis-t25", label: "Avensis T25 (2003–2008)", yearStart: 2003, yearEnd: 2008, boltPattern: "5x114.3" },
+          { id: "avensis-t27", label: "Avensis T27 (2009–2018)", yearStart: 2009, yearEnd: 2018, boltPattern: "5x114.3" },
+        ],
+      },
+      {
+        model: "Land Cruiser",
+        generations: [
+          { id: "landcruiser-j150", label: "Land Cruiser J150 (2009–2024)", yearStart: 2009, yearEnd: 2024, boltPattern: "5x150" },
+          { id: "landcruiser-j250", label: "Land Cruiser J250 (2024–présent)", yearStart: 2024, yearEnd: null, boltPattern: "5x150" },
+        ],
+      },
+      {
+        model: "Hilux",
+        generations: [
+          { id: "hilux-an120", label: "Hilux AN120/AN130 (2015–présent)", yearStart: 2015, yearEnd: null, boltPattern: "6x139.7" },
+        ],
+      },
     ],
   },
   {
@@ -512,6 +854,27 @@ export const VEHICLE_BRANDS = [
           { id: "nsx-na", label: "NSX NA1/NA2 (1990–2005)", yearStart: 1990, yearEnd: 2005, boltPattern: "5x114.3" },
           { id: "nsx-nc1", label: "NSX NC1 (2016–2022)", yearStart: 2016, yearEnd: 2022, boltPattern: "5x120" },
         ],
+      },
+      {
+        model: "Jazz",
+        generations: [
+          { id: "jazz-gd", label: "Jazz GD (2001–2008)", yearStart: 2001, yearEnd: 2008, boltPattern: "4x100" },
+          { id: "jazz-ge", label: "Jazz GE (2008–2015)", yearStart: 2008, yearEnd: 2015, boltPattern: "4x100" },
+          { id: "jazz-gk", label: "Jazz GK (2015–2020)", yearStart: 2015, yearEnd: 2020, boltPattern: "4x100" },
+          { id: "jazz-gr", label: "Jazz GR (2020–présent)", yearStart: 2020, yearEnd: null, boltPattern: "4x100" },
+        ],
+      },
+      {
+        model: "HR-V",
+        generations: [
+          { id: "hrv-gh", label: "HR-V I (1999–2006)", yearStart: 1999, yearEnd: 2006, boltPattern: "4x114.3" },
+          { id: "hrv-ru", label: "HR-V II (2015–2021)", yearStart: 2015, yearEnd: 2021, boltPattern: "5x114.3" },
+          { id: "hrv-rv", label: "HR-V III (2021–présent)", yearStart: 2021, yearEnd: null, boltPattern: "5x114.3" },
+        ],
+      },
+      {
+        model: "S2000",
+        generations: [{ id: "s2000-ap1-2", label: "AP1/AP2 (1999–2009)", yearStart: 1999, yearEnd: 2009, boltPattern: "5x114.3" }],
       },
     ],
   },
@@ -573,6 +936,36 @@ export const VEHICLE_BRANDS = [
           { id: "cx5-kf", label: "CX-5 KF (2017–présent)", yearStart: 2017, yearEnd: null, boltPattern: "5x114.3" },
         ],
       },
+      {
+        model: "Mazda2",
+        generations: [
+          { id: "mazda2-de", label: "Mazda2 DE (2007–2014)", yearStart: 2007, yearEnd: 2014, boltPattern: "4x100" },
+          { id: "mazda2-dj", label: "Mazda2 DJ (2014–présent)", yearStart: 2014, yearEnd: null, boltPattern: "4x100" },
+        ],
+      },
+      {
+        model: "Mazda6",
+        generations: [
+          { id: "mazda6-gh", label: "Mazda6 GH (2007–2012)", yearStart: 2007, yearEnd: 2012, boltPattern: "5x114.3" },
+          { id: "mazda6-gj", label: "Mazda6 GJ (2012–présent)", yearStart: 2012, yearEnd: null, boltPattern: "5x114.3" },
+        ],
+      },
+      {
+        model: "CX-3",
+        generations: [{ id: "cx3-dk", label: "CX-3 DK (2015–présent)", yearStart: 2015, yearEnd: null, boltPattern: "5x114.3" }],
+      },
+      {
+        model: "CX-30",
+        generations: [{ id: "cx30-dm", label: "CX-30 DM (2019–présent)", yearStart: 2019, yearEnd: null, boltPattern: "5x114.3" }],
+      },
+      {
+        model: "CX-60",
+        generations: [{ id: "cx60", label: "CX-60 (2022–présent)", yearStart: 2022, yearEnd: null, boltPattern: "5x114.3" }],
+      },
+      {
+        model: "RX-8",
+        generations: [{ id: "rx8-se3p", label: "RX-8 SE3P (2003–2012)", yearStart: 2003, yearEnd: 2012, boltPattern: "5x114.3" }],
+      },
     ],
   },
   {
@@ -601,6 +994,26 @@ export const VEHICLE_BRANDS = [
           { id: "forester-sk", label: "Forester SK (2018–présent)", yearStart: 2018, yearEnd: null, boltPattern: "5x114.3" },
         ],
       },
+      {
+        model: "Outback",
+        generations: [
+          { id: "outback-bp", label: "Outback BP (2003–2009)", yearStart: 2003, yearEnd: 2009, boltPattern: "5x100" },
+          { id: "outback-br", label: "Outback BR (2009–2014)", yearStart: 2009, yearEnd: 2014, boltPattern: "5x100" },
+          { id: "outback-bs", label: "Outback BS (2014–2019)", yearStart: 2014, yearEnd: 2019, boltPattern: "5x114.3" },
+          { id: "outback-bt", label: "Outback BT (2019–présent)", yearStart: 2019, yearEnd: null, boltPattern: "5x114.3" },
+        ],
+      },
+      {
+        model: "XV / Crosstrek",
+        generations: [
+          { id: "xv-gp", label: "XV GP (2012–2017)", yearStart: 2012, yearEnd: 2017, boltPattern: "5x100" },
+          { id: "xv-gt", label: "XV GT (2017–présent)", yearStart: 2017, yearEnd: null, boltPattern: "5x114.3" },
+        ],
+      },
+      {
+        model: "Levorg",
+        generations: [{ id: "levorg-vm", label: "Levorg VM (2014–2020)", yearStart: 2014, yearEnd: 2020, boltPattern: "5x114.3" }],
+      },
     ],
   },
   {
@@ -616,6 +1029,16 @@ export const VEHICLE_BRANDS = [
       },
       { model: "ASX", generations: [{ id: "asx-1", label: "ASX I (2010–2023)", yearStart: 2010, yearEnd: 2023, boltPattern: "5x114.3" }] },
       { model: "Outlander", generations: [{ id: "outlander-3", label: "Outlander III (2012–2021)", yearStart: 2012, yearEnd: 2021, boltPattern: "5x114.3" }] },
+      { model: "Space Star", generations: [{ id: "space-star-a03a", label: "Space Star A03A (2013–présent)", yearStart: 2013, yearEnd: null, boltPattern: "4x100" }] },
+      { model: "Eclipse Cross", generations: [{ id: "eclipse-cross-gk", label: "Eclipse Cross GK (2017–présent)", yearStart: 2017, yearEnd: null, boltPattern: "5x114.3" }] },
+      {
+        model: "L200",
+        generations: [
+          { id: "l200-ka4t", label: "L200 KA4T/KB4T (2005–2015)", yearStart: 2005, yearEnd: 2015, boltPattern: "6x139.7" },
+          { id: "l200-kb4t-2", label: "L200 (2015–présent)", yearStart: 2015, yearEnd: null, boltPattern: "6x139.7" },
+        ],
+      },
+      { model: "3000GT", generations: [{ id: "3000gt-z16a", label: "3000GT Z16A (1990–2000)", yearStart: 1990, yearEnd: 2000, boltPattern: "5x114.3" }] },
     ],
   },
   {
@@ -645,6 +1068,34 @@ export const VEHICLE_BRANDS = [
         ],
       },
       { model: "Ioniq 5", generations: [{ id: "ioniq5", label: "Ioniq 5 (2021–présent)", yearStart: 2021, yearEnd: null, boltPattern: "5x114.3" }] },
+      {
+        model: "i10",
+        generations: [
+          { id: "i10-pa", label: "i10 PA (2007–2013)", yearStart: 2007, yearEnd: 2013, boltPattern: "4x100" },
+          { id: "i10-ba", label: "i10 BA (2013–2019)", yearStart: 2013, yearEnd: 2019, boltPattern: "4x100" },
+          { id: "i10-ag3", label: "i10 AG3 (2019–présent)", yearStart: 2019, yearEnd: null, boltPattern: "4x100" },
+        ],
+      },
+      {
+        model: "i40",
+        generations: [{ id: "i40-vf", label: "i40 VF (2011–2019)", yearStart: 2011, yearEnd: 2019, boltPattern: "5x114.3" }],
+      },
+      {
+        model: "Bayon",
+        generations: [{ id: "bayon-bc3", label: "Bayon BC3 (2021–présent)", yearStart: 2021, yearEnd: null, boltPattern: "4x100" }],
+      },
+      {
+        model: "Santa Fe",
+        generations: [
+          { id: "santafe-cm", label: "Santa Fe CM (2006–2012)", yearStart: 2006, yearEnd: 2012, boltPattern: "5x114.3" },
+          { id: "santafe-dm", label: "Santa Fe DM (2012–2018)", yearStart: 2012, yearEnd: 2018, boltPattern: "5x114.3" },
+          { id: "santafe-tm", label: "Santa Fe TM (2018–présent)", yearStart: 2018, yearEnd: null, boltPattern: "5x114.3" },
+        ],
+      },
+      {
+        model: "Ioniq 6",
+        generations: [{ id: "ioniq6", label: "Ioniq 6 (2022–présent)", yearStart: 2022, yearEnd: null, boltPattern: "5x114.3" }],
+      },
     ],
   },
   {
@@ -674,6 +1125,39 @@ export const VEHICLE_BRANDS = [
       },
       { model: "Stinger", generations: [{ id: "stinger-ck", label: "Stinger CK (2017–2023)", yearStart: 2017, yearEnd: 2023, boltPattern: "5x114.3" }] },
       { model: "EV6", generations: [{ id: "ev6", label: "EV6 (2021–présent)", yearStart: 2021, yearEnd: null, boltPattern: "5x114.3" }] },
+      {
+        model: "Rio",
+        generations: [
+          { id: "rio-ub", label: "Rio UB (2011–2017)", yearStart: 2011, yearEnd: 2017, boltPattern: "4x100" },
+          { id: "rio-yb", label: "Rio YB (2017–présent)", yearStart: 2017, yearEnd: null, boltPattern: "4x100" },
+        ],
+      },
+      {
+        model: "Venga",
+        generations: [{ id: "venga-yn", label: "Venga YN (2009–2019)", yearStart: 2009, yearEnd: 2019, boltPattern: "4x100" }],
+      },
+      {
+        model: "Niro",
+        generations: [
+          { id: "niro-dee", label: "Niro DE (2016–2022)", yearStart: 2016, yearEnd: 2022, boltPattern: "5x114.3" },
+          { id: "niro-sg2", label: "Niro SG2 (2022–présent)", yearStart: 2022, yearEnd: null, boltPattern: "5x114.3" },
+        ],
+      },
+      {
+        model: "Sorento",
+        generations: [
+          { id: "sorento-um", label: "Sorento UM (2014–2020)", yearStart: 2014, yearEnd: 2020, boltPattern: "5x114.3" },
+          { id: "sorento-mq4", label: "Sorento MQ4 (2020–présent)", yearStart: 2020, yearEnd: null, boltPattern: "5x114.3" },
+        ],
+      },
+      {
+        model: "XCeed",
+        generations: [{ id: "xceed-ce", label: "XCeed CE (2019–présent)", yearStart: 2019, yearEnd: null, boltPattern: "5x114.3" }],
+      },
+      {
+        model: "EV9",
+        generations: [{ id: "ev9", label: "EV9 (2023–présent)", yearStart: 2023, yearEnd: null, boltPattern: "5x114.3" }],
+      },
     ],
   },
   {
@@ -694,6 +1178,39 @@ export const VEHICLE_BRANDS = [
           { id: "rx-al30", label: "RX V (2022–présent)", yearStart: 2022, yearEnd: null, boltPattern: "5x114.3" },
         ],
       },
+      {
+        model: "ES",
+        generations: [
+          { id: "es-xv60", label: "ES XV60 (2012–2018)", yearStart: 2012, yearEnd: 2018, boltPattern: "5x114.3" },
+          { id: "es-xv70", label: "ES XV70 (2018–présent)", yearStart: 2018, yearEnd: null, boltPattern: "5x114.3" },
+        ],
+      },
+      {
+        model: "LS",
+        generations: [
+          { id: "ls-xf40", label: "LS XF40 (2006–2017)", yearStart: 2006, yearEnd: 2017, boltPattern: "5x114.3" },
+          { id: "ls-xf50", label: "LS XF50 (2017–présent)", yearStart: 2017, yearEnd: null, boltPattern: "5x114.3" },
+        ],
+      },
+      {
+        model: "GX / LX",
+        generations: [
+          { id: "gx-j150", label: "GX J150 (2009–présent)", yearStart: 2009, yearEnd: null, boltPattern: "6x139.7" },
+          { id: "lx-j200", label: "LX J200 (2007–2021)", yearStart: 2007, yearEnd: 2021, boltPattern: "5x150" },
+        ],
+      },
+      {
+        model: "UX",
+        generations: [{ id: "ux-mz20", label: "UX MZ20 (2018–présent)", yearStart: 2018, yearEnd: null, boltPattern: "5x114.3" }],
+      },
+      {
+        model: "LC",
+        generations: [{ id: "lc-z100", label: "LC Z100 (2017–présent)", yearStart: 2017, yearEnd: null, boltPattern: "5x114.3" }],
+      },
+      {
+        model: "CT",
+        generations: [{ id: "ct-zwa10", label: "CT200h ZWA10 (2011–2022)", yearStart: 2011, yearEnd: 2022, boltPattern: "5x100" }],
+      },
     ],
   },
   {
@@ -713,6 +1230,25 @@ export const VEHICLE_BRANDS = [
           { id: "countryman-r60", label: "Countryman R60 (2010–2016)", yearStart: 2010, yearEnd: 2016, boltPattern: "5x120" },
           { id: "countryman-f60", label: "Countryman F60 (2017–2023)", yearStart: 2017, yearEnd: 2023, boltPattern: "5x112" },
         ],
+      },
+      {
+        model: "Clubman",
+        generations: [
+          { id: "clubman-r55", label: "Clubman R55 (2007–2014)", yearStart: 2007, yearEnd: 2014, boltPattern: "4x100" },
+          { id: "clubman-f54", label: "Clubman F54 (2015–2023)", yearStart: 2015, yearEnd: 2023, boltPattern: "5x112" },
+        ],
+      },
+      {
+        model: "Convertible",
+        generations: [
+          { id: "convertible-r52", label: "Convertible R52 (2004–2008)", yearStart: 2004, yearEnd: 2008, boltPattern: "4x100" },
+          { id: "convertible-r57", label: "Convertible R57 (2009–2015)", yearStart: 2009, yearEnd: 2015, boltPattern: "4x100" },
+          { id: "convertible-f57", label: "Convertible F57 (2016–2024)", yearStart: 2016, yearEnd: 2024, boltPattern: "5x112" },
+        ],
+      },
+      {
+        model: "Paceman",
+        generations: [{ id: "paceman-r61", label: "Paceman R61 (2013–2016)", yearStart: 2013, yearEnd: 2016, boltPattern: "5x120" }],
       },
     ],
   },
@@ -895,6 +1431,29 @@ export const VEHICLE_BRANDS = [
           { id: "octavia-5e", label: "Octavia Mk3, incl. RS (2013–2020)", yearStart: 2013, yearEnd: 2020, boltPattern: "5x112" },
           { id: "octavia-nx", label: "Octavia Mk4, incl. RS (2020–présent)", yearStart: 2020, yearEnd: null, boltPattern: "5x112" },
         ],
+      },
+      {
+        model: "Superb",
+        generations: [
+          { id: "superb-3t", label: "Superb Mk2 (2008–2015)", yearStart: 2008, yearEnd: 2015, boltPattern: "5x112" },
+          { id: "superb-3v", label: "Superb Mk3 (2015–présent)", yearStart: 2015, yearEnd: null, boltPattern: "5x112" },
+        ],
+      },
+      {
+        model: "Kodiaq",
+        generations: [{ id: "kodiaq-ns", label: "Kodiaq NS (2016–présent)", yearStart: 2016, yearEnd: null, boltPattern: "5x112" }],
+      },
+      {
+        model: "Karoq",
+        generations: [{ id: "karoq-nu", label: "Karoq NU (2017–présent)", yearStart: 2017, yearEnd: null, boltPattern: "5x112" }],
+      },
+      {
+        model: "Kamiq",
+        generations: [{ id: "kamiq-nw", label: "Kamiq NW (2019–présent)", yearStart: 2019, yearEnd: null, boltPattern: "5x112" }],
+      },
+      {
+        model: "Scala",
+        generations: [{ id: "scala-nw", label: "Scala NW (2019–présent)", yearStart: 2019, yearEnd: null, boltPattern: "5x112" }],
       },
     ],
   },
