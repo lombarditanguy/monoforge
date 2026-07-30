@@ -5,7 +5,7 @@ const SESSION_COOKIE = "kw_admin_session";
 const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
 
 function getSecret() {
-  const secret = import.meta.env.ADMIN_SESSION_SECRET;
+  const secret = process.env.ADMIN_SESSION_SECRET;
   if (!secret) {
     throw new Error("ADMIN_SESSION_SECRET n'est pas défini (variable d'environnement manquante).");
   }
@@ -13,7 +13,7 @@ function getSecret() {
 }
 
 export async function verifyPassword(password) {
-  const hash = import.meta.env.ADMIN_PASSWORD_HASH;
+  const hash = process.env.ADMIN_PASSWORD_HASH;
   if (!hash) {
     throw new Error("ADMIN_PASSWORD_HASH n'est pas défini (variable d'environnement manquante).");
   }

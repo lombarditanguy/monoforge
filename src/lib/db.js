@@ -2,9 +2,9 @@ import { neon } from "@neondatabase/serverless";
 
 function getConnectionString() {
   return (
-    import.meta.env.DATABASE_URL ||
-    import.meta.env.POSTGRES_URL ||
-    import.meta.env.DATABASE_URL_UNPOOLED
+    process.env.DATABASE_URL ||
+    process.env.POSTGRES_URL ||
+    process.env.DATABASE_URL_UNPOOLED
   );
 }
 
