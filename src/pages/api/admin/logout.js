@@ -2,7 +2,7 @@ import { clearSessionCookie } from "../../../lib/auth.js";
 
 export const prerender = false;
 
-export async function POST({ cookies, request }) {
+export async function POST({ cookies, redirect }) {
   clearSessionCookie(cookies);
-  return Response.redirect(new URL("/admin/login", request.url), 303);
+  return redirect("/admin/login", 303);
 }

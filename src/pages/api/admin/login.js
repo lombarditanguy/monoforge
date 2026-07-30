@@ -2,7 +2,7 @@ import { verifyPassword, createSessionToken, setSessionCookie } from "../../../l
 
 export const prerender = false;
 
-export async function POST({ request, cookies }) {
+export async function POST({ request, cookies, redirect }) {
   const data = await request.formData();
   const password = String(data.get("password") || "");
   const next = String(data.get("next") || "/admin");
@@ -18,13 +18,10 @@ export async function POST({ request, cookies }) {
   }
 
   if (!valid) {
-    return Response.redirect(
-      new URL(`/admin/login?error=1&next=${encodeURIComponent(next)}`, request.url),
-      303
-    );
+    return redirect(`/admin/login?error=1&next=${encodeURIComponent(next)}`, 303);
   }
 
   const token = createSessionToken();
   setSessionCookie(cookies, token);
-  return Response.redirect(new URL(next.startsWith("/admin") ? next : "/admin", request.url), 303);
+  return redirect(next.startsWith("/admin") ? next : "/admin", 303);
 }
