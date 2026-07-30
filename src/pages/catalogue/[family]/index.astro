@@ -1,20 +1,30 @@
 ---
+export const prerender = false;
 import Layout from "../../../layouts/Layout.astro";
 import Breadcrumbs from "../../../components/Breadcrumbs.astro";
 import WheelPhotoCard from "../../../components/WheelPhotoCard.astro";
 import CTASection from "../../../components/CTASection.astro";
 import { FAMILIES, itemsForFamily } from "../../../data/catalog.js";
 import { breadcrumbLd } from "../../../utils/seo.js";
+import { sql } from "../../../lib/db.js";
 
-export function getStaticPaths() {
-  return FAMILIES.map((family) => ({
-    params: { family: family.slug },
-    props: { family },
-  }));
+const { family: familySlug } = Astro.params;
+const family = FAMILIES.find((f) => f.slug === familySlug);
+if (!family) return Astro.redirect("/catalogue", 302);
+const items = itemsForFamily(family.slug);
+
+let startingPrice = 0;
+try {
+  const [priceRow] = await sql`select prix_achat_ht, coefficient_revente from price_bases where famille = ${family.slug} limit 1`;
+  const [minSize] = await sql`select min(coefficient) as min_coeff from size_coefficients`;
+  if (priceRow && minSize?.min_coeff) {
+    startingPrice = Number(priceRow.prix_achat_ht || 0) * Number(priceRow.coefficient_revente || 0) * Number(minSize.min_coeff);
+  }
+} catch {
+  // Pas de base connectée / pas encore configurée : pas de prix affiché.
 }
 
-const { family } = Astro.props;
-const items = itemsForFamily(family.slug);
+Astro.response.headers.set("Cache-Control", "public, s-maxage=600, stale-while-revalidate=86400");
 
 const STYLE_GROUPS = [
   { label: "Branches simples", tags: ["simple"] },
@@ -34,7 +44,7 @@ const availableGroups = STYLE_GROUPS.map((g) => ({
   <Breadcrumbs items={[{ name: "Catalogue", path: "/catalogue" }, { name: family.short, path: `/catalogue/${family.slug}` }]} />
 
   <section class="container-mf pb-12 pt-6">
-    <p class="chip">{items.length} références</p>
+    <p class="chip">{items.length} références{startingPrice > 0 ? ` · à partir de ${startingPrice.toFixed(0)} € HT` : ""}</p>
     <h1 class="mt-6 max-w-2xl text-balance font-display text-4xl font-bold leading-tight text-(--color-paper) sm:text-5xl">
       {family.label}
     </h1>

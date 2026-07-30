@@ -10,11 +10,12 @@ export async function POST({ request, redirect }) {
     const id = data.get("id");
     const famille = String(data.get("famille") || "").trim();
     const label = String(data.get("label") || "").trim();
-    const prix = Number(data.get("prix_base_ht") || 0);
+    const prixAchat = Number(data.get("prix_achat_ht") || 0);
+    const coefficient = Number(data.get("coefficient_revente") || 1);
     if (id) {
-      await sql`update price_bases set famille = ${famille}, label = ${label}, prix_base_ht = ${prix}, updated_at = now() where id = ${Number(id)}`;
+      await sql`update price_bases set famille = ${famille}, label = ${label}, prix_achat_ht = ${prixAchat}, coefficient_revente = ${coefficient}, updated_at = now() where id = ${Number(id)}`;
     } else {
-      await sql`insert into price_bases (famille, label, prix_base_ht) values (${famille}, ${label}, ${prix})`;
+      await sql`insert into price_bases (famille, label, prix_achat_ht, coefficient_revente) values (${famille}, ${label}, ${prixAchat}, ${coefficient})`;
     }
   } else if (type === "coefficient") {
     const id = data.get("id");
@@ -25,6 +26,28 @@ export async function POST({ request, redirect }) {
       await sql`update coefficients set label = ${label}, valeur = ${valeur}, description = ${description}, updated_at = now() where id = ${Number(id)}`;
     } else {
       await sql`insert into coefficients (label, valeur, description) values (${label}, ${valeur}, ${description})`;
+    }
+  } else if (type === "size_coefficient") {
+    const id = data.get("id");
+    const taille = String(data.get("taille") || "").trim();
+    const ordre = Number(data.get("ordre") || 0);
+    const coefficient = Number(data.get("coefficient") || 1);
+    if (id) {
+      await sql`update size_coefficients set taille = ${taille}, ordre = ${ordre}, coefficient = ${coefficient}, updated_at = now() where id = ${Number(id)}`;
+    } else {
+      await sql`insert into size_coefficients (taille, ordre, coefficient) values (${taille}, ${ordre}, ${coefficient})`;
+    }
+  } else if (type === "finish_option") {
+    const id = data.get("id");
+    const label = String(data.get("label") || "").trim();
+    const prixAchat = Number(data.get("prix_achat_ht") || 0);
+    const coefficient = Number(data.get("coefficient_revente") || 1);
+    const position = Number(data.get("position") || 0);
+    const actif = data.get("actif") === "1";
+    if (id) {
+      await sql`update finish_options set label = ${label}, prix_achat_ht = ${prixAchat}, coefficient_revente = ${coefficient}, position = ${position}, actif = ${actif}, updated_at = now() where id = ${Number(id)}`;
+    } else {
+      await sql`insert into finish_options (label, prix_achat_ht, coefficient_revente, actif) values (${label}, ${prixAchat}, ${coefficient}, true)`;
     }
   }
 
@@ -37,6 +60,10 @@ export async function DELETE({ request }) {
     await sql`delete from price_bases where id = ${Number(id)}`;
   } else if (type === "coefficient") {
     await sql`delete from coefficients where id = ${Number(id)}`;
+  } else if (type === "size_coefficient") {
+    await sql`delete from size_coefficients where id = ${Number(id)}`;
+  } else if (type === "finish_option") {
+    await sql`delete from finish_options where id = ${Number(id)}`;
   }
   return new Response(null, { status: 204 });
 }

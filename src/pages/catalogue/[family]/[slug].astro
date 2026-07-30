@@ -1,24 +1,42 @@
 ---
+export const prerender = false;
 import Layout from "../../../layouts/Layout.astro";
 import Breadcrumbs from "../../../components/Breadcrumbs.astro";
 import WheelPhotoCard from "../../../components/WheelPhotoCard.astro";
 import CTASection from "../../../components/CTASection.astro";
 import { FAMILIES, catalogItems, itemsForFamily } from "../../../data/catalog.js";
 import { breadcrumbLd, catalogItemLd } from "../../../utils/seo.js";
+import { sql } from "../../../lib/db.js";
 
-export function getStaticPaths() {
-  return catalogItems.map((item) => {
-    const family = FAMILIES.find((f) => f.slug === item.family);
-    return {
-      params: { family: item.family, slug: item.slug },
-      props: { item, family },
-    };
-  });
-}
+const { family: familySlug, slug } = Astro.params;
+const item = catalogItems.find((i) => i.family === familySlug && i.slug === slug);
+if (!item) return Astro.redirect("/catalogue", 302);
+const family = FAMILIES.find((f) => f.slug === item.family);
 
-const { item, family } = Astro.props;
 const siblings = itemsForFamily(family.slug).filter((i) => i.slug !== item.slug);
 const related = siblings.sort(() => 0.5 - Math.random()).slice(0, 6);
+
+let basePrice = 0;
+let sizes = [];
+let finishOptions = [];
+try {
+  const [priceRow] = await sql`select prix_achat_ht, coefficient_revente from price_bases where famille = ${family.slug} limit 1`;
+  if (priceRow) basePrice = Number(priceRow.prix_achat_ht || 0) * Number(priceRow.coefficient_revente || 0);
+  sizes = await sql`select taille, coefficient from size_coefficients order by ordre asc, id asc`;
+  finishOptions = await sql`select id, label, prix_achat_ht, coefficient_revente from finish_options where actif = true order by position asc, id asc`;
+} catch {
+  // Pas de base connectée / pas encore configurée : on retombe sur "prix sur devis".
+}
+const hasPricing = basePrice > 0 && sizes.length > 0;
+const sizesData = sizes.map((s) => ({ taille: s.taille, coefficient: Number(s.coefficient) }));
+const finishesData = finishOptions.map((f) => ({
+  id: f.id,
+  label: f.label,
+  supplement: Number(f.prix_achat_ht || 0) * Number(f.coefficient_revente || 0),
+}));
+const startingPrice = hasPricing ? basePrice * Math.min(...sizesData.map((s) => s.coefficient)) : 0;
+
+Astro.response.headers.set("Cache-Control", "public, s-maxage=600, stale-while-revalidate=86400");
 
 const ld = [
   breadcrumbLd([
@@ -46,6 +64,35 @@ const ld = [
       <p class="chip">{family.label}</p>
       <h1 class="mt-5 text-balance font-display text-3xl font-bold leading-tight text-(--color-paper) sm:text-4xl">{item.code}</h1>
       <p class="mt-6 max-w-lg leading-relaxed text-(--color-mist)">{family.description}</p>
+
+      {hasPricing ? (
+        <div class="mt-8 rounded-lg border border-(--color-line) bg-(--color-surface-2) p-5">
+          <p class="text-xs uppercase tracking-widest text-(--color-fog)">Prix indicatif</p>
+          <p id="mf-price-display" class="mt-1 font-display text-3xl font-bold text-(--color-paper)">
+            à partir de {startingPrice.toFixed(0)} € HT
+          </p>
+          <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label for="mf-size-select" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Diamètre</label>
+              <select id="mf-size-select" class="w-full rounded-md border border-(--color-line) bg-(--color-surface) px-3 py-2 text-sm text-(--color-paper)">
+                {sizesData.map((s) => <option value={s.coefficient}>{s.taille}</option>)}
+              </select>
+            </div>
+            <div>
+              <label for="mf-finish-select" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Finition</label>
+              <select id="mf-finish-select" class="w-full rounded-md border border-(--color-line) bg-(--color-surface) px-3 py-2 text-sm text-(--color-paper)">
+                <option value="0">Brut forgé (aucune finition)</option>
+                {finishesData.map((f) => <option value={f.supplement}>{f.label}{f.supplement > 0 ? ` (+${f.supplement.toFixed(0)} €)` : ""}</option>)}
+              </select>
+            </div>
+          </div>
+          <p class="mt-4 text-xs leading-relaxed text-(--color-fog)">
+            Estimation HT avant étude technique de votre véhicule (largeur, déport, complexité du dessin). Le prix
+            définitif est confirmé dans votre devis. Besoin d'une finition ou d'un dessin hors liste ? Précisez-le
+            dans les commentaires du configurateur.
+          </p>
+        </div>
+      ) : null}
 
       <div class="mt-10 border-t border-(--color-line) pt-8">
         <p class="text-xs uppercase tracking-widest text-(--color-fog)">Fabrication</p>
@@ -76,4 +123,20 @@ const ld = [
     description="Envoyez-nous les cotes de votre véhicule, on s'occupe de l'adaptation technique."
     primaryHref={`/configurateur?ref=${encodeURIComponent(item.code)}`}
   />
+
+  {hasPricing && (
+    <script define:vars={{ basePrice }}>
+      const sizeSelect = document.getElementById("mf-size-select");
+      const finishSelect = document.getElementById("mf-finish-select");
+      const display = document.getElementById("mf-price-display");
+      function recompute() {
+        const sizeCoeff = Number(sizeSelect?.value || 1);
+        const finishSupplement = Number(finishSelect?.value || 0);
+        const total = basePrice * sizeCoeff + finishSupplement;
+        if (display) display.textContent = `${total.toFixed(0)} € HT`;
+      }
+      sizeSelect?.addEventListener("change", recompute);
+      finishSelect?.addEventListener("change", recompute);
+    </script>
+  )}
 </Layout>

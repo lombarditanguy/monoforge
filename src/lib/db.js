@@ -38,11 +38,32 @@ create table if not exists price_bases (
   updated_at timestamptz not null default now()
 );
 
+alter table price_bases add column if not exists prix_achat_ht numeric(10,2) not null default 0;
+alter table price_bases add column if not exists coefficient_revente numeric(6,3) not null default 1.5;
+
 create table if not exists coefficients (
   id serial primary key,
   label text not null,
   valeur numeric(6,3) not null default 1,
   description text,
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists size_coefficients (
+  id serial primary key,
+  taille text not null,
+  ordre integer not null default 0,
+  coefficient numeric(6,3) not null default 1,
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists finish_options (
+  id serial primary key,
+  label text not null,
+  prix_achat_ht numeric(10,2) not null default 0,
+  coefficient_revente numeric(6,3) not null default 1.5,
+  position integer not null default 0,
+  actif boolean not null default true,
   updated_at timestamptz not null default now()
 );
 
@@ -73,6 +94,21 @@ create table if not exists invoice_counter (
 );
 `;
 
+const DEFAULT_SIZES = ["16", "17", "18", "19", "20", "21", "22", "23", "24"];
+
+const DEFAULT_FINISHES = [
+  "Peinture (coloris au choix)",
+  "Poli miroir",
+  "Cache moyeu alu — petit",
+  "Cache moyeu alu — grand",
+  "Cache moyeu alu — grand, formé",
+  "Brossé",
+  "Chromé",
+  "Lèvre carbone",
+  "Barrel habillé carbone",
+  "Dessin sur mesure / gravure",
+];
+
 export async function initSchema() {
   const connectionString = getConnectionString();
   if (!connectionString) {
@@ -85,6 +121,26 @@ export async function initSchema() {
   const statements = SCHEMA_SQL.split(";").map((s) => s.trim()).filter(Boolean);
   for (const statement of statements) {
     await client.query(statement + ";");
+  }
+
+  const sizeRows = await client.query("select count(*)::int as count from size_coefficients");
+  if (Number(sizeRows[0]?.count) === 0) {
+    for (let i = 0; i < DEFAULT_SIZES.length; i++) {
+      await client.query(
+        "insert into size_coefficients (taille, ordre, coefficient) values ($1, $2, 1)",
+        [`${DEFAULT_SIZES[i]}"`, i]
+      );
+    }
+  }
+
+  const finishRows = await client.query("select count(*)::int as count from finish_options");
+  if (Number(finishRows[0]?.count) === 0) {
+    for (let i = 0; i < DEFAULT_FINISHES.length; i++) {
+      await client.query(
+        "insert into finish_options (label, position) values ($1, $2)",
+        [DEFAULT_FINISHES[i], i]
+      );
+    }
   }
 }
 
