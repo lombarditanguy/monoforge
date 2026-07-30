@@ -96,8 +96,9 @@ create table if not exists invoice_counter (
 
 const DEFAULT_FAMILIES = [
   { famille: "monobloc", label: "Monobloc — 1 pièce" },
-  { famille: "multi-pieces", label: "Multi-pièces — 2 parties" },
+  { famille: "multi-pieces", label: "Multi-pièces — 2 et 3 parties" },
   { famille: "tout-terrain", label: "Tout-terrain" },
+  { famille: "carbone", label: "Carbone brasé" },
 ];
 
 const DEFAULT_SIZES = ["16", "17", "18", "19", "20", "21", "22", "23", "24"];
@@ -132,14 +133,13 @@ export async function initSchema() {
     await client.query(statement + ";");
   }
 
-  const familyRows = await client.query("select count(*)::int as count from price_bases");
-  if (Number(familyRows[0]?.count) === 0) {
-    for (const f of DEFAULT_FAMILIES) {
-      await client.query(
-        "insert into price_bases (famille, label, prix_achat_ht, coefficient_revente) values ($1, $2, 699, 1)",
-        [f.famille, f.label]
-      );
-    }
+  for (const f of DEFAULT_FAMILIES) {
+    await client.query(
+      `insert into price_bases (famille, label, prix_achat_ht, coefficient_revente)
+       select $1, $2, 699, 1
+       where not exists (select 1 from price_bases where famille = $1)`,
+      [f.famille, f.label]
+    );
   }
 
   const sizeRows = await client.query("select count(*)::int as count from size_coefficients");
