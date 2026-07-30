@@ -98,8 +98,13 @@ const ld = [
         <p class="text-xs uppercase tracking-widest text-(--color-fog)">Fabrication</p>
         <p class="mt-2 font-display text-lg font-bold text-(--color-paper)">Fabriquée spécialement pour votre véhicule</p>
         <p class="mt-2 max-w-lg text-sm leading-relaxed text-(--color-mist)">
-          Aucun stock : diamètre, largeur et déport sont définis avec vous au moment de la commande, à partir de ce dessin. Le nombre et la forme des bâtons peuvent eux-mêmes être adaptés si besoin — voir <a href="/sur-mesure" class="underline hover:text-(--color-mist)">le sur-mesure</a>.
+          Aucun stock : diamètre, largeur et déport sont définis avec vous au moment de la commande, à partir de ce dessin (voir notre <a href="/journal/guide-choisir-taille-jantes" class="underline hover:text-(--color-mist)">guide sur les tailles</a>). Le nombre et la forme des bâtons peuvent eux-mêmes être adaptés si besoin — voir <a href="/sur-mesure" class="underline hover:text-(--color-mist)">le sur-mesure</a>.
         </p>
+        {(family.slug === "monobloc" || family.slug === "multi-pieces") && (
+          <p class="mt-2 max-w-lg text-sm leading-relaxed text-(--color-mist)">
+            Voir notre comparatif <a href="/journal/monobloc-ou-multi-pieces" class="underline hover:text-(--color-mist)">monobloc vs multi-pièces</a> pour choisir l'architecture adaptée à votre projet.
+          </p>
+        )}
       </div>
 
       <div class="mt-10 flex flex-col gap-4 sm:flex-row">

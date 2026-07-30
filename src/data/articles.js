@@ -19,7 +19,7 @@ export const articles = [
       </ul>
       <h2>Et le prix ?</h2>
       <p>Le forgeage reste plus coûteux que la coulée : presses lourdes, usinage plus important, séries plus courtes. C'est le compromis assumé d'un produit pensé pour la performance et la durabilité plutôt que pour le volume.</p>
-      <p>Pour aller plus loin sur les deux architectures de jantes forgées (monobloc et multi-pièces), direction notre article <a href="/journal/monobloc-ou-multi-pieces">monobloc ou multi-pièces</a>.</p>
+      <p>Pour un tour d'horizon complet de notre procédé (matière, contrôle qualité, monobloc vs multi-pièces), voir notre page <a href="/savoir-faire">savoir-faire</a>. Pour aller plus loin sur les deux architectures de jantes forgées, direction notre article <a href="/journal/monobloc-ou-multi-pieces">monobloc ou multi-pièces</a>.</p>
     `,
   },
   {
@@ -58,6 +58,7 @@ export const articles = [
       <h2>La jante multi-pièces</h2>
       <p>Composée d'un centre forgé et d'un ou deux barrels boulonnés (2 ou 3 parties), elle permet d'ajuster indépendamment la largeur et le déport, et facilite le remplacement d'un élément en cas de dommage localisé. C'est l'architecture de référence pour les dish profonds façon "stance" ou pour les projets susceptibles d'évoluer (changement de largeur ultérieur, par exemple).</p>
       <h2>Notre recommandation</h2>
+      <p>Voir aussi le comparatif détaillé (poids, modularité, dish, cas d'usage) sur notre page <a href="/savoir-faire">savoir-faire</a>.</p>
       <table>
         <thead><tr><th>Vous cherchez</th><th>Architecture conseillée</th></tr></thead>
         <tbody>
@@ -78,7 +79,7 @@ export const articles = [
     date: "2026-05-12",
     readingTime: "4 min",
     html: `
-      <p>Le sur-mesure forgé n'est pas un produit de stock : chaque commande déclenche une chaîne d'étapes qui prend du temps. Voici comment se décompose un délai moyen de 8 à 14 semaines.</p>
+      <p>Le <a href="/sur-mesure">sur-mesure forgé</a> n'est pas un produit de stock : chaque commande déclenche une chaîne d'étapes qui prend du temps. Voici comment se décompose un délai moyen de 8 à 14 semaines (voir aussi notre <a href="/faq">FAQ</a> sur le sujet).</p>
       <h2>Étude & validation (1 à 3 semaines)</h2>
       <p>Brief, échanges techniques, production du plan et du rendu, validation de votre part. Cette étape peut être raccourcie si votre brief initial est déjà précis (cotes connues, références visuelles claires).</p>
       <h2>Forgeage (3 à 6 semaines)</h2>
