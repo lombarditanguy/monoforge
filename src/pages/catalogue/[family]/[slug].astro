@@ -71,7 +71,7 @@ const ld = [
           <p id="mf-price-display" class="mt-1 font-display text-3xl font-bold text-(--color-paper)">
             à partir de {startingPrice.toFixed(0)} € HT
           </p>
-          <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div>
               <label for="mf-size-select" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Diamètre</label>
               <select id="mf-size-select" class="w-full rounded-md border border-(--color-line) bg-(--color-surface) px-3 py-2 text-sm text-(--color-paper)">
@@ -83,6 +83,14 @@ const ld = [
               <select id="mf-finish-select" class="w-full rounded-md border border-(--color-line) bg-(--color-surface) px-3 py-2 text-sm text-(--color-paper)">
                 <option value="0">Brut forgé (aucune finition)</option>
                 {finishesData.map((f) => <option value={f.supplement}>{f.label}{f.supplement > 0 ? ` (+${f.supplement.toFixed(0)} €)` : ""}</option>)}
+              </select>
+            </div>
+            <div>
+              <label for="mf-qty-select" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Quantité</label>
+              <select id="mf-qty-select" class="w-full rounded-md border border-(--color-line) bg-(--color-surface) px-3 py-2 text-sm text-(--color-paper)">
+                <option value="1">1 jante</option>
+                <option value="2">2 jantes</option>
+                <option value="4" selected>4 jantes (jeu complet)</option>
               </select>
             </div>
           </div>
@@ -133,15 +141,19 @@ const ld = [
     <script define:vars={{ basePrice }}>
       const sizeSelect = document.getElementById("mf-size-select");
       const finishSelect = document.getElementById("mf-finish-select");
+      const qtySelect = document.getElementById("mf-qty-select");
       const display = document.getElementById("mf-price-display");
       function recompute() {
         const sizeCoeff = Number(sizeSelect?.value || 1);
         const finishSupplement = Number(finishSelect?.value || 0);
-        const total = basePrice * sizeCoeff + finishSupplement;
-        if (display) display.textContent = `${total.toFixed(0)} € HT`;
+        const qty = Number(qtySelect?.value || 1);
+        const total = (basePrice * sizeCoeff + finishSupplement) * qty;
+        if (display) display.textContent = `${total.toFixed(0)} € HT (${qty} jante${qty > 1 ? "s" : ""})`;
       }
       sizeSelect?.addEventListener("change", recompute);
       finishSelect?.addEventListener("change", recompute);
+      qtySelect?.addEventListener("change", recompute);
+      recompute();
     </script>
   )}
 </Layout>

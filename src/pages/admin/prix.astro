@@ -35,35 +35,36 @@ function ventebase(p) {
         <h2 style="margin-top:0">Familles — prix d'achat & coefficient de revente</h2>
         <p class="muted">
           Prix de base HT pour la taille la plus petite (voir coefficients de taille ci-dessous), sans finition.
+          Prix de vente = prix d'achat × coefficient.
         </p>
-        <table>
-          <thead><tr><th>Famille</th><th>Libellé</th><th>Prix d'achat HT</th><th>Coeff. revente</th><th>→ Prix de vente base</th><th></th></tr></thead>
-          <tbody>
-            {priceBases.map((p) => (
-              <tr>
-                <td>{p.famille}</td>
-                <td>{p.label}</td>
-                <td>
-                  <form method="POST" action="/api/admin/prix" style="display:flex;gap:.4rem;align-items:center;margin:0">
-                    <input type="hidden" name="type" value="price_base" />
-                    <input type="hidden" name="id" value={p.id} />
-                    <input type="hidden" name="famille" value={p.famille} />
-                    <input type="hidden" name="label" value={p.label} />
-                    <input name="prix_achat_ht" type="number" step="0.01" value={p.prix_achat_ht} style="width:6rem;margin:0" />
-                    <input name="coefficient_revente" type="number" step="0.01" value={p.coefficient_revente} style="width:5rem;margin:0" title="Coefficient de revente" />
-                    <button class="btn btn-outline" type="submit" style="padding:.4rem .7rem">Maj</button>
-                  </form>
-                </td>
-                <td colspan="2" class="muted">{ventebase(p).toFixed(2)} € HT</td>
-                <td>
-                  <form method="POST" action="/api/admin/prix" data-delete data-type="price_base" data-id={p.id} style="margin:0">
-                    <button class="btn btn-outline" type="submit" style="padding:.4rem .7rem;color:#e5484d">Suppr.</button>
-                  </form>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {priceBases.length === 0 && <p class="muted">Aucune famille pour l'instant — ajoute-en une ci-dessous.</p>}
+        {priceBases.map((p) => (
+          <div class="edit-row">
+            <p class="edit-row-title">{p.label} <span class="muted">({p.famille})</span></p>
+            <form method="POST" action="/api/admin/prix">
+              <input type="hidden" name="type" value="price_base" />
+              <input type="hidden" name="id" value={p.id} />
+              <input type="hidden" name="famille" value={p.famille} />
+              <input type="hidden" name="label" value={p.label} />
+              <div class="field-row">
+                <div>
+                  <label for={`achat-${p.id}`}>Prix d'achat HT (€)</label>
+                  <input id={`achat-${p.id}`} name="prix_achat_ht" type="number" step="0.01" value={p.prix_achat_ht} />
+                </div>
+                <div>
+                  <label for={`coeff-${p.id}`}>Coefficient de revente</label>
+                  <input id={`coeff-${p.id}`} name="coefficient_revente" type="number" step="0.01" value={p.coefficient_revente} />
+                </div>
+                <div>
+                  <label>→ Prix de vente calculé</label>
+                  <p class="computed">{ventebase(p).toFixed(2)} € HT</p>
+                </div>
+              </div>
+              <button class="btn btn-outline" type="submit">Enregistrer</button>
+              <button class="btn btn-outline btn-danger" type="submit" formaction="/api/admin/prix" data-delete data-type="price_base" data-id={p.id}>Supprimer</button>
+            </form>
+          </div>
+        ))}
         <details style="margin-top:1rem">
           <summary class="muted" style="cursor:pointer">+ Ajouter une famille</summary>
           <form method="POST" action="/api/admin/prix" style="margin-top:1rem">
@@ -78,11 +79,11 @@ function ventebase(p) {
                 <input id="label" name="label" placeholder="Monobloc — 1 pièce" required />
               </div>
               <div>
-                <label for="prix_achat_ht">Prix d'achat HT</label>
+                <label for="prix_achat_ht">Prix d'achat HT (€)</label>
                 <input id="prix_achat_ht" name="prix_achat_ht" type="number" step="0.01" required />
               </div>
               <div>
-                <label for="coefficient_revente">Coeff. revente</label>
+                <label for="coefficient_revente">Coefficient de revente</label>
                 <input id="coefficient_revente" name="coefficient_revente" type="number" step="0.01" value="1.5" required />
               </div>
             </div>
@@ -97,31 +98,30 @@ function ventebase(p) {
           Multiplicateur appliqué au prix de vente de base selon le diamètre choisi par le client (1.00 = taille de
           base, pas de variation ; 1.10 = +10% par rapport à la base, etc.).
         </p>
-        <table>
-          <thead><tr><th>Taille</th><th>Ordre</th><th>Coefficient</th><th></th></tr></thead>
-          <tbody>
-            {sizeCoefficients.map((s) => (
-              <tr>
-                <td>
-                  <form method="POST" action="/api/admin/prix" style="display:flex;gap:.4rem;align-items:center;margin:0">
-                    <input type="hidden" name="type" value="size_coefficient" />
-                    <input type="hidden" name="id" value={s.id} />
-                    <input name="taille" value={s.taille} style="width:4.5rem;margin:0" />
-                    <input name="ordre" type="number" value={s.ordre} style="width:4rem;margin:0" title="Ordre d'affichage" />
-                    <input name="coefficient" type="number" step="0.001" value={s.coefficient} style="width:5.5rem;margin:0" />
-                    <button class="btn btn-outline" type="submit" style="padding:.4rem .7rem">Maj</button>
-                  </form>
-                </td>
-                <td colspan="2"></td>
-                <td>
-                  <form method="POST" action="/api/admin/prix" data-delete data-type="size_coefficient" data-id={s.id} style="margin:0">
-                    <button class="btn btn-outline" type="submit" style="padding:.4rem .7rem;color:#e5484d">Suppr.</button>
-                  </form>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {sizeCoefficients.map((s) => (
+          <div class="edit-row">
+            <form method="POST" action="/api/admin/prix">
+              <input type="hidden" name="type" value="size_coefficient" />
+              <input type="hidden" name="id" value={s.id} />
+              <div class="field-row">
+                <div>
+                  <label for={`taille-${s.id}`}>Taille</label>
+                  <input id={`taille-${s.id}`} name="taille" value={s.taille} />
+                </div>
+                <div>
+                  <label for={`ordre-${s.id}`}>Ordre d'affichage</label>
+                  <input id={`ordre-${s.id}`} name="ordre" type="number" value={s.ordre} />
+                </div>
+                <div>
+                  <label for={`coeff-taille-${s.id}`}>Coefficient</label>
+                  <input id={`coeff-taille-${s.id}`} name="coefficient" type="number" step="0.001" value={s.coefficient} />
+                </div>
+              </div>
+              <button class="btn btn-outline" type="submit">Enregistrer</button>
+              <button class="btn btn-outline btn-danger" type="submit" data-delete data-type="size_coefficient" data-id={s.id}>Supprimer</button>
+            </form>
+          </div>
+        ))}
         <details style="margin-top:1rem">
           <summary class="muted" style="cursor:pointer">+ Ajouter une taille</summary>
           <form method="POST" action="/api/admin/prix" style="margin-top:1rem">
@@ -132,7 +132,7 @@ function ventebase(p) {
                 <input id="taille" name="taille" placeholder='25"' required />
               </div>
               <div>
-                <label for="ordre">Ordre</label>
+                <label for="ordre">Ordre d'affichage</label>
                 <input id="ordre" name="ordre" type="number" value="99" required />
               </div>
               <div>
@@ -151,35 +151,38 @@ function ventebase(p) {
           Proposées au client sur la fiche produit (voir tableau fournisseur). Prix d'achat HT + coefficient de
           revente → supplément ajouté au prix de vente. Décoche "Active" pour la masquer sans la supprimer.
         </p>
-        <table>
-          <thead><tr><th>Finition / prix d'achat / coeff. revente</th><th>→ Supplément vente</th><th></th></tr></thead>
-          <tbody>
-            {finishes.map((f) => (
-              <tr>
-                <td>
-                  <form method="POST" action="/api/admin/prix" style="display:flex;gap:.4rem;align-items:center;margin:0;flex-wrap:wrap" data-finish-form>
-                    <input type="hidden" name="type" value="finish_option" />
-                    <input type="hidden" name="id" value={f.id} />
-                    <input type="hidden" name="position" value={f.position} />
-                    <input name="label" value={f.label} style="width:11rem;margin:0" />
-                    <input name="prix_achat_ht" type="number" step="0.01" value={f.prix_achat_ht} style="width:6rem;margin:0" title="Prix d'achat HT" />
-                    <input name="coefficient_revente" type="number" step="0.01" value={f.coefficient_revente} style="width:5rem;margin:0" title="Coefficient de revente" />
-                    <label style="display:flex;align-items:center;gap:.3rem;font-size:.8rem;color:var(--muted,#9a9a9f)">
-                      <input type="checkbox" name="actif" value="1" checked={f.actif} style="width:auto;margin:0" /> active
-                    </label>
-                    <button class="btn btn-outline" type="submit" style="padding:.4rem .7rem">Maj</button>
-                  </form>
-                </td>
-                <td class="muted">{(Number(f.prix_achat_ht || 0) * Number(f.coefficient_revente || 0)).toFixed(2)} €</td>
-                <td>
-                  <form method="POST" action="/api/admin/prix" data-delete data-type="finish_option" data-id={f.id} style="margin:0">
-                    <button class="btn btn-outline" type="submit" style="padding:.4rem .7rem;color:#e5484d">Suppr.</button>
-                  </form>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {finishes.map((f) => (
+          <div class="edit-row">
+            <form method="POST" action="/api/admin/prix" data-finish-form>
+              <input type="hidden" name="type" value="finish_option" />
+              <input type="hidden" name="id" value={f.id} />
+              <input type="hidden" name="position" value={f.position} />
+              <div class="field-row">
+                <div>
+                  <label for={`flabel-${f.id}`}>Libellé</label>
+                  <input id={`flabel-${f.id}`} name="label" value={f.label} />
+                </div>
+                <div>
+                  <label for={`fachat-${f.id}`}>Prix d'achat HT (€)</label>
+                  <input id={`fachat-${f.id}`} name="prix_achat_ht" type="number" step="0.01" value={f.prix_achat_ht} />
+                </div>
+                <div>
+                  <label for={`fcoeff-${f.id}`}>Coefficient de revente</label>
+                  <input id={`fcoeff-${f.id}`} name="coefficient_revente" type="number" step="0.01" value={f.coefficient_revente} />
+                </div>
+                <div>
+                  <label>→ Supplément vente</label>
+                  <p class="computed">+{(Number(f.prix_achat_ht || 0) * Number(f.coefficient_revente || 0)).toFixed(2)} €</p>
+                </div>
+              </div>
+              <label style="display:flex;align-items:center;gap:.4rem;margin-bottom:1rem">
+                <input type="checkbox" name="actif" value="1" checked={f.actif} style="width:auto;margin:0" /> Finition active (visible côté client)
+              </label>
+              <button class="btn btn-outline" type="submit">Enregistrer</button>
+              <button class="btn btn-outline btn-danger" type="submit" data-delete data-type="finish_option" data-id={f.id}>Supprimer</button>
+            </form>
+          </div>
+        ))}
         <details style="margin-top:1rem">
           <summary class="muted" style="cursor:pointer">+ Ajouter une finition</summary>
           <form method="POST" action="/api/admin/prix" style="margin-top:1rem">
@@ -190,11 +193,11 @@ function ventebase(p) {
                 <input id="f_label" name="label" placeholder="Chromé" required />
               </div>
               <div>
-                <label for="f_achat">Prix d'achat HT</label>
+                <label for="f_achat">Prix d'achat HT (€)</label>
                 <input id="f_achat" name="prix_achat_ht" type="number" step="0.01" value="0" required />
               </div>
               <div>
-                <label for="f_coeff">Coeff. revente</label>
+                <label for="f_coeff">Coefficient de revente</label>
                 <input id="f_coeff" name="coefficient_revente" type="number" step="0.01" value="1.5" required />
               </div>
             </div>
@@ -209,31 +212,25 @@ function ventebase(p) {
           Multiplicateurs libres, non liés à une taille ou une finition précise (ex : dessin inédit, délai
           express...) — utilisables au moment de préparer un devis ou une facture manuellement.
         </p>
-        <table>
-          <thead><tr><th>Libellé</th><th>Coefficient</th><th>Description</th><th></th></tr></thead>
-          <tbody>
-            {coefficients.map((c) => (
-              <tr>
-                <td>{c.label}</td>
-                <td>×{Number(c.valeur).toFixed(2)}</td>
-                <td class="muted">{c.description || "—"}</td>
-                <td style="display:flex;gap:.4rem">
-                  <form method="POST" action="/api/admin/prix" style="display:flex;gap:.4rem;align-items:center;margin:0">
-                    <input type="hidden" name="type" value="coefficient" />
-                    <input type="hidden" name="id" value={c.id} />
-                    <input type="hidden" name="label" value={c.label} />
-                    <input type="hidden" name="description" value={c.description || ""} />
-                    <input name="valeur" type="number" step="0.01" value={c.valeur} style="width:5rem;margin:0" />
-                    <button class="btn btn-outline" type="submit" style="padding:.4rem .7rem">Maj</button>
-                  </form>
-                  <form method="POST" action="/api/admin/prix" data-delete data-type="coefficient" data-id={c.id} style="margin:0">
-                    <button class="btn btn-outline" type="submit" style="padding:.4rem .7rem;color:#e5484d">Suppr.</button>
-                  </form>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {coefficients.map((c) => (
+          <div class="edit-row">
+            <p class="edit-row-title">{c.label} <span class="muted">— actuellement ×{Number(c.valeur).toFixed(2)}{c.description ? ` (${c.description})` : ""}</span></p>
+            <form method="POST" action="/api/admin/prix">
+              <input type="hidden" name="type" value="coefficient" />
+              <input type="hidden" name="id" value={c.id} />
+              <input type="hidden" name="label" value={c.label} />
+              <input type="hidden" name="description" value={c.description || ""} />
+              <div class="field-row">
+                <div>
+                  <label for={`cvaleur-${c.id}`}>Coefficient</label>
+                  <input id={`cvaleur-${c.id}`} name="valeur" type="number" step="0.01" value={c.valeur} />
+                </div>
+              </div>
+              <button class="btn btn-outline" type="submit">Enregistrer</button>
+              <button class="btn btn-outline btn-danger" type="submit" data-delete data-type="coefficient" data-id={c.id}>Supprimer</button>
+            </form>
+          </div>
+        ))}
         <details style="margin-top:1rem">
           <summary class="muted" style="cursor:pointer">+ Ajouter un coefficient</summary>
           <form method="POST" action="/api/admin/prix" style="margin-top:1rem">
@@ -257,13 +254,38 @@ function ventebase(p) {
     </>
   )}
 
+  <style>
+    .edit-row {
+      border: 1px solid #1c1c20;
+      border-radius: 0.4rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    .edit-row-title {
+      margin: 0 0 0.75rem;
+      font-weight: 600;
+    }
+    .edit-row form {
+      margin: 0;
+    }
+    .computed {
+      margin: 0;
+      padding: 0.55rem 0;
+      font-weight: 700;
+    }
+    .btn-danger {
+      color: #e5484d;
+      margin-left: 0.5rem;
+    }
+  </style>
+
   <script>
-    document.querySelectorAll("form[data-delete]").forEach((form) => {
-      form.addEventListener("submit", async (e) => {
+    document.querySelectorAll("button[data-delete]").forEach((btn) => {
+      btn.addEventListener("click", async (e) => {
         e.preventDefault();
         if (!confirm("Supprimer cette ligne ?")) return;
-        const type = form.getAttribute("data-type");
-        const id = form.getAttribute("data-id");
+        const type = btn.getAttribute("data-type");
+        const id = btn.getAttribute("data-id");
         await fetch("/api/admin/prix", {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },

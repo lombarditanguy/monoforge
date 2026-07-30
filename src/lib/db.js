@@ -94,6 +94,12 @@ create table if not exists invoice_counter (
 );
 `;
 
+const DEFAULT_FAMILIES = [
+  { famille: "monobloc", label: "Monobloc — 1 pièce" },
+  { famille: "multi-pieces", label: "Multi-pièces — 2 parties" },
+  { famille: "tout-terrain", label: "Tout-terrain" },
+];
+
 const DEFAULT_SIZES = ["16", "17", "18", "19", "20", "21", "22", "23", "24"];
 
 const DEFAULT_FINISHES = [
@@ -121,6 +127,16 @@ export async function initSchema() {
   const statements = SCHEMA_SQL.split(";").map((s) => s.trim()).filter(Boolean);
   for (const statement of statements) {
     await client.query(statement + ";");
+  }
+
+  const familyRows = await client.query("select count(*)::int as count from price_bases");
+  if (Number(familyRows[0]?.count) === 0) {
+    for (const f of DEFAULT_FAMILIES) {
+      await client.query(
+        "insert into price_bases (famille, label, prix_achat_ht, coefficient_revente) values ($1, $2, 699, 1)",
+        [f.famille, f.label]
+      );
+    }
   }
 
   const sizeRows = await client.query("select count(*)::int as count from size_coefficients");
