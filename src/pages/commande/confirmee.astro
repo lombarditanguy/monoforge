@@ -3,33 +3,49 @@ export const prerender = false;
 import Layout from "../../layouts/Layout.astro";
 import { SITE } from "../../data/site.js";
 import { isStripeConfigured, getStripe } from "../../lib/stripe.js";
+import { sql } from "../../lib/db.js";
 
 const sessionId = Astro.url.searchParams.get("session_id");
-let session = null;
+const reference = Astro.url.searchParams.get("ref");
+
+let stripeSession = null;
 if (sessionId && isStripeConfigured()) {
   try {
-    session = await getStripe().checkout.sessions.retrieve(sessionId);
+    stripeSession = await getStripe().checkout.sessions.retrieve(sessionId);
+    if (stripeSession?.payment_status === "paid" && reference) {
+      await sql`
+        update commandes
+        set statut = 'payee', stripe_payment_intent = ${String(stripeSession.payment_intent || "")}, updated_at = now()
+        where reference = ${reference} and statut <> 'payee'
+      `;
+    }
   } catch {
-    session = null;
+    stripeSession = null;
   }
 }
+
+const isPaid = Boolean(stripeSession?.payment_status === "paid");
+const isPendingPayment = Boolean(reference && !sessionId);
 ---
 
 <Layout title="Commande confirmée" description="Votre commande a bien été enregistrée." noindex>
   <section class="container-mf flex min-h-[50vh] flex-col items-center justify-center py-24 text-center">
-    <p class="chip">Paiement confirmé</p>
+    <p class="chip">{isPaid ? "Paiement confirmé" : isPendingPayment ? "Commande enregistrée" : "Commande reçue"}</p>
     <h1 class="mt-6 max-w-xl text-balance font-display text-3xl font-bold text-(--color-paper) sm:text-4xl">
-      Merci, votre commande est enregistrée.
+      {isPaid ? "Merci, votre commande est confirmée." : "Merci, votre commande est enregistrée."}
     </h1>
     <p class="mt-5 max-w-md text-balance leading-relaxed text-(--color-mist)">
-      {session
-        ? `Un email de confirmation vous a été envoyé à ${session.customer_details?.email || "votre adresse"}.`
-        : "Un email de confirmation vous sera envoyé sous peu."}
-      {" "}Notre bureau technique revient vers vous rapidement pour finaliser les cotes exactes de votre véhicule.
+      {reference && <>Référence <strong class="text-(--color-paper)">{reference}</strong>.{" "}</>}
+      {isPaid
+        ? `Un email de confirmation vous a été envoyé à ${stripeSession?.customer_details?.email || "votre adresse"}.`
+        : isPendingPayment
+          ? "Le paiement en ligne n'est pas encore actif — notre équipe vous recontacte rapidement pour finaliser le règlement."
+          : "Un email de confirmation vous sera envoyé sous peu."}
+      {" "}Notre bureau technique vérifie l'entraxe et le déport de votre véhicule à partir de la plaque fournie avant de lancer la fabrication.
     </p>
     <div class="mt-9 flex flex-col gap-4 sm:flex-row">
-      <a href="/configurateur" class="btn btn-forge">Compléter les infos de mon véhicule</a>
-      <a href="/catalogue" class="btn btn-outline">Retour au catalogue</a>
+      <a href="/catalogue" class="btn btn-forge">Retour au catalogue</a>
+      <a href="/configurateur" class="btn btn-outline">Démarrer un projet sur-mesure</a>
     </div>
     <p class="mt-8 text-xs text-(--color-fog)">
       Une question ? <a href={`mailto:${SITE.email}`} class="underline hover:text-(--color-mist)">{SITE.email}</a>

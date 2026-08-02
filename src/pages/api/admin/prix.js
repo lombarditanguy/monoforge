@@ -10,12 +10,21 @@ export async function POST({ request, redirect }) {
     const id = data.get("id");
     const famille = String(data.get("famille") || "").trim();
     const label = String(data.get("label") || "").trim();
-    const prixAchat = Number(data.get("prix_achat_ht") || 0);
     const coefficient = Number(data.get("coefficient_revente") || 1);
     if (id) {
-      await sql`update price_bases set famille = ${famille}, label = ${label}, prix_achat_ht = ${prixAchat}, coefficient_revente = ${coefficient}, updated_at = now() where id = ${Number(id)}`;
+      await sql`update price_bases set famille = ${famille}, label = ${label}, coefficient_revente = ${coefficient}, updated_at = now() where id = ${Number(id)}`;
     } else {
-      await sql`insert into price_bases (famille, label, prix_achat_ht, coefficient_revente) values (${famille}, ${label}, ${prixAchat}, ${coefficient})`;
+      await sql`insert into price_bases (famille, label, coefficient_revente) values (${famille}, ${label}, ${coefficient})`;
+    }
+  } else if (type === "width_coefficient") {
+    const id = data.get("id");
+    const largeur = String(data.get("largeur") || "").trim();
+    const ordre = Number(data.get("ordre") || 0);
+    const coefficient = Number(data.get("coefficient") || 1);
+    if (id) {
+      await sql`update width_coefficients set largeur = ${largeur}, ordre = ${ordre}, coefficient = ${coefficient}, updated_at = now() where id = ${Number(id)}`;
+    } else {
+      await sql`insert into width_coefficients (largeur, ordre, coefficient) values (${largeur}, ${ordre}, ${coefficient})`;
     }
   } else if (type === "coefficient") {
     const id = data.get("id");
@@ -62,6 +71,8 @@ export async function DELETE({ request }) {
     await sql`delete from coefficients where id = ${Number(id)}`;
   } else if (type === "size_coefficient") {
     await sql`delete from size_coefficients where id = ${Number(id)}`;
+  } else if (type === "width_coefficient") {
+    await sql`delete from width_coefficients where id = ${Number(id)}`;
   } else if (type === "finish_option") {
     await sql`delete from finish_options where id = ${Number(id)}`;
   }

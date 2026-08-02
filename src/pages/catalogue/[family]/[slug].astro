@@ -12,29 +12,39 @@ const { family: familySlug, slug } = Astro.params;
 const item = catalogItems.find((i) => i.family === familySlug && i.slug === slug);
 if (!item) return Astro.redirect("/catalogue", 302);
 const family = FAMILIES.find((f) => f.slug === item.family);
+const gallery = item.images && item.images.length > 0 ? item.images : [item.image];
 
 const siblings = itemsForFamily(family.slug).filter((i) => i.slug !== item.slug);
 const related = siblings.sort(() => 0.5 - Math.random()).slice(0, 6);
 
-let basePrice = 0;
+let itemPriceHt = 0;
+let coefficientRevente = 0;
 let sizes = [];
+let widths = [];
 let finishOptions = [];
 try {
-  const [priceRow] = await sql`select prix_achat_ht, coefficient_revente from price_bases where famille = ${family.slug} limit 1`;
-  if (priceRow) basePrice = Number(priceRow.prix_achat_ht || 0) * Number(priceRow.coefficient_revente || 0);
+  const [priceRow] = await sql`select coefficient_revente from price_bases where famille = ${family.slug} limit 1`;
+  const [itemPriceRow] = await sql`select prix_achat_ht from item_prices where code = ${item.code} limit 1`;
+  coefficientRevente = Number(priceRow?.coefficient_revente || 0);
+  itemPriceHt = Number(itemPriceRow?.prix_achat_ht || 0);
   sizes = await sql`select taille, coefficient from size_coefficients order by ordre asc, id asc`;
+  widths = await sql`select largeur, coefficient from width_coefficients order by ordre asc, id asc`;
   finishOptions = await sql`select id, label, prix_achat_ht, coefficient_revente from finish_options where actif = true order by position asc, id asc`;
 } catch {
   // Pas de base connectée / pas encore configurée : on retombe sur "prix sur devis".
 }
-const hasPricing = basePrice > 0 && sizes.length > 0;
+const basePrice = itemPriceHt * coefficientRevente;
+const hasPricing = basePrice > 0 && sizes.length > 0 && widths.length > 0;
 const sizesData = sizes.map((s) => ({ taille: s.taille, coefficient: Number(s.coefficient) }));
+const widthsData = widths.map((w) => ({ largeur: w.largeur, coefficient: Number(w.coefficient) }));
 const finishesData = finishOptions.map((f) => ({
   id: f.id,
   label: f.label,
   supplement: Number(f.prix_achat_ht || 0) * Number(f.coefficient_revente || 0),
 }));
-const startingPrice = hasPricing ? basePrice * Math.min(...sizesData.map((s) => s.coefficient)) : 0;
+const minSizeCoeff = hasPricing ? Math.min(...sizesData.map((s) => s.coefficient)) : 1;
+const minWidthCoeff = hasPricing ? Math.min(...widthsData.map((w) => w.coefficient)) : 1;
+const startingPrice = hasPricing ? basePrice * minSizeCoeff * minWidthCoeff : 0;
 
 Astro.response.headers.set("Cache-Control", "public, s-maxage=600, stale-while-revalidate=86400");
 
@@ -56,8 +66,23 @@ const ld = [
   <Breadcrumbs items={[{ name: "Catalogue", path: "/catalogue" }, { name: family.short, path: `/catalogue/${family.slug}` }, { name: item.code, path: `/catalogue/${item.family}/${item.slug}` }]} />
 
   <section class="container-mf grid grid-cols-1 gap-14 pb-20 pt-6 lg:grid-cols-2 lg:gap-20">
-    <div class="overflow-hidden rounded-lg border border-(--color-line) bg-(--color-surface-2) lg:sticky lg:top-28 lg:h-fit">
-      <img src={item.image} alt={`Jante forgée ${item.code}`} width="600" height="600" class="w-full object-cover" />
+    <div class="lg:sticky lg:top-28 lg:h-fit">
+      <div class="overflow-hidden rounded-lg border border-(--color-line) bg-(--color-surface-2)">
+        <img id="mf-gallery-main" src={gallery[0]} alt={`Jante forgée ${item.code}`} width="600" height="600" class="aspect-square w-full object-cover" />
+      </div>
+      {gallery.length > 1 && (
+        <div class="mt-3 grid grid-cols-3 gap-3">
+          {gallery.map((src, i) => (
+            <button
+              type="button"
+              data-gallery-thumb={src}
+              class:list={["mf-thumb overflow-hidden rounded-md border bg-(--color-surface-2)", i === 0 ? "border-(--color-forge-500)" : "border-(--color-line)"]}
+            >
+              <img src={src} alt={`${item.code} — photo ${i + 1}`} width="200" height="200" class="aspect-square w-full object-cover" loading="lazy" />
+            </button>
+          ))}
+        </div>
+      )}
     </div>
 
     <div>
@@ -71,19 +96,26 @@ const ld = [
           <p id="mf-price-display" class="mt-1 font-display text-3xl font-bold text-(--color-paper)">
             {startingPrice.toFixed(0)} € HT
           </p>
-          <form id="mf-checkout-form" method="POST" action="/api/checkout">
+          <form id="mf-checkout-form" method="GET" action="/commande/nouvelle">
             <input type="hidden" name="code" value={item.code} />
             <input type="hidden" name="family" value={family.slug} />
             <input type="hidden" name="slug" value={item.slug} />
             <input type="hidden" id="mf-hidden-size-label" name="sizeLabel" value={sizesData[0]?.taille} />
+            <input type="hidden" id="mf-hidden-width-label" name="widthLabel" value={widthsData[0]?.largeur} />
             <input type="hidden" id="mf-hidden-finish-label" name="finishLabel" value="Brut forgé" />
             <input type="hidden" id="mf-hidden-qty" name="quantity" value="4" />
             <input type="hidden" id="mf-hidden-unit-price" name="unitPriceHt" value={startingPrice.toFixed(2)} />
-            <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label for="mf-size-select" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Diamètre</label>
                 <select id="mf-size-select" class="w-full rounded-md border border-(--color-line) bg-(--color-surface) px-3 py-2 text-sm text-(--color-paper)">
                   {sizesData.map((s) => <option value={s.coefficient} data-label={s.taille}>{s.taille}</option>)}
+                </select>
+              </div>
+              <div>
+                <label for="mf-width-select" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Largeur</label>
+                <select id="mf-width-select" class="w-full rounded-md border border-(--color-line) bg-(--color-surface) px-3 py-2 text-sm text-(--color-paper)">
+                  {widthsData.map((w) => <option value={w.coefficient} data-label={w.largeur}>{w.largeur}</option>)}
                 </select>
               </div>
               <div>
@@ -105,11 +137,15 @@ const ld = [
             <button type="submit" class="btn btn-forge mt-5 w-full sm:w-auto">Commander et payer</button>
           </form>
           <p class="mt-4 text-xs leading-relaxed text-(--color-fog)">
-            Prix HT pour cette configuration. Besoin d'une finition, d'un dessin ou d'une contrainte technique
-            particulière qui ne figure pas ici ? <a href={`/configurateur?ref=${encodeURIComponent(item.code)}`} class="underline hover:text-(--color-mist)">Passez par le configurateur</a> pour nous décrire votre projet précisément.
+            Prix HT pour cette jante telle quelle. Besoin d'une finition, d'un dessin ou d'une contrainte technique
+            particulière qui ne figure pas ici ?
           </p>
         </div>
       ) : null}
+
+      <a href={`/configurateur?ref=${encodeURIComponent(item.code)}`} class="btn btn-outline mt-4 w-full sm:w-auto">
+        Utiliser cette jante comme base pour mon projet sur-mesure
+      </a>
 
       <div class="mt-10 border-t border-(--color-line) pt-8">
         <p class="text-xs uppercase tracking-widest text-(--color-fog)">Fabrication</p>
@@ -150,30 +186,51 @@ const ld = [
     primaryHref={`/configurateur?ref=${encodeURIComponent(item.code)}`}
   />
 
+  <script>
+    const mainImg = document.getElementById("mf-gallery-main") as HTMLImageElement | null;
+    document.querySelectorAll<HTMLButtonElement>("[data-gallery-thumb]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const src = btn.getAttribute("data-gallery-thumb");
+        if (mainImg && src) mainImg.src = src;
+        document.querySelectorAll(".mf-thumb").forEach((el) => {
+          el.classList.remove("border-(--color-forge-500)");
+          el.classList.add("border-(--color-line)");
+        });
+        btn.classList.remove("border-(--color-line)");
+        btn.classList.add("border-(--color-forge-500)");
+      });
+    });
+  </script>
+
   {hasPricing && (
     <script define:vars={{ basePrice }}>
       const sizeSelect = document.getElementById("mf-size-select");
+      const widthSelect = document.getElementById("mf-width-select");
       const finishSelect = document.getElementById("mf-finish-select");
       const qtySelect = document.getElementById("mf-qty-select");
       const display = document.getElementById("mf-price-display");
       const hiddenSizeLabel = document.getElementById("mf-hidden-size-label");
+      const hiddenWidthLabel = document.getElementById("mf-hidden-width-label");
       const hiddenFinishLabel = document.getElementById("mf-hidden-finish-label");
       const hiddenQty = document.getElementById("mf-hidden-qty");
       const hiddenUnitPrice = document.getElementById("mf-hidden-unit-price");
 
       function recompute() {
         const sizeCoeff = Number(sizeSelect?.value || 1);
+        const widthCoeff = Number(widthSelect?.value || 1);
         const finishSupplement = Number(finishSelect?.value || 0);
         const qty = Number(qtySelect?.value || 1);
-        const unitPrice = basePrice * sizeCoeff + finishSupplement;
+        const unitPrice = basePrice * sizeCoeff * widthCoeff + finishSupplement;
         const total = unitPrice * qty;
         if (display) display.textContent = `${total.toFixed(0)} € HT (${qty} jante${qty > 1 ? "s" : ""})`;
         if (hiddenSizeLabel) hiddenSizeLabel.value = sizeSelect?.selectedOptions[0]?.dataset.label || "";
+        if (hiddenWidthLabel) hiddenWidthLabel.value = widthSelect?.selectedOptions[0]?.dataset.label || "";
         if (hiddenFinishLabel) hiddenFinishLabel.value = finishSelect?.selectedOptions[0]?.dataset.label || "";
         if (hiddenQty) hiddenQty.value = String(qty);
         if (hiddenUnitPrice) hiddenUnitPrice.value = unitPrice.toFixed(2);
       }
       sizeSelect?.addEventListener("change", recompute);
+      widthSelect?.addEventListener("change", recompute);
       finishSelect?.addEventListener("change", recompute);
       qtySelect?.addEventListener("change", recompute);
       recompute();

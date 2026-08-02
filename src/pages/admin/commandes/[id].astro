@@ -1,0 +1,121 @@
+---
+export const prerender = false;
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import { sql } from "../../../lib/db.js";
+
+const { id } = Astro.params;
+let commande = null;
+let dbError = null;
+try {
+  const rows = await sql`select * from commandes where id = ${Number(id)} limit 1`;
+  commande = rows[0] || null;
+} catch (err) {
+  dbError = err.message;
+}
+if (!dbError && !commande) return Astro.redirect("/admin/commandes", 302);
+
+const STATUTS = [
+  { value: "en_attente_paiement", label: "En attente de paiement" },
+  { value: "payee", label: "Payée" },
+  { value: "expediee", label: "Expédiée" },
+  { value: "annulee", label: "Annulée" },
+];
+---
+
+<AdminLayout title={commande ? commande.reference : "Commande"}>
+  {dbError && <div class="notice">{dbError}</div>}
+  {commande && (
+    <>
+      <h1>{commande.reference}</h1>
+      <p class="muted" style="margin-top:-1rem">Créée le {new Date(commande.created_at).toLocaleString("fr-FR")}</p>
+
+      <div class="card">
+        <h2 style="margin-top:0">Statut</h2>
+        <form method="POST" action="/api/admin/commandes">
+          <input type="hidden" name="id" value={commande.id} />
+          <div class="field-row">
+            <div>
+              <label for="statut">Statut de la commande</label>
+              <select id="statut" name="statut">
+                {STATUTS.map((s) => <option value={s.value} selected={s.value === commande.statut}>{s.label}</option>)}
+              </select>
+            </div>
+          </div>
+          <button class="btn" type="submit">Mettre à jour</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2 style="margin-top:0">Produit</h2>
+        <table>
+          <tbody>
+            <tr><th>Référence jante</th><td>{commande.item_code} ({commande.item_family})</td></tr>
+            <tr><th>Diamètre</th><td>{commande.taille || "—"}</td></tr>
+            <tr><th>Largeur</th><td>{commande.largeur || "—"}</td></tr>
+            <tr><th>Finition</th><td>{commande.finition || "—"}</td></tr>
+            <tr><th>Quantité</th><td>{commande.quantite}</td></tr>
+            <tr><th>Prix unitaire HT</th><td>{Number(commande.prix_unitaire_ht).toFixed(2)} €</td></tr>
+            <tr><th>Total HT</th><td><strong>{Number(commande.total_ht).toFixed(2)} €</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <h2 style="margin-top:0">Véhicule</h2>
+        <table>
+          <tbody>
+            <tr><th>Plaque d'immatriculation</th><td>{commande.plaque_immatriculation || "—"}</td></tr>
+            <tr><th>Entraxe</th><td>{commande.entraxe || "à déterminer via l'API plaque"}</td></tr>
+            <tr><th>Déport</th><td>{commande.deport || "à déterminer via l'API plaque"}</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <h2 style="margin-top:0">Client</h2>
+        <table>
+          <tbody>
+            <tr><th>Nom</th><td>{commande.client_nom}</td></tr>
+            <tr><th>Email</th><td>{commande.client_email}</td></tr>
+            <tr><th>Téléphone</th><td>{commande.client_telephone || "—"}</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="field-row">
+        <div class="card">
+          <h2 style="margin-top:0">Adresse de livraison</h2>
+          <p>
+            {commande.livraison_rue}<br />
+            {commande.livraison_complement && <>{commande.livraison_complement}<br /></>}
+            {commande.livraison_code_postal} {commande.livraison_ville}<br />
+            {commande.livraison_pays}
+          </p>
+        </div>
+        <div class="card">
+          <h2 style="margin-top:0">Adresse de facturation</h2>
+          <p>
+            {commande.facturation_rue}<br />
+            {commande.facturation_complement && <>{commande.facturation_complement}<br /></>}
+            {commande.facturation_code_postal} {commande.facturation_ville}<br />
+            {commande.facturation_pays}
+          </p>
+        </div>
+      </div>
+
+      {(commande.stripe_session_id || commande.stripe_payment_intent) && (
+        <div class="card">
+          <h2 style="margin-top:0">Paiement Stripe</h2>
+          <table>
+            <tbody>
+              {commande.stripe_session_id && <tr><th>Session</th><td>{commande.stripe_session_id}</td></tr>}
+              {commande.stripe_payment_intent && <tr><th>Payment intent</th><td>{commande.stripe_payment_intent}</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <a href="/admin/commandes" class="btn btn-outline">← Retour aux commandes</a>
+    </>
+  )}
+</AdminLayout>

@@ -1,4 +1,5 @@
 import { neon } from "@neondatabase/serverless";
+import { catalogItems } from "../data/catalog.js";
 
 function getConnectionString() {
   return (
@@ -67,6 +68,67 @@ create table if not exists finish_options (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists width_coefficients (
+  id serial primary key,
+  largeur text not null,
+  ordre integer not null default 0,
+  coefficient numeric(6,3) not null default 1,
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists item_prices (
+  code text primary key,
+  prix_achat_ht numeric(10,2) not null default 0,
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists commandes (
+  id serial primary key,
+  reference text not null unique,
+  statut text not null default 'en_attente_paiement',
+
+  item_code text not null,
+  item_family text not null,
+  taille text,
+  largeur text,
+  finition text,
+  quantite integer not null default 1,
+  prix_unitaire_ht numeric(10,2) not null default 0,
+  total_ht numeric(10,2) not null default 0,
+
+  plaque_immatriculation text,
+  entraxe text,
+  deport text,
+
+  client_nom text not null,
+  client_email text not null,
+  client_telephone text,
+
+  livraison_rue text,
+  livraison_complement text,
+  livraison_code_postal text,
+  livraison_ville text,
+  livraison_pays text not null default 'France',
+
+  facturation_rue text,
+  facturation_complement text,
+  facturation_code_postal text,
+  facturation_ville text,
+  facturation_pays text not null default 'France',
+
+  stripe_session_id text,
+  stripe_payment_intent text,
+
+  notes text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists commande_counter (
+  year integer primary key,
+  last_number integer not null default 0
+);
+
 create table if not exists invoices (
   id serial primary key,
   numero text not null unique,
@@ -102,6 +164,7 @@ const DEFAULT_FAMILIES = [
 ];
 
 const DEFAULT_SIZES = ["16", "17", "18", "19", "20", "21", "22", "23", "24"];
+const DEFAULT_WIDTHS = ["8", "8,5", "9", "9,5", "10", "10,5", "11", "11,5", "12"];
 
 // Prix d'achat HT approximatifs, convertis depuis le tableau tarifaire USD
 // du fournisseur (XINLAI) à ~0.92 USD->EUR — à ajuster avec le taux et les
@@ -152,6 +215,45 @@ export async function initSchema() {
     }
   }
 
+  const widthRows = await client.query("select count(*)::int as count from width_coefficients");
+  if (Number(widthRows[0]?.count) === 0) {
+    for (let i = 0; i < DEFAULT_WIDTHS.length; i++) {
+      await client.query(
+        "insert into width_coefficients (largeur, ordre, coefficient) values ($1, $2, 1)",
+        [`${DEFAULT_WIDTHS[i]}J`, i]
+      );
+    }
+  }
+
+  // Migration prix par famille -> prix par jante : les références
+  // tout-terrain n'ont pas de prix fournisseur (achatHt) dans catalogItems
+  // (catalogue non retouché) — on amorce leur item_prices avec l'ancien
+  // prix par famille déjà en base, pour ne pas perdre leur prix actuel.
+  const [outdoorBase] = await client.query(
+    "select prix_achat_ht from price_bases where famille = 'tout-terrain' limit 1"
+  );
+  const outdoorFallback = Number(outdoorBase?.prix_achat_ht || 0) || 699;
+  for (const item of catalogItems) {
+    if (item.family !== "tout-terrain") continue;
+    await client.query(
+      `insert into item_prices (code, prix_achat_ht) values ($1, $2)
+       on conflict (code) do nothing`,
+      [item.code, outdoorFallback]
+    );
+  }
+
+  // Prix d'achat par jante : amorcé depuis le prix indicatif fournisseur
+  // (catalogItems[].achatHt) au premier démarrage, puis entièrement piloté
+  // depuis /admin/prix-jantes ensuite — on ne touche jamais une ligne existante.
+  for (const item of catalogItems) {
+    if (!item.achatHt) continue;
+    await client.query(
+      `insert into item_prices (code, prix_achat_ht) values ($1, $2)
+       on conflict (code) do nothing`,
+      [item.code, item.achatHt]
+    );
+  }
+
   const finishRows = await client.query("select count(*)::int as count from finish_options");
   if (Number(finishRows[0]?.count) === 0) {
     for (let i = 0; i < DEFAULT_FINISHES.length; i++) {
@@ -183,4 +285,16 @@ export async function nextInvoiceNumber() {
   `;
   const n = rows[0].last_number;
   return `KW-${year}-${String(n).padStart(4, "0")}`;
+}
+
+export async function nextCommandeReference() {
+  const year = new Date().getFullYear();
+  const rows = await sql`
+    insert into commande_counter (year, last_number)
+    values (${year}, 1)
+    on conflict (year) do update set last_number = commande_counter.last_number + 1
+    returning last_number
+  `;
+  const n = rows[0].last_number;
+  return `KW-CMD-${year}-${String(n).padStart(4, "0")}`;
 }

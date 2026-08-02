@@ -5,38 +5,34 @@ import { sql } from "../../lib/db.js";
 
 let priceBases = [];
 let sizeCoefficients = [];
+let widthCoefficients = [];
 let finishes = [];
 let coefficients = [];
 let dbError = null;
 try {
   priceBases = await sql`select * from price_bases order by famille asc`;
   sizeCoefficients = await sql`select * from size_coefficients order by ordre asc, id asc`;
+  widthCoefficients = await sql`select * from width_coefficients order by ordre asc, id asc`;
   finishes = await sql`select * from finish_options order by position asc, id asc`;
   coefficients = await sql`select * from coefficients order by label asc`;
 } catch (err) {
   dbError = err.message;
-}
-
-function ventebase(p) {
-  return Number(p.prix_achat_ht || 0) * Number(p.coefficient_revente || 0);
 }
 ---
 
 <AdminLayout title="Prix & coefficients">
   <h1>Prix & coefficients</h1>
   <p class="muted" style="margin-top:-.5rem">
-    Ton prix d'achat n'est jamais visible par le client — seul le prix de vente calculé (achat × coefficient) s'affiche sur le site.
+    Le prix d'achat de chaque jante se règle référence par référence dans <a href="/admin/prix-jantes" style="color:#ff7a45">Prix par jante</a>.
+    Ici : le coefficient de revente par famille (prix de vente = achat × coefficient), et les coefficients de taille, largeur et finition.
   </p>
   {dbError && <div class="notice">{dbError}</div>}
 
   {!dbError && (
     <>
       <div class="card">
-        <h2 style="margin-top:0">Familles — prix d'achat & coefficient de revente</h2>
-        <p class="muted">
-          Prix de base HT pour la taille la plus petite (voir coefficients de taille ci-dessous), sans finition.
-          Prix de vente = prix d'achat × coefficient.
-        </p>
+        <h2 style="margin-top:0">Familles — coefficient de revente</h2>
+        <p class="muted">Prix de vente d'une jante = son prix d'achat (voir Prix par jante) × ce coefficient.</p>
         {priceBases.length === 0 && <p class="muted">Aucune famille pour l'instant — ajoute-en une ci-dessous.</p>}
         {priceBases.map((p) => (
           <div class="edit-row">
@@ -48,16 +44,8 @@ function ventebase(p) {
               <input type="hidden" name="label" value={p.label} />
               <div class="field-row">
                 <div>
-                  <label for={`achat-${p.id}`}>Prix d'achat HT (€)</label>
-                  <input id={`achat-${p.id}`} name="prix_achat_ht" type="number" step="0.01" value={p.prix_achat_ht} />
-                </div>
-                <div>
                   <label for={`coeff-${p.id}`}>Coefficient de revente</label>
                   <input id={`coeff-${p.id}`} name="coefficient_revente" type="number" step="0.01" value={p.coefficient_revente} />
-                </div>
-                <div>
-                  <label>→ Prix de vente calculé</label>
-                  <p class="computed">{ventebase(p).toFixed(2)} € HT</p>
                 </div>
               </div>
               <button class="btn btn-outline" type="submit">Enregistrer</button>
@@ -79,10 +67,6 @@ function ventebase(p) {
                 <input id="label" name="label" placeholder="Monobloc — 1 pièce" required />
               </div>
               <div>
-                <label for="prix_achat_ht">Prix d'achat HT (€)</label>
-                <input id="prix_achat_ht" name="prix_achat_ht" type="number" step="0.01" required />
-              </div>
-              <div>
                 <label for="coefficient_revente">Coefficient de revente</label>
                 <input id="coefficient_revente" name="coefficient_revente" type="number" step="0.01" value="1.5" required />
               </div>
@@ -93,7 +77,7 @@ function ventebase(p) {
       </div>
 
       <div class="card">
-        <h2 style="margin-top:0">Coefficients par taille</h2>
+        <h2 style="margin-top:0">Coefficients par taille (diamètre)</h2>
         <p class="muted">
           Multiplicateur appliqué au prix de vente de base selon le diamètre choisi par le client (1.00 = taille de
           base, pas de variation ; 1.10 = +10% par rapport à la base, etc.).
@@ -138,6 +122,59 @@ function ventebase(p) {
               <div>
                 <label for="coefficient">Coefficient</label>
                 <input id="coefficient" name="coefficient" type="number" step="0.001" value="1" required />
+              </div>
+            </div>
+            <button class="btn" type="submit">Ajouter</button>
+          </form>
+        </details>
+      </div>
+
+      <div class="card">
+        <h2 style="margin-top:0">Coefficients par largeur</h2>
+        <p class="muted">
+          Multiplicateur appliqué au prix de vente de base selon la largeur choisie par le client (1.00 = largeur de
+          base, pas de variation ; 1.10 = +10% par rapport à la base, etc.).
+        </p>
+        {widthCoefficients.map((w) => (
+          <div class="edit-row">
+            <form method="POST" action="/api/admin/prix">
+              <input type="hidden" name="type" value="width_coefficient" />
+              <input type="hidden" name="id" value={w.id} />
+              <div class="field-row">
+                <div>
+                  <label for={`largeur-${w.id}`}>Largeur</label>
+                  <input id={`largeur-${w.id}`} name="largeur" value={w.largeur} />
+                </div>
+                <div>
+                  <label for={`ordre-largeur-${w.id}`}>Ordre d'affichage</label>
+                  <input id={`ordre-largeur-${w.id}`} name="ordre" type="number" value={w.ordre} />
+                </div>
+                <div>
+                  <label for={`coeff-largeur-${w.id}`}>Coefficient</label>
+                  <input id={`coeff-largeur-${w.id}`} name="coefficient" type="number" step="0.001" value={w.coefficient} />
+                </div>
+              </div>
+              <button class="btn btn-outline" type="submit">Enregistrer</button>
+              <button class="btn btn-outline btn-danger" type="submit" data-delete data-type="width_coefficient" data-id={w.id}>Supprimer</button>
+            </form>
+          </div>
+        ))}
+        <details style="margin-top:1rem">
+          <summary class="muted" style="cursor:pointer">+ Ajouter une largeur</summary>
+          <form method="POST" action="/api/admin/prix" style="margin-top:1rem">
+            <input type="hidden" name="type" value="width_coefficient" />
+            <div class="field-row">
+              <div>
+                <label for="largeur">Largeur</label>
+                <input id="largeur" name="largeur" placeholder="12J" required />
+              </div>
+              <div>
+                <label for="ordre-largeur">Ordre d'affichage</label>
+                <input id="ordre-largeur" name="ordre" type="number" value="99" required />
+              </div>
+              <div>
+                <label for="coefficient-largeur">Coefficient</label>
+                <input id="coefficient-largeur" name="coefficient" type="number" step="0.001" value="1" required />
               </div>
             </div>
             <button class="btn" type="submit">Ajouter</button>

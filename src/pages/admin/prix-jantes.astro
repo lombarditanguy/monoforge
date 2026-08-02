@@ -1,0 +1,132 @@
+---
+export const prerender = false;
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import { sql } from "../../lib/db.js";
+import { FAMILIES, catalogItems } from "../../data/catalog.js";
+
+let priceRows = [];
+let dbError = null;
+try {
+  priceRows = await sql`select code, prix_achat_ht from item_prices`;
+} catch (err) {
+  dbError = err.message;
+}
+const priceByCode = new Map(priceRows.map((r) => [r.code, Number(r.prix_achat_ht || 0)]));
+
+const itemsByFamily = FAMILIES.map((family) => ({
+  family,
+  items: catalogItems
+    .filter((i) => i.family === family.slug)
+    .map((i) => ({ ...i, prixAchatHt: priceByCode.get(i.code) ?? 0 })),
+}));
+---
+
+<AdminLayout title="Prix par jante">
+  <h1>Prix par jante</h1>
+  <p class="muted" style="margin-top:-.5rem">
+    Prix d'achat HT propre à chaque référence. Le prix de vente affiché au client = prix d'achat de la jante ×
+    coefficient de revente de la famille (réglable dans <a href="/admin/prix" style="color:#ff7a45">Prix &amp; coefficients</a>).
+  </p>
+  {dbError && <div class="notice">{dbError}</div>}
+
+  {!dbError && (
+    <>
+      <div class="card" style="position:sticky;top:0;z-index:5;display:flex;gap:1rem;align-items:center">
+        <input id="mf-search" placeholder="Filtrer par référence (ex: DZ-014)" style="margin:0" />
+        <span id="mf-count" class="muted" style="white-space:nowrap"></span>
+        <button id="mf-save" class="btn" type="button" style="margin-left:auto;white-space:nowrap">Enregistrer les modifications</button>
+        <span id="mf-status" class="muted"></span>
+      </div>
+
+      {itemsByFamily.map(({ family, items }) => (
+        <div class="card">
+          <h2 style="margin-top:0">{family.label} <span class="muted">({items.length} références)</span></h2>
+          <table>
+            <thead>
+              <tr>
+                <th style="width:4.5rem">Photo</th>
+                <th>Référence</th>
+                <th style="width:12rem">Prix d'achat HT (€)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item) => (
+                <tr data-row data-code={item.code.toLowerCase()}>
+                  <td><img src={item.image} alt="" width="40" height="40" style="border-radius:.25rem;object-fit:cover;display:block" /></td>
+                  <td>{item.code}</td>
+                  <td>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={item.prixAchatHt}
+                      data-price-input
+                      data-code={item.code}
+                      style="margin:0"
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ))}
+    </>
+  )}
+
+  <script>
+    const search = document.getElementById("mf-search") as HTMLInputElement | null;
+    const rows = Array.from(document.querySelectorAll<HTMLTableRowElement>("tr[data-row]"));
+    const countEl = document.getElementById("mf-count");
+    const statusEl = document.getElementById("mf-status");
+    const saveBtn = document.getElementById("mf-save");
+
+    function applyFilter() {
+      const q = (search?.value || "").trim().toLowerCase();
+      let visible = 0;
+      for (const row of rows) {
+        const match = !q || (row.dataset.code || "").includes(q);
+        row.style.display = match ? "" : "none";
+        if (match) visible += 1;
+      }
+      if (countEl) countEl.textContent = `${visible} / ${rows.length} affichées`;
+    }
+    search?.addEventListener("input", applyFilter);
+    applyFilter();
+
+    const dirty = new Set<string>();
+    document.querySelectorAll<HTMLInputElement>("input[data-price-input]").forEach((input) => {
+      input.addEventListener("input", () => {
+        if (input.dataset.code) dirty.add(input.dataset.code);
+        if (statusEl) statusEl.textContent = `${dirty.size} modification(s) non enregistrée(s)`;
+      });
+    });
+
+    saveBtn?.addEventListener("click", async () => {
+      if (dirty.size === 0) {
+        if (statusEl) statusEl.textContent = "Rien à enregistrer.";
+        return;
+      }
+      const payload = Array.from(dirty).map((code) => {
+        const input = document.querySelector<HTMLInputElement>(`input[data-price-input][data-code="${CSS.escape(code)}"]`);
+        return { code, prixAchatHt: Number(input?.value || 0) };
+      });
+      if (statusEl) statusEl.textContent = "Enregistrement...";
+      saveBtn.setAttribute("disabled", "true");
+      try {
+        const res = await fetch("/api/admin/item-prices", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ items: payload }),
+        });
+        if (!res.ok) throw new Error(await res.text());
+        dirty.clear();
+        if (statusEl) statusEl.textContent = `Enregistré (${payload.length} référence(s)).`;
+      } catch (err) {
+        if (statusEl) statusEl.textContent = `Erreur : ${(err as Error).message}`;
+      } finally {
+        saveBtn.removeAttribute("disabled");
+      }
+    });
+  </script>
+</AdminLayout>

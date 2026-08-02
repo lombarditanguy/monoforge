@@ -1,0 +1,147 @@
+---
+export const prerender = false;
+import Layout from "../../layouts/Layout.astro";
+import { catalogItems, getFamily } from "../../data/catalog.js";
+
+const params = Astro.url.searchParams;
+const code = params.get("code") || "";
+const item = catalogItems.find((i) => i.code === code);
+if (!item) return Astro.redirect("/catalogue", 302);
+const family = getFamily(item.family);
+
+const sizeLabel = params.get("sizeLabel") || "";
+const widthLabel = params.get("widthLabel") || "";
+const finishLabel = params.get("finishLabel") || "Brut forgé";
+const quantity = Math.max(1, Number(params.get("quantity") || 1));
+const unitPriceHt = Number(params.get("unitPriceHt") || 0);
+const totalHt = unitPriceHt * quantity;
+
+if (unitPriceHt <= 0) return Astro.redirect(`/catalogue/${item.family}/${item.slug}`, 302);
+---
+
+<Layout title={`Commande — ${item.code}`} description="Finalisez votre commande de jante catalogue." noindex>
+  <section class="container-mf grid grid-cols-1 gap-14 pb-24 pt-10 lg:grid-cols-[1fr_20rem]">
+    <div>
+      <p class="chip">Étape 1/2 — Vos informations</p>
+      <h1 class="mt-5 text-balance font-display text-3xl font-bold text-(--color-paper) sm:text-4xl">Finaliser la commande</h1>
+      <p class="mt-4 max-w-xl text-balance leading-relaxed text-(--color-mist)">
+        Ce prix correspond à la jante <strong class="text-(--color-paper)">{item.code}</strong> telle quelle, dans la configuration choisie. Renseignez votre plaque d'immatriculation : elle nous permet de retrouver l'entraxe et le déport exacts de votre véhicule avant fabrication.
+      </p>
+
+      <form method="POST" action="/api/commande" class="mt-10 space-y-8">
+        <input type="hidden" name="code" value={item.code} />
+        <input type="hidden" name="family" value={item.family} />
+        <input type="hidden" name="slug" value={item.slug} />
+        <input type="hidden" name="sizeLabel" value={sizeLabel} />
+        <input type="hidden" name="widthLabel" value={widthLabel} />
+        <input type="hidden" name="finishLabel" value={finishLabel} />
+        <input type="hidden" name="quantity" value={quantity} />
+        <input type="hidden" name="unitPriceHt" value={unitPriceHt.toFixed(2)} />
+
+        <div class="card-mf p-6">
+          <h2 class="font-display text-lg font-bold text-(--color-paper)">Véhicule</h2>
+          <div class="mt-4">
+            <label for="plaque" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Plaque d'immatriculation</label>
+            <input required id="plaque" name="plaque" type="text" placeholder="AA-123-AA" class="w-full max-w-xs rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm uppercase text-(--color-paper) placeholder:text-(--color-fog) focus:border-(--color-forge-500) focus:outline-none" />
+            <p class="mt-2 text-xs text-(--color-fog)">Utilisée uniquement pour déterminer l'entraxe et le déport compatibles — jamais partagée.</p>
+          </div>
+        </div>
+
+        <div class="card-mf p-6">
+          <h2 class="font-display text-lg font-bold text-(--color-paper)">Coordonnées</h2>
+          <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div>
+              <label for="nom" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Nom complet</label>
+              <input required id="nom" name="nom" type="text" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) focus:border-(--color-forge-500) focus:outline-none" />
+            </div>
+            <div>
+              <label for="email" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Email</label>
+              <input required id="email" name="email" type="email" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) focus:border-(--color-forge-500) focus:outline-none" />
+            </div>
+            <div>
+              <label for="telephone" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Téléphone</label>
+              <input required id="telephone" name="telephone" type="tel" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) focus:border-(--color-forge-500) focus:outline-none" />
+            </div>
+          </div>
+        </div>
+
+        <div class="card-mf p-6">
+          <h2 class="font-display text-lg font-bold text-(--color-paper)">Adresse de livraison</h2>
+          <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div class="sm:col-span-2">
+              <label for="liv_rue" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Rue</label>
+              <input required id="liv_rue" name="livraison_rue" type="text" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) focus:border-(--color-forge-500) focus:outline-none" />
+            </div>
+            <div class="sm:col-span-2">
+              <label for="liv_complement" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Complément (optionnel)</label>
+              <input id="liv_complement" name="livraison_complement" type="text" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) focus:border-(--color-forge-500) focus:outline-none" />
+            </div>
+            <div>
+              <label for="liv_cp" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Code postal</label>
+              <input required id="liv_cp" name="livraison_code_postal" type="text" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) focus:border-(--color-forge-500) focus:outline-none" />
+            </div>
+            <div>
+              <label for="liv_ville" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Ville</label>
+              <input required id="liv_ville" name="livraison_ville" type="text" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) focus:border-(--color-forge-500) focus:outline-none" />
+            </div>
+            <div class="sm:col-span-2">
+              <label for="liv_pays" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Pays</label>
+              <input required id="liv_pays" name="livraison_pays" type="text" value="France" class="w-full max-w-xs rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) focus:border-(--color-forge-500) focus:outline-none" />
+            </div>
+          </div>
+        </div>
+
+        <div class="card-mf p-6">
+          <h2 class="font-display text-lg font-bold text-(--color-paper)">Adresse de facturation</h2>
+          <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div class="sm:col-span-2">
+              <label for="fac_rue" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Rue</label>
+              <input required id="fac_rue" name="facturation_rue" type="text" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) focus:border-(--color-forge-500) focus:outline-none" />
+            </div>
+            <div class="sm:col-span-2">
+              <label for="fac_complement" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Complément (optionnel)</label>
+              <input id="fac_complement" name="facturation_complement" type="text" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) focus:border-(--color-forge-500) focus:outline-none" />
+            </div>
+            <div>
+              <label for="fac_cp" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Code postal</label>
+              <input required id="fac_cp" name="facturation_code_postal" type="text" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) focus:border-(--color-forge-500) focus:outline-none" />
+            </div>
+            <div>
+              <label for="fac_ville" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Ville</label>
+              <input required id="fac_ville" name="facturation_ville" type="text" class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) focus:border-(--color-forge-500) focus:outline-none" />
+            </div>
+            <div class="sm:col-span-2">
+              <label for="fac_pays" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Pays</label>
+              <input required id="fac_pays" name="facturation_pays" type="text" value="France" class="w-full max-w-xs rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) focus:border-(--color-forge-500) focus:outline-none" />
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-forge w-full sm:w-auto">Continuer vers le paiement</button>
+      </form>
+    </div>
+
+    <aside class="lg:sticky lg:top-28 lg:h-fit">
+      <div class="card-mf p-6">
+        <p class="text-xs uppercase tracking-widest text-(--color-fog)">Récapitulatif</p>
+        <div class="mt-4 overflow-hidden rounded-md border border-(--color-line)">
+          <img src={item.image} alt={`Jante ${item.code}`} class="aspect-square w-full object-cover" />
+        </div>
+        <p class="mt-4 font-display text-lg font-bold text-(--color-paper)">{item.code}</p>
+        <p class="text-sm text-(--color-mist)">{family?.short}</p>
+        <dl class="mt-4 space-y-1.5 text-sm">
+          {sizeLabel && <div class="flex justify-between"><dt class="text-(--color-fog)">Diamètre</dt><dd class="text-(--color-paper)">{sizeLabel}</dd></div>}
+          {widthLabel && <div class="flex justify-between"><dt class="text-(--color-fog)">Largeur</dt><dd class="text-(--color-paper)">{widthLabel}</dd></div>}
+          <div class="flex justify-between"><dt class="text-(--color-fog)">Finition</dt><dd class="text-(--color-paper)">{finishLabel}</dd></div>
+          <div class="flex justify-between"><dt class="text-(--color-fog)">Quantité</dt><dd class="text-(--color-paper)">{quantity}</dd></div>
+        </dl>
+        <div class="mt-5 border-t border-(--color-line) pt-4">
+          <p class="flex justify-between font-display text-xl font-bold text-(--color-paper)">
+            <span>Total HT</span>
+            <span>{totalHt.toFixed(0)} €</span>
+          </p>
+        </div>
+      </div>
+    </aside>
+  </section>
+</Layout>

@@ -1,0 +1,75 @@
+---
+export const prerender = false;
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import { sql } from "../../../lib/db.js";
+
+const statutFilter = Astro.url.searchParams.get("statut") || "";
+
+let commandes = [];
+let dbError = null;
+try {
+  commandes = statutFilter
+    ? await sql`select * from commandes where statut = ${statutFilter} order by created_at desc`
+    : await sql`select * from commandes order by created_at desc`;
+} catch (err) {
+  dbError = err.message;
+}
+
+const STATUTS = [
+  { value: "en_attente_paiement", label: "En attente de paiement" },
+  { value: "payee", label: "Payée" },
+  { value: "expediee", label: "Expédiée" },
+  { value: "annulee", label: "Annulée" },
+];
+
+function statutLabel(v) {
+  return STATUTS.find((s) => s.value === v)?.label || v;
+}
+---
+
+<AdminLayout title="Commandes">
+  <h1>Commandes</h1>
+  <p class="muted" style="margin-top:-.5rem">Commandes passées depuis le catalogue (hors projets sur-mesure, gérés via le configurateur).</p>
+  {dbError && <div class="notice">{dbError}</div>}
+
+  {!dbError && (
+    <>
+      <div class="card" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
+        <a href="/admin/commandes" class:list={["btn", !statutFilter ? "" : "btn-outline"]}>Toutes ({commandes.length})</a>
+        {STATUTS.map((s) => (
+          <a href={`/admin/commandes?statut=${s.value}`} class:list={["btn", statutFilter === s.value ? "" : "btn-outline"]}>{s.label}</a>
+        ))}
+      </div>
+
+      <div class="card">
+        {commandes.length === 0 && <p class="muted">Aucune commande pour l'instant.</p>}
+        {commandes.length > 0 && (
+          <table>
+            <thead>
+              <tr>
+                <th>Référence</th>
+                <th>Date</th>
+                <th>Client</th>
+                <th>Jante</th>
+                <th>Total HT</th>
+                <th>Statut</th>
+              </tr>
+            </thead>
+            <tbody>
+              {commandes.map((c) => (
+                <tr>
+                  <td><a href={`/admin/commandes/${c.id}`} style="color:#ff7a45">{c.reference}</a></td>
+                  <td>{new Date(c.created_at).toLocaleDateString("fr-FR")}</td>
+                  <td>{c.client_nom}</td>
+                  <td>{c.item_code} {c.quantite > 1 ? `×${c.quantite}` : ""}</td>
+                  <td>{Number(c.total_ht).toFixed(0)} €</td>
+                  <td>{statutLabel(c.statut)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </>
+  )}
+</AdminLayout>
