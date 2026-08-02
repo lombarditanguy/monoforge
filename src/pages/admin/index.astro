@@ -13,6 +13,15 @@ try {
 } catch (err) {
   dbError = err.message;
 }
+
+let itemPricesMissing = false;
+if (!dbError) {
+  try {
+    await sql`select 1 from item_prices limit 1`;
+  } catch {
+    itemPricesMissing = true;
+  }
+}
 ---
 
 <AdminLayout title="Tableau de bord">
@@ -22,7 +31,15 @@ try {
     <div class="notice">
       <strong>Base de données non connectée.</strong> {dbError}
       <br />
-      Va sur <code>/admin/setup</code> une fois la base activée côté Vercel pour initialiser les tables.
+      Va sur <a href="/admin/setup" style="color:#ff7a45">/admin/setup</a> une fois la base activée côté Vercel pour initialiser les tables.
+    </div>
+  )}
+
+  {itemPricesMissing && (
+    <div class="notice">
+      <strong>Prix par jante pas encore initialisés.</strong> Les fiches produit affichent "sur devis" tant que ce n'est pas fait.
+      <br />
+      Va sur <a href="/admin/setup" style="color:#ff7a45">/admin/setup</a> et clique sur "Initialiser / vérifier les tables" — ça remplit automatiquement les 457 prix d'achat depuis le catalogue, sans risque pour les données existantes.
     </div>
   )}
 
@@ -49,6 +66,8 @@ try {
       <a class="btn" href="/admin/factures/nouveau">Nouvelle facture</a>
       <a class="btn btn-outline" href="/admin/clients/nouveau">Nouveau client</a>
       <a class="btn btn-outline" href="/admin/prix">Gérer les prix</a>
+      <a class="btn btn-outline" href="/admin/prix-jantes">Prix par jante</a>
+      <a class="btn btn-outline" href="/admin/setup">Initialiser / vérifier les tables</a>
     </div>
   </div>
 </AdminLayout>
