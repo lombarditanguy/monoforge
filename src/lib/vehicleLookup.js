@@ -27,7 +27,7 @@ export function isPlateLookupConfigured() {
 }
 
 export function isFitmentLookupConfigured() {
-  return Boolean(process.env.WHEELSIZE_API_KEY);
+  return Boolean(process.env.VDIM_API_KEY || process.env.WHEELSIZE_API_KEY);
 }
 
 export async function lookupVehicleByPlate(plaque) {
@@ -84,11 +84,94 @@ export function fitmentFromTable(marque, modele, annee) {
   };
 }
 
+// Cherche récursivement une valeur dans une réponse JSON dont on ne connaît
+// pas la structure exacte, en testant plusieurs noms de champs plausibles.
+// Les fournisseurs de fitment n'exposent pas tous la même arborescence, et
+// leurs docs sont inaccessibles au scraping : on reste tolérant, et la
+// réponse brute est de toute façon conservée pour ajuster au premier appel réel.
+function deepFind(node, keys, depth = 0) {
+  if (!node || typeof node !== "object" || depth > 6) return null;
+  if (Array.isArray(node)) {
+    for (const entry of node) {
+      const found = deepFind(entry, keys, depth + 1);
+      if (found !== null) return found;
+    }
+    return null;
+  }
+  for (const [k, v] of Object.entries(node)) {
+    const normalized = k.toLowerCase().replace(/[^a-z]/g, "");
+    if (keys.includes(normalized) && v !== null && v !== "" && typeof v !== "object") {
+      return v;
+    }
+  }
+  for (const v of Object.values(node)) {
+    const found = deepFind(v, keys, depth + 1);
+    if (found !== null) return found;
+  }
+  return null;
+}
+
+// tire.vdim.app — authentification par en-tête x-api-key.
+// L'endpoint exact des données de jante n'a pas pu être vérifié depuis leur
+// documentation (site protégé contre le scraping) : on essaie les chemins les
+// plus probables l'un après l'autre et on garde le premier qui répond.
+const VDIM_FITMENT_PATHS = [
+  "/api/v1/by_vehicle/wheelfitment/",
+  "/api/v1/by_vehicle/wheel_fitment/",
+  "/api/v1/by_vehicle/wheelsize/",
+  "/api/v1/by_vehicle/tiresize/",
+];
+
+export async function lookupFitmentVdim(marque, modele, annee) {
+  const apiKey = process.env.VDIM_API_KEY;
+  if (!apiKey) throw new Error("VDIM_API_KEY manquante.");
+  if (!marque) throw new Error("Marque manquante — impossible de chercher l'entraxe/déport.");
+
+  const attempts = [];
+  for (const path of VDIM_FITMENT_PATHS) {
+    const url = new URL(path, "https://tire.vdim.app");
+    url.searchParams.set("make", marque);
+    if (modele) url.searchParams.set("model", modele);
+    if (annee) url.searchParams.set("year", annee);
+
+    let res;
+    try {
+      res = await fetch(url, { headers: { "x-api-key": apiKey } });
+    } catch (err) {
+      attempts.push(`${path} -> ${err.message}`);
+      continue;
+    }
+    if (!res.ok) {
+      attempts.push(`${path} -> HTTP ${res.status}`);
+      continue;
+    }
+    const raw = await res.json().catch(() => null);
+    if (!raw) {
+      attempts.push(`${path} -> réponse illisible`);
+      continue;
+    }
+
+    const entraxe = deepFind(raw, ["boltpattern", "pcd", "boltcircle", "entraxe"]);
+    const deport = deepFind(raw, ["offset", "et", "rimoffset", "deport"]);
+    return {
+      entraxe: entraxe ? String(entraxe) : null,
+      deport: deport ? String(deport) : null,
+      raw: { endpoint: path, response: raw },
+    };
+  }
+
+  throw new Error(`Aucun endpoint tire.vdim.app n'a répondu (${attempts.join(" ; ")}).`);
+}
+
 export async function lookupFitment(marque, modele, annee) {
+  if (process.env.VDIM_API_KEY) {
+    return lookupFitmentVdim(marque, modele, annee);
+  }
+
   const userKey = process.env.WHEELSIZE_API_KEY;
   if (!userKey) {
     throw new Error(
-      "Recherche entraxe/déport non configurée : ajoute WHEELSIZE_API_KEY dans les variables d'environnement Vercel, puis redéploie."
+      "Recherche entraxe/déport non configurée : ajoute VDIM_API_KEY (tire.vdim.app) ou WHEELSIZE_API_KEY dans les variables d'environnement Vercel, puis redéploie."
     );
   }
   if (!marque || !modele) {
