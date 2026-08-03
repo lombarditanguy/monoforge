@@ -46,6 +46,21 @@ const minSizeCoeff = hasPricing ? Math.min(...sizesData.map((s) => s.coefficient
 const minWidthCoeff = hasPricing ? Math.min(...widthsData.map((w) => w.coefficient)) : 1;
 const startingPrice = hasPricing ? basePrice * minSizeCoeff * minWidthCoeff : 0;
 
+let relatedWithPrice = related.map((w) => ({ ...w, startingPrice: 0 }));
+if (hasPricing && related.length > 0) {
+  try {
+    const relatedCodes = related.map((w) => w.code);
+    const relatedPriceRows = await sql`select code, prix_achat_ht from item_prices where code = any(${relatedCodes})`;
+    const relatedAchatByCode = new Map(relatedPriceRows.map((r) => [r.code, Number(r.prix_achat_ht || 0)]));
+    relatedWithPrice = related.map((w) => ({
+      ...w,
+      startingPrice: (relatedAchatByCode.get(w.code) || 0) * coefficientRevente * minSizeCoeff * minWidthCoeff,
+    }));
+  } catch {
+    // Pas de prix pour les références liées : les cartes retombent sur "sur devis".
+  }
+}
+
 Astro.response.headers.set("Cache-Control", "public, s-maxage=600, stale-while-revalidate=86400");
 
 const ld = [
@@ -176,7 +191,7 @@ const ld = [
     <p class="section-label">Continuer d'explorer</p>
     <h2 class="mt-4 font-display text-2xl font-bold text-(--color-paper)">Autres références {family.short}</h2>
     <div class="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-      {related.map((w) => <WheelPhotoCard item={w} startingPrice={startingPrice} />)}
+      {relatedWithPrice.map((w) => <WheelPhotoCard item={w} startingPrice={w.startingPrice} />)}
     </div>
   </section>
 

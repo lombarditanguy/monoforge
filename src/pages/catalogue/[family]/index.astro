@@ -13,19 +13,26 @@ const family = FAMILIES.find((f) => f.slug === familySlug);
 if (!family) return Astro.redirect("/catalogue", 302);
 const items = itemsForFamily(family.slug);
 
+let itemsWithPrice = items.map((i) => ({ ...i, startingPrice: 0 }));
 let startingPrice = 0;
 try {
   const codes = items.map((i) => i.code);
   const [priceRow] = await sql`select coefficient_revente from price_bases where famille = ${family.slug} limit 1`;
-  const [minItem] = await sql`select min(prix_achat_ht) as min_achat from item_prices where code = any(${codes})`;
+  const priceRows = await sql`select code, prix_achat_ht from item_prices where code = any(${codes})`;
   const [minSize] = await sql`select min(coefficient) as min_coeff from size_coefficients`;
   const [minWidth] = await sql`select min(coefficient) as min_coeff from width_coefficients`;
-  if (priceRow && minItem?.min_achat && minSize?.min_coeff) {
-    startingPrice =
-      Number(minItem.min_achat || 0) *
-      Number(priceRow.coefficient_revente || 0) *
-      Number(minSize.min_coeff) *
-      Number(minWidth?.min_coeff || 1);
+  const coefficient = Number(priceRow?.coefficient_revente || 0);
+  const sizeCoeff = Number(minSize?.min_coeff || 0);
+  const widthCoeff = Number(minWidth?.min_coeff || 1);
+  const achatByCode = new Map(priceRows.map((r) => [r.code, Number(r.prix_achat_ht || 0)]));
+
+  if (coefficient > 0 && sizeCoeff > 0) {
+    itemsWithPrice = items.map((i) => ({
+      ...i,
+      startingPrice: (achatByCode.get(i.code) || 0) * coefficient * sizeCoeff * widthCoeff,
+    }));
+    const positivePrices = itemsWithPrice.map((i) => i.startingPrice).filter((p) => p > 0);
+    startingPrice = positivePrices.length > 0 ? Math.min(...positivePrices) : 0;
   }
 } catch {
   // Pas de base connectée / pas encore configurée : pas de prix affiché.
@@ -89,7 +96,7 @@ const availableGroups = STYLE_GROUPS.map((g) => ({
     )}
     <p id="mf-catalog-count" class="mb-4 text-sm text-(--color-fog)">{items.length} références affichées</p>
     <div id="mf-catalog-grid" class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-      {items.map((item) => <WheelPhotoCard item={item} startingPrice={startingPrice} />)}
+      {itemsWithPrice.map((item) => <WheelPhotoCard item={item} startingPrice={item.startingPrice} />)}
     </div>
     <p id="mf-catalog-empty" class="hidden py-16 text-center text-sm text-(--color-fog)">Aucune référence dans ce style pour l'instant.</p>
   </section>
