@@ -15,7 +15,21 @@ function jsonError(message, status = 400) {
   });
 }
 
-export async function POST({ request }) {
+export async function POST(context) {
+  // Toute erreur non prévue doit ressortir en JSON lisible : sans ce filet, la
+  // fonction meurt avec un corps vide et l'admin ne voit qu'une erreur de
+  // parsing JSON côté navigateur, sans aucune indication de la cause réelle.
+  try {
+    return await handlePost(context);
+  } catch (err) {
+    const message = /column .* does not exist/i.test(err.message)
+      ? `La base n'est pas à jour (${err.message}). Ouvre /admin/setup et clique sur « Initialiser / vérifier les tables ».`
+      : `Erreur inattendue : ${err.message}`;
+    return jsonError(message, 500);
+  }
+}
+
+async function handlePost({ request }) {
   const body = await request.json().catch(() => null);
   const id = Number(body?.id);
   if (!id) return jsonError("Commande invalide.");

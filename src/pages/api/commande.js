@@ -32,12 +32,14 @@ export async function POST({ request, redirect }) {
     insert into commandes (
       reference, statut, item_code, item_family, taille, largeur, finition, quantite,
       prix_unitaire_ht, total_ht, plaque_immatriculation,
+      vehicule_marque, vehicule_modele,
       client_nom, client_email, client_telephone,
       livraison_rue, livraison_complement, livraison_code_postal, livraison_ville, livraison_pays,
       facturation_rue, facturation_complement, facturation_code_postal, facturation_ville, facturation_pays
     ) values (
       ${reference}, 'en_attente_paiement', ${code}, ${family}, ${sizeLabel}, ${widthLabel}, ${finishLabel}, ${quantity},
       ${unitPriceHt}, ${totalHt}, ${plaque},
+      ${get("vehicule_marque") || null}, ${get("vehicule_modele") || null},
       ${nom}, ${email}, ${telephone},
       ${get("livraison_rue")}, ${get("livraison_complement")}, ${get("livraison_code_postal")}, ${get("livraison_ville")}, ${get("livraison_pays") || "France"},
       ${get("facturation_rue")}, ${get("facturation_complement")}, ${get("facturation_code_postal")}, ${get("facturation_ville")}, ${get("facturation_pays") || "France"}

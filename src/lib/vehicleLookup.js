@@ -44,20 +44,46 @@ export async function lookupVehicleByPlate(plaque) {
   url.searchParams.set("country", "fr");
 
   const res = await fetch(url);
-  const raw = await res.json().catch(() => null);
+  const bodyText = await res.text();
+  let raw = null;
+  try {
+    raw = bodyText ? JSON.parse(bodyText) : null;
+  } catch {
+    raw = null;
+  }
   if (!res.ok || !raw) {
-    throw new Error(`Recherche plaque échouée (HTTP ${res.status}).`);
+    // On remonte un extrait du corps réel : c'est ce qui permet de comprendre
+    // un refus du fournisseur (jeton, quota, format) sans avoir à deviner.
+    const extrait = bodyText ? ` — réponse : ${bodyText.slice(0, 200)}` : " — réponse vide";
+    throw new Error(`Recherche plaque échouée (HTTP ${res.status})${extrait}`);
   }
 
-  const marque = firstDefined(raw.marque, raw.make, raw.brand, raw?.data?.marque, raw?.data?.make);
-  const modele = firstDefined(raw.modele, raw.model, raw?.data?.modele, raw?.data?.model);
-  const dateMiseEnCirculation = firstDefined(
-    raw.date_mise_en_circulation,
-    raw.circulation_date,
-    raw.date_1ere_immat,
-    raw?.data?.date_mise_en_circulation
-  );
-  const annee = dateMiseEnCirculation ? String(dateMiseEnCirculation).slice(0, 4) : null;
+  // La structure exacte de la réponse n'est pas documentée publiquement : on
+  // cherche les champs par nom à n'importe quelle profondeur plutôt que de
+  // parier sur une arborescence précise.
+  const marque = deepFind(raw, ["marque", "make", "brand", "marquevehicule", "carmake"]);
+  const modele = deepFind(raw, ["modele", "model", "modelevehicule", "carmodel", "version"]);
+  const dateMiseEnCirculation = deepFind(raw, [
+    "datemiseencirculation",
+    "circulationdate",
+    "date1ereimmat",
+    "datepremiereimmatriculation",
+    "dateimmat",
+    "year",
+    "annee",
+  ]);
+  const anneeMatch = dateMiseEnCirculation ? String(dateMiseEnCirculation).match(/(19|20)\d{2}/) : null;
+  const annee = anneeMatch ? anneeMatch[0] : null;
+
+  // Sans marque, la réponse contient presque toujours un message d'erreur du
+  // fournisseur (jeton invalide, crédits épuisés, plaque inconnue) : on le
+  // remonte tel quel plutôt que de laisser un « non identifié » opaque.
+  if (!marque) {
+    const providerMessage = deepFind(raw, ["error", "message", "erreur", "status", "detail"]);
+    if (providerMessage) {
+      throw new Error(`Réponse du fournisseur de plaques : ${providerMessage}`);
+    }
+  }
 
   return { marque, modele, annee, raw };
 }

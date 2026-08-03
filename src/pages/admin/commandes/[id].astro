@@ -65,6 +65,14 @@ const STATUTS = [
         <table>
           <tbody>
             <tr><th>Plaque d'immatriculation</th><td>{commande.plaque_immatriculation || "—"}</td></tr>
+            <tr>
+              <th>Véhicule annoncé par le client</th>
+              <td>
+                {commande.vehicule_marque
+                  ? `${commande.vehicule_marque} ${commande.vehicule_modele || ""}`.trim()
+                  : "— (non vérifié à la commande)"}
+              </td>
+            </tr>
           </tbody>
         </table>
 
@@ -166,8 +174,20 @@ const STATUTS = [
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id: commandeId }),
         });
-        const json = await res.json();
-        if (!res.ok) throw new Error(json.error || "Erreur");
+        // Une fonction qui plante peut renvoyer un corps vide ou du HTML :
+        // on lit d'abord en texte pour toujours afficher quelque chose d'utile.
+        const body = await res.text();
+        let json = null;
+        try {
+          json = body ? JSON.parse(body) : null;
+        } catch {
+          json = null;
+        }
+        if (!res.ok || !json) {
+          throw new Error(
+            json?.error || (body ? `Réponse inattendue du serveur (HTTP ${res.status}).` : `Le serveur n'a rien renvoyé (HTTP ${res.status}) — vérifie /admin/setup.`)
+          );
+        }
 
         const marqueInput = document.getElementById("vehicule_marque");
         const modeleInput = document.getElementById("vehicule_modele");

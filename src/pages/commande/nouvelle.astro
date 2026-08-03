@@ -43,8 +43,27 @@ if (unitPriceHt <= 0) return Astro.redirect(`/catalogue/${item.family}/${item.sl
           <h2 class="font-display text-lg font-bold text-(--color-paper)">Véhicule</h2>
           <div class="mt-4">
             <label for="plaque" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Plaque d'immatriculation</label>
-            <input required id="plaque" name="plaque" type="text" placeholder="AA-123-AA" class="w-full max-w-xs rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm uppercase text-(--color-paper) placeholder:text-(--color-fog) focus:border-(--color-forge-500) focus:outline-none" />
-            <p class="mt-2 text-xs text-(--color-fog)">Utilisée uniquement pour déterminer l'entraxe et le déport compatibles — jamais partagée.</p>
+            <div class="flex flex-wrap items-start gap-3">
+              <input required id="plaque" name="plaque" type="text" placeholder="AA-123-AA" autocomplete="off" class="w-full max-w-xs rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm uppercase text-(--color-paper) placeholder:text-(--color-fog) focus:border-(--color-forge-500) focus:outline-none" />
+              <button type="button" id="mf-plaque-btn" class="btn btn-outline whitespace-nowrap">Vérifier mon véhicule</button>
+            </div>
+            <p class="mt-2 text-xs text-(--color-fog)">
+              Format attendu : <strong class="text-(--color-mist)">AA-123-AA</strong> — ou <strong class="text-(--color-mist)">123 ABC 45</strong> pour les plaques d'avant 2009.
+              Elle nous sert uniquement à déterminer l'entraxe et le déport compatibles, et n'est jamais partagée.
+            </p>
+
+            <div id="mf-plaque-result" class="mt-4 hidden rounded border border-(--color-line) bg-(--color-surface-2) p-4">
+              <p class="text-xs uppercase tracking-widest text-(--color-fog)">Véhicule identifié</p>
+              <p id="mf-plaque-vehicule" class="mt-1 font-display text-lg font-bold text-(--color-paper)"></p>
+              <p id="mf-plaque-message" class="mt-1 text-xs text-(--color-fog)"></p>
+              <label class="mt-3 flex items-start gap-2.5 text-sm text-(--color-mist)">
+                <input type="checkbox" id="mf-plaque-confirm" name="vehicule_confirme" value="1" class="mt-0.5 h-4 w-4 shrink-0 accent-(--color-forge-500)" />
+                <span>Je confirme que c'est bien mon véhicule.</span>
+              </label>
+            </div>
+
+            <input type="hidden" id="mf-vehicule-marque" name="vehicule_marque" />
+            <input type="hidden" id="mf-vehicule-modele" name="vehicule_modele" />
           </div>
         </div>
 
@@ -145,4 +164,65 @@ if (unitPriceHt <= 0) return Astro.redirect(`/catalogue/${item.family}/${item.sl
       </div>
     </aside>
   </section>
+
+  <script>
+    const plaqueInput = document.getElementById("plaque") as HTMLInputElement | null;
+    const plaqueBtn = document.getElementById("mf-plaque-btn");
+    const resultBox = document.getElementById("mf-plaque-result");
+    const vehiculeEl = document.getElementById("mf-plaque-vehicule");
+    const messageEl = document.getElementById("mf-plaque-message");
+    const confirmBox = document.getElementById("mf-plaque-confirm") as HTMLInputElement | null;
+    const hiddenMarque = document.getElementById("mf-vehicule-marque") as HTMLInputElement | null;
+    const hiddenModele = document.getElementById("mf-vehicule-modele") as HTMLInputElement | null;
+
+    function showBox(titre: string, message: string, withConfirm: boolean) {
+      if (!resultBox || !vehiculeEl || !messageEl) return;
+      resultBox.classList.remove("hidden");
+      vehiculeEl.textContent = titre;
+      messageEl.textContent = message;
+      const label = confirmBox?.closest("label");
+      if (label) label.style.display = withConfirm ? "" : "none";
+      if (!withConfirm && confirmBox) confirmBox.checked = false;
+    }
+
+    plaqueBtn?.addEventListener("click", async () => {
+      const plaque = (plaqueInput?.value || "").trim();
+      if (!plaque) {
+        showBox("—", "Renseignez d'abord votre plaque d'immatriculation.", false);
+        return;
+      }
+      plaqueBtn.setAttribute("disabled", "true");
+      showBox("Recherche...", "Nous identifions votre véhicule.", false);
+      try {
+        const res = await fetch("/api/plaque", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ plaque }),
+        });
+        const json = await res.json();
+        if (!res.ok) {
+          showBox("Non identifié", json.error || "Vérification impossible.", false);
+          if (hiddenMarque) hiddenMarque.value = "";
+          if (hiddenModele) hiddenModele.value = "";
+          return;
+        }
+        const nom = [json.marque, json.modele, json.annee].filter(Boolean).join(" ");
+        showBox(nom, "Si ce n'est pas votre véhicule, corrigez la plaque et relancez la vérification.", true);
+        if (hiddenMarque) hiddenMarque.value = json.marque || "";
+        if (hiddenModele) hiddenModele.value = json.modele || "";
+      } catch {
+        showBox("Non identifié", "Vérification impossible pour le moment. Vous pouvez continuer, nous confirmerons avec vous.", false);
+      } finally {
+        plaqueBtn.removeAttribute("disabled");
+      }
+    });
+
+    // Une correction de plaque invalide la confirmation précédente.
+    plaqueInput?.addEventListener("input", () => {
+      if (confirmBox) confirmBox.checked = false;
+      if (hiddenMarque) hiddenMarque.value = "";
+      if (hiddenModele) hiddenModele.value = "";
+      resultBox?.classList.add("hidden");
+    });
+  </script>
 </Layout>
