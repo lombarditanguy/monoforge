@@ -130,8 +130,14 @@ const ld = [
                 </select>
               </div>
               <div>
-                <label for="mf-width-select" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Largeur</label>
+                <label for="mf-width-select" id="mf-width-label" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Largeur</label>
                 <select id="mf-width-select" class="w-full rounded-md border border-(--color-line) bg-(--color-surface) px-3 py-2 text-sm text-(--color-paper)">
+                  {widthsData.map((w) => <option value={w.coefficient} data-label={w.largeur}>{w.largeur}</option>)}
+                </select>
+              </div>
+              <div id="mf-width-rear-row" class="hidden">
+                <label for="mf-width-rear-select" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Largeur (arrière)</label>
+                <select id="mf-width-rear-select" class="w-full rounded-md border border-(--color-line) bg-(--color-surface) px-3 py-2 text-sm text-(--color-paper)">
                   {widthsData.map((w) => <option value={w.coefficient} data-label={w.largeur}>{w.largeur}</option>)}
                 </select>
               </div>
@@ -223,6 +229,9 @@ const ld = [
     <script define:vars={{ basePrice }}>
       const sizeSelect = document.getElementById("mf-size-select");
       const widthSelect = document.getElementById("mf-width-select");
+      const widthLabel = document.getElementById("mf-width-label");
+      const widthRearRow = document.getElementById("mf-width-rear-row");
+      const widthRearSelect = document.getElementById("mf-width-rear-select");
       const finishSelect = document.getElementById("mf-finish-select");
       const qtySelect = document.getElementById("mf-qty-select");
       const display = document.getElementById("mf-price-display");
@@ -237,17 +246,37 @@ const ld = [
         const widthCoeff = Number(widthSelect?.value || 1);
         const finishSupplement = Number(finishSelect?.value || 0);
         const qty = Number(qtySelect?.value || 1);
-        const unitPrice = basePrice * sizeCoeff * widthCoeff + finishSupplement;
-        const total = unitPrice * qty;
+        const staggered = qty === 4;
+
+        if (widthRearRow) widthRearRow.classList.toggle("hidden", !staggered);
+        if (widthLabel) widthLabel.textContent = staggered ? "Largeur (avant)" : "Largeur";
+
+        const frontUnit = basePrice * sizeCoeff * widthCoeff + finishSupplement;
+        const frontLabel = widthSelect?.selectedOptions[0]?.dataset.label || "";
+
+        let total = frontUnit * qty;
+        let unitPrice = frontUnit;
+        let widthLabelForForm = frontLabel;
+
+        if (staggered) {
+          const widthRearCoeff = Number(widthRearSelect?.value || widthCoeff);
+          const rearUnit = basePrice * sizeCoeff * widthRearCoeff + finishSupplement;
+          const rearLabel = widthRearSelect?.selectedOptions[0]?.dataset.label || "";
+          total = 2 * frontUnit + 2 * rearUnit;
+          unitPrice = total / qty;
+          widthLabelForForm = rearLabel === frontLabel ? frontLabel : `${frontLabel} avant / ${rearLabel} arrière`;
+        }
+
         if (display) display.textContent = `${total.toFixed(0)} € HT (${qty} jante${qty > 1 ? "s" : ""})`;
         if (hiddenSizeLabel) hiddenSizeLabel.value = sizeSelect?.selectedOptions[0]?.dataset.label || "";
-        if (hiddenWidthLabel) hiddenWidthLabel.value = widthSelect?.selectedOptions[0]?.dataset.label || "";
+        if (hiddenWidthLabel) hiddenWidthLabel.value = widthLabelForForm;
         if (hiddenFinishLabel) hiddenFinishLabel.value = finishSelect?.selectedOptions[0]?.dataset.label || "";
         if (hiddenQty) hiddenQty.value = String(qty);
         if (hiddenUnitPrice) hiddenUnitPrice.value = unitPrice.toFixed(2);
       }
       sizeSelect?.addEventListener("change", recompute);
       widthSelect?.addEventListener("change", recompute);
+      widthRearSelect?.addEventListener("change", recompute);
       finishSelect?.addEventListener("change", recompute);
       qtySelect?.addEventListener("change", recompute);
       recompute();
