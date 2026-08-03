@@ -96,9 +96,10 @@ export async function lookupVehicleByPlate(plaque) {
   return { marque, modele, annee, raw };
 }
 
-// Entraxe depuis la table interne (gratuite, sans API). C'est la source par
-// défaut : le déport n'est volontairement pas déduit ici, c'est un paramètre
-// de conception défini avec le client sur une jante sur mesure.
+// Entraxe depuis la table interne (gratuite, sans API). Le déport n'y figure
+// pas : il dépend du véhicule ET de la largeur commandée, donc il vient de
+// l'API de fitment. Sur une commande catalogue c'est à nous de le déterminer
+// — l'acheteur prend la jante telle quelle et n'a pas à connaître cette cote.
 export function fitmentFromTable(marque, modele, annee) {
   const guess = guessBoltPattern(marque, modele, annee);
   if (!guess) {
@@ -162,63 +163,166 @@ function deepFind(node, keys, depth = 0) {
 }
 
 // tire.vdim.app — authentification par en-tête x-api-key.
-// L'endpoint exact des données de jante n'a pas pu être vérifié depuis leur
-// documentation (site protégé contre le scraping) : on essaie les chemins les
-// plus probables l'un après l'autre et on garde le premier qui répond.
-const VDIM_FITMENT_PATHS = [
-  "/api/v1/by_vehicle/wheelfitment/",
-  "/api/v1/by_vehicle/wheel_fitment/",
-  "/api/v1/by_vehicle/wheelsize/",
-  "/api/v1/by_vehicle/tiresize/",
-];
+//
+// Structure confirmée par leurs messages d'erreur : /api/v1/by_vehicle/{type}/
+// où {type} vaut make, model, trim ou tiresize. C'est un sélecteur en cascade,
+// et `tiresize` exige year + make + model + trim. On remonte donc la chaîne
+// avant de demander les cotes.
+//
+// Complication : auto-ways renvoie des libellés français ("MERCEDES",
+// "CLASSE E") là où ce fournisseur attend les siens ("Mercedes-Benz",
+// "E-Class"). Plutôt que de figer une table de traduction, on récupère ses
+// propres listes et on y cherche la meilleure correspondance.
+
+const VDIM_BASE = "https://tire.vdim.app";
+
+async function vdimGet(type, params, apiKey) {
+  const url = new URL(`/api/v1/by_vehicle/${type}/`, VDIM_BASE);
+  for (const [k, v] of Object.entries(params)) {
+    if (v !== null && v !== undefined && v !== "") url.searchParams.set(k, v);
+  }
+  let res;
+  try {
+    res = await fetch(url, { headers: { "x-api-key": apiKey } });
+  } catch (err) {
+    return { ok: false, status: 0, text: err.message, json: null };
+  }
+  const text = await res.text();
+  let json = null;
+  try {
+    json = text ? JSON.parse(text) : null;
+  } catch {
+    json = null;
+  }
+  return { ok: res.ok, status: res.status, text, json };
+}
+
+// Extrait une liste de libellés d'une réponse dont on ne connaît pas la forme
+// (tableau nu, {data:[...]}, [{name:...}], [{make:...}]...).
+function extractLabels(json) {
+  const seen = [];
+  const walk = (node, depth = 0) => {
+    if (node === null || depth > 5) return;
+    if (typeof node === "string") {
+      if (node.trim()) seen.push(node);
+      return;
+    }
+    if (Array.isArray(node)) {
+      for (const v of node) walk(v, depth + 1);
+      return;
+    }
+    if (typeof node === "object") {
+      for (const [k, v] of Object.entries(node)) {
+        if (typeof v === "string" && /^(name|label|make|model|trim|value|title)$/i.test(k)) {
+          if (v.trim()) seen.push(v);
+        } else {
+          walk(v, depth + 1);
+        }
+      }
+    }
+  };
+  walk(json);
+  return [...new Set(seen)];
+}
+
+// "CLASSE E" et "E-Class" désignent le même modèle : on compare les mots en
+// écartant les termes de gamme, qui changent de langue et de position.
+const FILLER = /^(classe|class|serie|series|the|de|le|la)$/i;
+
+function tokens(value) {
+  return String(value)
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toUpperCase()
+    .split(/[^A-Z0-9]+/)
+    .filter((t) => t && !FILLER.test(t));
+}
+
+function bestMatch(candidates, wanted) {
+  if (!wanted || candidates.length === 0) return null;
+  const flat = (v) => tokens(v).join("");
+  const target = flat(wanted);
+  if (!target) return null;
+
+  const exact = candidates.find((c) => flat(c) === target);
+  if (exact) return exact;
+
+  const contains = candidates.find((c) => {
+    const f = flat(c);
+    return f.startsWith(target) || target.startsWith(f) || f.includes(target) || target.includes(f);
+  });
+  if (contains) return contains;
+
+  // Dernier recours : tous les mots significatifs recherchés sont présents.
+  const wantedTokens = tokens(wanted);
+  return (
+    candidates.find((c) => {
+      const ct = tokens(c);
+      return wantedTokens.every((t) => ct.includes(t));
+    }) || null
+  );
+}
 
 export async function lookupFitmentVdim(marque, modele, annee) {
   const apiKey = process.env.VDIM_API_KEY;
   if (!apiKey) throw new Error("VDIM_API_KEY manquante.");
-  if (!marque) throw new Error("Marque manquante — impossible de chercher l'entraxe/déport.");
+  if (!marque) throw new Error("Marque manquante — impossible de chercher le déport.");
+  if (!annee) throw new Error("Année inconnue — requise par tire.vdim.app.");
 
-  const attempts = [];
-  for (const path of VDIM_FITMENT_PATHS) {
-    const url = new URL(path, "https://tire.vdim.app");
-    url.searchParams.set("make", marque);
-    if (modele) url.searchParams.set("model", modele);
-    if (annee) url.searchParams.set("year", annee);
+  const trace = [];
 
-    let res;
-    try {
-      res = await fetch(url, { headers: { "x-api-key": apiKey } });
-    } catch (err) {
-      attempts.push(`${path} -> ${err.message}`);
-      continue;
-    }
-    const bodyText = await res.text();
-    if (!res.ok) {
-      // Un 400 porte presque toujours le motif du refus (paramètre manquant,
-      // nom de champ attendu…) : sans le corps, on ne peut que deviner.
-      attempts.push(`${path} -> HTTP ${res.status} ${bodyText ? bodyText.slice(0, 300) : "(corps vide)"}`);
-      continue;
-    }
-    let raw = null;
-    try {
-      raw = bodyText ? JSON.parse(bodyText) : null;
-    } catch {
-      raw = null;
-    }
-    if (!raw) {
-      attempts.push(`${path} -> réponse illisible : ${bodyText.slice(0, 200)}`);
-      continue;
-    }
+  // 1) Marque : on aligne le libellé français sur celui du fournisseur.
+  const makesRes = await vdimGet("make", { year: annee }, apiKey);
+  if (!makesRes.ok) {
+    throw new Error(`Liste des marques refusée (HTTP ${makesRes.status} ${makesRes.text.slice(0, 200)})`);
+  }
+  const makes = extractLabels(makesRes.json);
+  const make = bestMatch(makes, marque);
+  if (!make) {
+    throw new Error(`Marque « ${marque} » absente de leur catalogue (${makes.length} marques connues).`);
+  }
+  trace.push(`make: ${marque} -> ${make}`);
 
-    const entraxe = deepFind(raw, ["boltpattern", "pcd", "boltcircle", "entraxe"]);
-    const deport = deepFind(raw, ["offset", "et", "rimoffset", "deport"]);
-    return {
-      entraxe: entraxe ? String(entraxe) : null,
-      deport: deport ? String(deport) : null,
-      raw: { endpoint: path, response: raw },
-    };
+  // 2) Modèle.
+  const modelsRes = await vdimGet("model", { make, year: annee }, apiKey);
+  if (!modelsRes.ok) {
+    throw new Error(`Liste des modèles refusée (HTTP ${modelsRes.status} ${modelsRes.text.slice(0, 200)})`);
+  }
+  const models = extractLabels(modelsRes.json);
+  const model = bestMatch(models, modele);
+  if (!model) {
+    throw new Error(
+      `Modèle « ${modele} » introuvable pour ${make} en ${annee}. Modèles proposés : ${models.slice(0, 12).join(", ")}`
+    );
+  }
+  trace.push(`model: ${modele} -> ${model}`);
+
+  // 3) Finition : obligatoire pour tiresize. Sans information sur la version
+  // exacte du véhicule, on prend la première proposée — l'admin corrige au
+  // besoin, la valeur retenue étant tracée dans la réponse brute.
+  const trimsRes = await vdimGet("trim", { make, model, year: annee }, apiKey);
+  if (!trimsRes.ok) {
+    throw new Error(`Liste des finitions refusée (HTTP ${trimsRes.status} ${trimsRes.text.slice(0, 200)})`);
+  }
+  const trims = extractLabels(trimsRes.json);
+  const trim = trims[0];
+  if (!trim) throw new Error(`Aucune finition listée pour ${make} ${model} ${annee}.`);
+  trace.push(`trim: ${trim}${trims.length > 1 ? ` (parmi ${trims.length})` : ""}`);
+
+  // 4) Cotes.
+  const specsRes = await vdimGet("tiresize", { year: annee, make, model, trim }, apiKey);
+  if (!specsRes.ok) {
+    throw new Error(`Cotes refusées (HTTP ${specsRes.status} ${specsRes.text.slice(0, 250)})`);
   }
 
-  throw new Error(`Aucun endpoint tire.vdim.app n'a répondu (${attempts.join(" ; ")}).`);
+  const entraxe = deepFind(specsRes.json, ["boltpattern", "pcd", "boltcircle", "entraxe"]);
+  const deport = deepFind(specsRes.json, ["offset", "rimoffset", "deport", "et"]);
+
+  return {
+    entraxe: entraxe ? String(entraxe) : null,
+    deport: deport ? String(deport) : null,
+    raw: { trace, trims, response: specsRes.json },
+  };
 }
 
 export async function lookupFitment(marque, modele, annee) {

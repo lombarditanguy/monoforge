@@ -11,9 +11,9 @@
 // d'ailleurs déjà la promesse faite sur le site (chaque jante est fabriquée
 // aux cotes confirmées du véhicule).
 //
-// Le déport (ET) n'est volontairement pas dans cette table : sur une jante
-// sur mesure c'est un paramètre de conception défini avec le client, pas une
-// caractéristique figée du véhicule.
+// Le déport (ET) n'est pas dans cette table : contrairement à l'entraxe il
+// varie selon la largeur montée, donc il ne se déduit pas de la seule
+// marque/modèle. Il vient de l'API de fitment.
 
 function normalize(value) {
   return String(value || "")

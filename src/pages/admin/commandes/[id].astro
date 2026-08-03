@@ -205,7 +205,8 @@ const STATUTS = [
           if (json.entraxe) parts.push(`Entraxe ${json.entraxe} (${origine}).`);
           if (json.confiance && json.confiance !== "haute") parts.push(`Fiabilité ${json.confiance} — à confirmer.`);
           if (json.fitmentError) parts.push(json.fitmentError);
-          parts.push("Le déport se définit avec le client. Vérifie puis enregistre.");
+          if (!json.deport) parts.push("Déport non récupéré — à renseigner ici avant fabrication.");
+          parts.push("Vérifie puis enregistre.");
           lookupStatus.textContent = parts.join(" ");
         }
       } catch (err) {
