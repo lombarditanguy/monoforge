@@ -62,7 +62,9 @@ export async function lookupVehicleByPlate(plaque) {
   // cherche les champs par nom à n'importe quelle profondeur plutôt que de
   // parier sur une arborescence précise.
   const marque = deepFind(raw, ["marque", "make", "brand", "marquevehicule", "carmake"]);
-  const modele = deepFind(raw, ["modele", "model", "modelevehicule", "carmodel", "version"]);
+  // Volontairement sans "version" : chez auto-ways c'est la finition
+  // ("E320 CDI ELEGANCE BA"), pas le modèle attendu par les bases de fitment.
+  const modele = deepFind(raw, ["modele", "model", "modelevehicule", "carmodel"]);
   const dateMiseEnCirculation = deepFind(raw, [
     "datemiseencirculation",
     "circulationdate",
@@ -79,7 +81,13 @@ export async function lookupVehicleByPlate(plaque) {
   // fournisseur (jeton invalide, crédits épuisés, plaque inconnue) : on le
   // remonte tel quel plutôt que de laisser un « non identifié » opaque.
   if (!marque) {
-    const providerMessage = deepFind(raw, ["error", "message", "erreur", "status", "detail"]);
+    // On cherche d'abord un libellé, puis seulement un champ d'état : sinon on
+    // remonterait le booléen `error: true` au lieu du message explicatif.
+    const providerMessage = [
+      deepFind(raw, ["message"]),
+      deepFind(raw, ["erreur", "detail", "description"]),
+      deepFind(raw, ["error", "status"]),
+    ].find((v) => typeof v === "string" && v.trim());
     if (providerMessage) {
       throw new Error(`Réponse du fournisseur de plaques : ${providerMessage}`);
     }
@@ -115,6 +123,16 @@ export function fitmentFromTable(marque, modele, annee) {
 // Les fournisseurs de fitment n'exposent pas tous la même arborescence, et
 // leurs docs sont inaccessibles au scraping : on reste tolérant, et la
 // réponse brute est de toute façon conservée pour ajuster au premier appel réel.
+// Les fournisseurs préfixent souvent leurs champs (auto-ways renvoie
+// AWN_marque, AWN_modele...). On accepte donc aussi les clés qui se
+// *terminent* par le nom cherché, en privilégiant toujours une
+// correspondance exacte quand il y en a une au même niveau.
+function usableValue(v) {
+  if (v === null || v === "" || typeof v === "object") return false;
+  // "INCONNU" est le marqueur d'absence de donnée chez auto-ways.
+  return String(v).toUpperCase() !== "INCONNU";
+}
+
 function deepFind(node, keys, depth = 0) {
   if (!node || typeof node !== "object" || depth > 6) return null;
   if (Array.isArray(node)) {
@@ -124,12 +142,18 @@ function deepFind(node, keys, depth = 0) {
     }
     return null;
   }
-  for (const [k, v] of Object.entries(node)) {
-    const normalized = k.toLowerCase().replace(/[^a-z]/g, "");
-    if (keys.includes(normalized) && v !== null && v !== "" && typeof v !== "object") {
-      return v;
-    }
+
+  const entries = Object.entries(node).filter(([, v]) => usableValue(v));
+  const normalize = (k) => k.toLowerCase().replace(/[^a-z]/g, "");
+
+  for (const [k, v] of entries) {
+    if (keys.includes(normalize(k))) return v;
   }
+  for (const [k, v] of entries) {
+    const n = normalize(k);
+    if (keys.some((key) => n.endsWith(key))) return v;
+  }
+
   for (const v of Object.values(node)) {
     const found = deepFind(v, keys, depth + 1);
     if (found !== null) return found;
