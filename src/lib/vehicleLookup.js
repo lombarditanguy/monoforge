@@ -13,6 +13,8 @@
 // (`raw`) pour que l'admin puisse vérifier/corriger à la main si un champ
 // n'est pas au bon endroit. À ajuster dès la première vraie recherche.
 
+import { guessBoltPattern } from "./boltPatterns.js";
+
 function firstDefined(...values) {
   for (const v of values) {
     if (v !== undefined && v !== null && v !== "") return v;
@@ -58,6 +60,28 @@ export async function lookupVehicleByPlate(plaque) {
   const annee = dateMiseEnCirculation ? String(dateMiseEnCirculation).slice(0, 4) : null;
 
   return { marque, modele, annee, raw };
+}
+
+// Entraxe depuis la table interne (gratuite, sans API). C'est la source par
+// défaut : le déport n'est volontairement pas déduit ici, c'est un paramètre
+// de conception défini avec le client sur une jante sur mesure.
+export function fitmentFromTable(marque, modele, annee) {
+  const guess = guessBoltPattern(marque, modele, annee);
+  if (!guess) {
+    return {
+      entraxe: null,
+      deport: null,
+      source: "table",
+      note: `Marque « ${marque || "?"} » absente de la table des entraxes — à renseigner à la main.`,
+    };
+  }
+  return {
+    entraxe: guess.entraxe,
+    deport: null,
+    source: "table",
+    confiance: guess.confiance,
+    note: guess.note,
+  };
 }
 
 export async function lookupFitment(marque, modele, annee) {

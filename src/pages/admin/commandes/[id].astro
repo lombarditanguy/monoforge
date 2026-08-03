@@ -179,9 +179,14 @@ const STATUTS = [
         if (json.deport && deportInput) deportInput.value = json.deport;
 
         if (lookupStatus) {
-          lookupStatus.textContent = json.fitmentError
-            ? `Véhicule trouvé (${json.marque || "?"} ${json.modele || "?"}) — ${json.fitmentError}`
-            : "Trouvé et rempli ci-dessous — vérifie puis enregistre.";
+          const vehicule = `${json.marque || "?"} ${json.modele || ""} ${json.annee || ""}`.trim();
+          const origine = json.source === "api" ? "via l'API" : "table interne";
+          const parts = [`Véhicule : ${vehicule}.`];
+          if (json.entraxe) parts.push(`Entraxe ${json.entraxe} (${origine}).`);
+          if (json.confiance && json.confiance !== "haute") parts.push(`Fiabilité ${json.confiance} — à confirmer.`);
+          if (json.fitmentError) parts.push(json.fitmentError);
+          parts.push("Le déport se définit avec le client. Vérifie puis enregistre.");
+          lookupStatus.textContent = parts.join(" ");
         }
       } catch (err) {
         if (lookupStatus) lookupStatus.textContent = `Erreur : ${err.message}`;

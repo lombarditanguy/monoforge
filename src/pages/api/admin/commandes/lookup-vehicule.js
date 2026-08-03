@@ -1,5 +1,10 @@
 import { sql } from "../../../../lib/db.js";
-import { lookupVehicleByPlate, lookupFitment } from "../../../../lib/vehicleLookup.js";
+import {
+  lookupVehicleByPlate,
+  lookupFitment,
+  fitmentFromTable,
+  isFitmentLookupConfigured,
+} from "../../../../lib/vehicleLookup.js";
 
 export const prerender = false;
 
@@ -26,16 +31,25 @@ export async function POST({ request }) {
     return jsonError(err.message, 500);
   }
 
-  let fitment = { entraxe: null, deport: null, raw: null };
+  // Entraxe : table interne par défaut (gratuite). Si une clé Wheel-Size est
+  // configurée, on tente l'API d'abord et on retombe sur la table si elle échoue.
+  let fitment = { entraxe: null, deport: null, raw: null, source: null };
   let fitmentError = null;
-  if (vehicle.marque && vehicle.modele) {
-    try {
-      fitment = await lookupFitment(vehicle.marque, vehicle.modele, vehicle.annee);
-    } catch (err) {
-      fitmentError = err.message;
-    }
+  if (!vehicle.marque) {
+    fitmentError = "Marque non identifiée depuis la plaque — entraxe à renseigner à la main.";
   } else {
-    fitmentError = "Marque/modèle non identifiés depuis la plaque — entraxe/déport non recherchés.";
+    if (isFitmentLookupConfigured()) {
+      try {
+        fitment = { ...(await lookupFitment(vehicle.marque, vehicle.modele, vehicle.annee)), source: "api" };
+      } catch (err) {
+        fitmentError = `API entraxe indisponible (${err.message}) — valeur issue de la table interne.`;
+      }
+    }
+    if (!fitment.entraxe) {
+      const table = fitmentFromTable(vehicle.marque, vehicle.modele, vehicle.annee);
+      fitment = { ...fitment, entraxe: table.entraxe, source: table.source, confiance: table.confiance };
+      if (table.note) fitmentError = table.note;
+    }
   }
 
   const combinedRaw = { plate_lookup: vehicle.raw, fitment_lookup: fitment.raw };
@@ -59,6 +73,8 @@ export async function POST({ request }) {
       annee: vehicle.annee,
       entraxe: fitment.entraxe,
       deport: fitment.deport,
+      source: fitment.source,
+      confiance: fitment.confiance,
       fitmentError,
     }),
     { status: 200, headers: { "Content-Type": "application/json" } }
