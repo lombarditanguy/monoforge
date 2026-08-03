@@ -23,6 +23,26 @@ if (!dbError && !item) return Astro.redirect("/admin/catalogue", 302);
         {item.family} · {isStaticItem(item.code) ? "Catalogue fournisseur" : "Ajoutée par l'admin"}
       </p>
 
+      {item.supplierName ? (
+        <div class="card">
+          <h2 style="margin-top:0">Nom chez le fournisseur</h2>
+          <p class="muted">
+            XINLAI n'a pas de code SKU court — c'est le nom exact de l'annonce qui identifie la jante. Copie-le pour
+            la rechercher ou la recommander.
+          </p>
+          <div style="display:flex;gap:.5rem;align-items:flex-start;margin-top:.75rem">
+            <input id="mf-supplier-name" readonly value={item.supplierName} style="margin:0;flex:1;font-size:.85rem" />
+            <button type="button" id="mf-copy-name" class="btn btn-outline" style="white-space:nowrap">Copier</button>
+          </div>
+          <span id="mf-copy-status" class="muted" style="font-size:.8rem"></span>
+        </div>
+      ) : (
+        <div class="card">
+          <h2 style="margin-top:0">Nom chez le fournisseur</h2>
+          <p class="muted">Aucun nom fournisseur connu pour cette référence {isStaticItem(item.code) ? "(catalogue antérieur à XINLAI)" : "(jante ajoutée par l'admin)"}.</p>
+        </div>
+      )}
+
       <div class="card">
         <h2 style="margin-top:0">Photos actuelles</h2>
         <p class="muted">La première photo (à gauche) est celle utilisée comme vignette sur le site.</p>
@@ -57,6 +77,19 @@ if (!dbError && !item) return Astro.redirect("/admin/catalogue", 302);
   )}
 
   <script define:vars={{ code: item?.code }}>
+    const copyBtn = document.getElementById("mf-copy-name");
+    const copyStatus = document.getElementById("mf-copy-status");
+    copyBtn?.addEventListener("click", async () => {
+      const input = document.getElementById("mf-supplier-name");
+      try {
+        await navigator.clipboard.writeText(input.value);
+        if (copyStatus) copyStatus.textContent = "Copié.";
+      } catch {
+        input.select();
+        if (copyStatus) copyStatus.textContent = "Sélectionné — copie avec Ctrl/Cmd+C.";
+      }
+    });
+
     const grid = document.getElementById("mf-photos-grid");
     const photosStatus = document.getElementById("mf-photos-status");
     const uploadForm = document.getElementById("mf-upload-form");

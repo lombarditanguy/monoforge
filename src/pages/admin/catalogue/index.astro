@@ -23,7 +23,8 @@ const itemsByFamily = FAMILIES.map((family) => ({
   <p class="muted" style="margin-top:-.5rem">
     {items.length} références au total. Le catalogue fournisseur (jantes déjà présentes) n'est pas listé pour
     suppression ici — seules ses photos sont modifiables. Les jantes que tu ajoutes toi-même peuvent être gérées
-    librement.
+    librement. La colonne « Nom fournisseur » est le nom exact de l'annonce chez XINLAI — c'est ce qu'il faut
+    chercher ou renvoyer pour recommander la même jante (on n'a pas de code SKU court côté fournisseur, juste ce nom).
   </p>
   {dbError && <div class="notice">{dbError}</div>}
 
@@ -31,7 +32,7 @@ const itemsByFamily = FAMILIES.map((family) => ({
     <>
       <div class="card" style="display:flex;gap:.75rem;flex-wrap:wrap">
         <a class="btn" href="/admin/catalogue/nouveau">+ Ajouter une jante</a>
-        <input id="mf-search" placeholder="Filtrer par référence (ex: DZ-014)" style="margin:0;max-width:20rem" />
+        <input id="mf-search" placeholder="Filtrer par référence ou nom fournisseur (ex: DZ-014, chrome)" style="margin:0;max-width:24rem" />
       </div>
 
       {itemsByFamily.map(({ family, items: familyItems }) => (
@@ -42,15 +43,17 @@ const itemsByFamily = FAMILIES.map((family) => ({
               <tr>
                 <th style="width:4.5rem">Photo</th>
                 <th>Référence</th>
+                <th>Nom fournisseur</th>
                 <th>Origine</th>
                 <th style="width:10rem"></th>
               </tr>
             </thead>
             <tbody>
               {familyItems.map((item) => (
-                <tr data-row data-code={item.code.toLowerCase()}>
+                <tr data-row data-code={item.code.toLowerCase()} data-name={(item.supplierName || "").toLowerCase()}>
                   <td><img src={item.image} alt="" width="40" height="40" style="border-radius:.25rem;object-fit:cover;display:block" /></td>
                   <td>{item.code}</td>
+                  <td class="muted" style="max-width:22rem">{item.supplierName || "—"}</td>
                   <td class="muted">{isStaticItem(item.code) ? "Catalogue fournisseur" : "Ajoutée par l'admin"}</td>
                   <td><a class="btn btn-outline" href={`/admin/catalogue/${item.code}`}>Gérer les photos</a></td>
                 </tr>
@@ -68,7 +71,7 @@ const itemsByFamily = FAMILIES.map((family) => ({
     search?.addEventListener("input", () => {
       const q = (search.value || "").trim().toLowerCase();
       for (const row of rows) {
-        const match = !q || (row.dataset.code || "").includes(q);
+        const match = !q || (row.dataset.code || "").includes(q) || (row.dataset.name || "").includes(q);
         row.style.display = match ? "" : "none";
       }
     });
