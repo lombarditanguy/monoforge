@@ -65,10 +65,45 @@ const STATUTS = [
         <table>
           <tbody>
             <tr><th>Plaque d'immatriculation</th><td>{commande.plaque_immatriculation || "—"}</td></tr>
-            <tr><th>Entraxe</th><td>{commande.entraxe || "à déterminer via l'API plaque"}</td></tr>
-            <tr><th>Déport</th><td>{commande.deport || "à déterminer via l'API plaque"}</td></tr>
           </tbody>
         </table>
+
+        <div style="margin:1rem 0;display:flex;align-items:center;gap:.75rem">
+          <button type="button" id="mf-lookup-btn" class="btn btn-outline">Rechercher via l'API</button>
+          <span id="mf-lookup-status" class="muted"></span>
+        </div>
+
+        <form method="POST" action="/api/admin/commandes">
+          <input type="hidden" name="id" value={commande.id} />
+          <div class="field-row">
+            <div>
+              <label for="vehicule_marque">Marque</label>
+              <input id="vehicule_marque" name="vehicule_marque" type="text" value={commande.vehicule_marque || ""} />
+            </div>
+            <div>
+              <label for="vehicule_modele">Modèle</label>
+              <input id="vehicule_modele" name="vehicule_modele" type="text" value={commande.vehicule_modele || ""} />
+            </div>
+          </div>
+          <div class="field-row">
+            <div>
+              <label for="entraxe">Entraxe</label>
+              <input id="entraxe" name="entraxe" type="text" value={commande.entraxe || ""} placeholder="ex : 5x112" />
+            </div>
+            <div>
+              <label for="deport">Déport</label>
+              <input id="deport" name="deport" type="text" value={commande.deport || ""} placeholder="ex : ET35" />
+            </div>
+          </div>
+          <button class="btn" type="submit">Enregistrer</button>
+        </form>
+
+        {commande.vehicule_lookup_raw && (
+          <details style="margin-top:1rem">
+            <summary class="muted" style="cursor:pointer">Réponse brute de la dernière recherche (debug)</summary>
+            <pre style="white-space:pre-wrap;font-size:.75rem;overflow-x:auto;background:#0a0a0b;padding:.75rem;border-radius:.3rem">{JSON.stringify(commande.vehicule_lookup_raw, null, 2)}</pre>
+          </details>
+        )}
       </div>
 
       <div class="card">
@@ -118,4 +153,41 @@ const STATUTS = [
       <a href="/admin/commandes" class="btn btn-outline">← Retour aux commandes</a>
     </>
   )}
+
+  <script define:vars={{ commandeId: commande?.id }}>
+    const lookupBtn = document.getElementById("mf-lookup-btn");
+    const lookupStatus = document.getElementById("mf-lookup-status");
+    lookupBtn?.addEventListener("click", async () => {
+      if (lookupStatus) lookupStatus.textContent = "Recherche en cours...";
+      lookupBtn.setAttribute("disabled", "true");
+      try {
+        const res = await fetch("/api/admin/commandes/lookup-vehicule", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: commandeId }),
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || "Erreur");
+
+        const marqueInput = document.getElementById("vehicule_marque");
+        const modeleInput = document.getElementById("vehicule_modele");
+        const entraxeInput = document.getElementById("entraxe");
+        const deportInput = document.getElementById("deport");
+        if (marqueInput) marqueInput.value = json.marque || "";
+        if (modeleInput) modeleInput.value = json.modele || "";
+        if (json.entraxe && entraxeInput) entraxeInput.value = json.entraxe;
+        if (json.deport && deportInput) deportInput.value = json.deport;
+
+        if (lookupStatus) {
+          lookupStatus.textContent = json.fitmentError
+            ? `Véhicule trouvé (${json.marque || "?"} ${json.modele || "?"}) — ${json.fitmentError}`
+            : "Trouvé et rempli ci-dessous — vérifie puis enregistre.";
+        }
+      } catch (err) {
+        if (lookupStatus) lookupStatus.textContent = `Erreur : ${err.message}`;
+      } finally {
+        lookupBtn.removeAttribute("disabled");
+      }
+    });
+  </script>
 </AdminLayout>

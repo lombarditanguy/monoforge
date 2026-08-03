@@ -99,6 +99,9 @@ create table if not exists commandes (
   plaque_immatriculation text,
   entraxe text,
   deport text,
+  vehicule_marque text,
+  vehicule_modele text,
+  vehicule_lookup_raw jsonb,
 
   client_nom text not null,
   client_email text not null,
@@ -123,6 +126,10 @@ create table if not exists commandes (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table commandes add column if not exists vehicule_marque text;
+alter table commandes add column if not exists vehicule_modele text;
+alter table commandes add column if not exists vehicule_lookup_raw jsonb;
 
 create table if not exists commande_counter (
   year integer primary key,
