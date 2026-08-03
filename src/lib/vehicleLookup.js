@@ -191,13 +191,21 @@ export async function lookupFitmentVdim(marque, modele, annee) {
       attempts.push(`${path} -> ${err.message}`);
       continue;
     }
+    const bodyText = await res.text();
     if (!res.ok) {
-      attempts.push(`${path} -> HTTP ${res.status}`);
+      // Un 400 porte presque toujours le motif du refus (paramètre manquant,
+      // nom de champ attendu…) : sans le corps, on ne peut que deviner.
+      attempts.push(`${path} -> HTTP ${res.status} ${bodyText ? bodyText.slice(0, 300) : "(corps vide)"}`);
       continue;
     }
-    const raw = await res.json().catch(() => null);
+    let raw = null;
+    try {
+      raw = bodyText ? JSON.parse(bodyText) : null;
+    } catch {
+      raw = null;
+    }
     if (!raw) {
-      attempts.push(`${path} -> réponse illisible`);
+      attempts.push(`${path} -> réponse illisible : ${bodyText.slice(0, 200)}`);
       continue;
     }
 
