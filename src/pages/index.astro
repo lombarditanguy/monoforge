@@ -29,49 +29,53 @@ const homeFaqs = [
   jsonLd={faqLd(homeFaqs)}
 >
   <!-- HERO -->
-  <section class="relative overflow-hidden bg-(--color-ink)">
-    <video
-      class="absolute inset-0 h-full w-full object-cover opacity-60"
-      autoplay
-      muted
-      loop
-      playsinline
-      preload="auto"
-      aria-hidden="true"
-    >
-      <source src="/hero-forge.webm" type="video/webm" />
-      <source src="/hero-forge.mp4" type="video/mp4" />
-    </video>
-    <div class="absolute inset-0 bg-gradient-to-r from-(--color-ink) via-(--color-ink)/70 to-transparent"></div>
-    <div class="absolute inset-0 bg-gradient-to-t from-(--color-ink) via-transparent to-transparent"></div>
+  <section class="relative bg-(--color-ink)">
+    <div class="grid">
+      <div class="sticky top-0 col-start-1 row-start-1 h-svh w-full overflow-hidden bg-(--color-ink)">
+        <video
+          class="h-full w-full object-contain opacity-60 md:object-cover"
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="auto"
+          aria-hidden="true"
+        >
+          <source src="/hero-forge.webm" type="video/webm" />
+          <source src="/hero-forge.mp4" type="video/mp4" />
+        </video>
+        <div class="absolute inset-0 bg-gradient-to-r from-(--color-ink) via-(--color-ink)/70 to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-(--color-ink) via-transparent to-transparent"></div>
+      </div>
 
-    <div class="container-mf relative pt-24 pb-20 md:pt-32 md:pb-28">
-      <div class="max-w-2xl">
-        <p class="chip">Fabrication à la demande — aluminium forgé</p>
-        <h1 class="mt-6 text-balance font-display text-4xl font-bold leading-[1.05] text-(--color-paper) sm:text-5xl lg:text-6xl">
-          Des jantes forgées <span class="text-(--color-forge-400)">à votre dessin</span>, pas au dessin du catalogue.
-        </h1>
-        <p class="mt-6 max-w-lg text-balance text-lg leading-relaxed text-(--color-mist)">
-          Toute taille. Toute largeur. Et, à la différence de tous les autres fabricants sur mesure, la forme même des bâtons peut être redessinée pour votre projet. C'est notre seule règle : zéro compromis sur votre exigence.
-        </p>
-        <div class="mt-9 flex flex-col gap-4 sm:flex-row">
-          <a href="/configurateur" class="btn btn-forge">Démarrer une étude gratuite</a>
-          <a href="/catalogue" class="btn btn-outline">Explorer le catalogue</a>
+      <div class="container-mf relative col-start-1 row-start-1 flex min-h-svh items-center pt-24 pb-20 md:pt-32 md:pb-28">
+        <div class="max-w-2xl">
+          <p class="chip">Fabrication à la demande — aluminium forgé</p>
+          <h1 class="mt-6 text-balance font-display text-4xl font-bold leading-[1.05] text-(--color-paper) sm:text-5xl lg:text-6xl">
+            Des jantes forgées <span class="text-(--color-forge-400)">à votre dessin</span>, pas au dessin du catalogue.
+          </h1>
+          <p class="mt-6 max-w-lg text-balance text-lg leading-relaxed text-(--color-mist)">
+            Toute taille. Toute largeur. Et, à la différence de tous les autres fabricants sur mesure, la forme même des bâtons peut être redessinée pour votre projet. C'est notre seule règle : zéro compromis sur votre exigence.
+          </p>
+          <div class="mt-9 flex flex-col gap-4 sm:flex-row">
+            <a href="/configurateur" class="btn btn-forge">Démarrer une étude gratuite</a>
+            <a href="/catalogue" class="btn btn-outline">Explorer le catalogue</a>
+          </div>
+          <dl class="mt-14 grid grid-cols-3 gap-6 border-t border-(--color-line) pt-8">
+            <div>
+              <dt class="text-xs uppercase tracking-widest text-(--color-fog)">Tailles</dt>
+              <dd class="mt-1 font-display text-2xl font-bold text-(--color-paper)">15″ – 26″</dd>
+            </div>
+            <div>
+              <dt class="text-xs uppercase tracking-widest text-(--color-fog)">Dessin</dt>
+              <dd class="mt-1 font-display text-2xl font-bold text-(--color-paper)">100% modifiable</dd>
+            </div>
+            <div>
+              <dt class="text-xs uppercase tracking-widest text-(--color-fog)">Matière</dt>
+              <dd class="mt-1 font-display text-2xl font-bold text-(--color-paper)">Alu forgé</dd>
+            </div>
+          </dl>
         </div>
-        <dl class="mt-14 grid grid-cols-3 gap-6 border-t border-(--color-line) pt-8">
-          <div>
-            <dt class="text-xs uppercase tracking-widest text-(--color-fog)">Tailles</dt>
-            <dd class="mt-1 font-display text-2xl font-bold text-(--color-paper)">15″ – 26″</dd>
-          </div>
-          <div>
-            <dt class="text-xs uppercase tracking-widest text-(--color-fog)">Dessin</dt>
-            <dd class="mt-1 font-display text-2xl font-bold text-(--color-paper)">100% modifiable</dd>
-          </div>
-          <div>
-            <dt class="text-xs uppercase tracking-widest text-(--color-fog)">Matière</dt>
-            <dd class="mt-1 font-display text-2xl font-bold text-(--color-paper)">Alu forgé</dd>
-          </div>
-        </dl>
       </div>
     </div>
   </section>
