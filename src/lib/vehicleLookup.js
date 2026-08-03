@@ -242,29 +242,40 @@ function tokens(value) {
     .filter((t) => t && !FILLER.test(t));
 }
 
-function bestMatch(candidates, wanted) {
-  if (!wanted || candidates.length === 0) return null;
+// `hint` sert à départager : "CLASSE E" se réduit au seul mot "E", qui
+// matcherait par préfixe aussi bien E320 que E350 ou E55. La finition
+// ("E320 CDI ELEGANCE BA") tranche. Sans elle, on préfère ne rien renvoyer
+// plutôt que de retenir un homonyme au hasard.
+function bestMatch(candidates, wanted, hint) {
+  if (candidates.length === 0) return null;
   const flat = (v) => tokens(v).join("");
   const target = flat(wanted);
-  if (!target) return null;
+  const hintTokens = hint ? tokens(hint) : [];
+  const hintFlat = hintTokens.join("");
+  if (!target && !hintFlat) return null;
 
-  const exact = candidates.find((c) => flat(c) === target);
-  if (exact) return exact;
+  const scored = candidates.map((c) => {
+    const ct = tokens(c);
+    const cf = ct.join("");
+    let score = 0;
 
-  const contains = candidates.find((c) => {
-    const f = flat(c);
-    return f.startsWith(target) || target.startsWith(f) || f.includes(target) || target.includes(f);
+    if (target && cf === target) score += 100;
+    if (target && ct.length && tokens(wanted).every((t) => ct.includes(t))) score += 40;
+
+    // Un rapprochement par préfixe n'a de valeur que sur une chaîne un peu
+    // longue : "E" contre "E320" ne prouve rien.
+    if (target && target.length >= 3 && (cf.startsWith(target) || target.startsWith(cf))) score += 30;
+    if (target && target.length >= 4 && (cf.includes(target) || target.includes(cf))) score += 20;
+
+    // Signal fort : le libellé du candidat apparaît dans la finition réelle.
+    if (hintFlat && cf && (hintFlat.includes(cf) || hintTokens.includes(cf))) score += 60;
+    if (hintTokens.length && ct.length && ct.every((t) => hintTokens.includes(t))) score += 25;
+
+    return { c, score, len: cf.length };
   });
-  if (contains) return contains;
 
-  // Dernier recours : tous les mots significatifs recherchés sont présents.
-  const wantedTokens = tokens(wanted);
-  return (
-    candidates.find((c) => {
-      const ct = tokens(c);
-      return wantedTokens.every((t) => ct.includes(t));
-    }) || null
-  );
+  scored.sort((a, b) => b.score - a.score || b.len - a.len);
+  return scored[0].score > 0 ? scored[0].c : null;
 }
 
 export async function lookupFitmentVdim(marque, modele, annee, finition) {
@@ -293,7 +304,9 @@ export async function lookupFitmentVdim(marque, modele, annee, finition) {
     throw new Error(`Liste des modèles refusée (HTTP ${modelsRes.status} ${modelsRes.text.slice(0, 200)})`);
   }
   const models = extractLabels(modelsRes.json);
-  const model = bestMatch(models, modele);
+  // Leur catalogue nomme les modèles à l'américaine (E320, pas E-Class) : la
+  // finition est souvent le seul élément qui permet de choisir le bon.
+  const model = bestMatch(models, modele, finition);
   if (!model) {
     throw new Error(
       `Modèle « ${modele} » introuvable pour ${make} en ${annee}. Modèles proposés : ${models.slice(0, 12).join(", ")}`
@@ -313,30 +326,44 @@ export async function lookupFitmentVdim(marque, modele, annee, finition) {
   const trims = extractLabels(trimsRes.json);
   if (trims.length === 0) throw new Error(`Aucune finition listée pour ${make} ${model} ${annee}.`);
 
-  let trim = trims.length === 1 ? trims[0] : bestMatch(trims, finition);
-  if (!trim) {
+  const preferred = trims.length === 1 ? trims[0] : bestMatch(trims, finition, finition);
+  if (!preferred) {
     throw new Error(
       `Finition non déterminée : « ${finition || "inconnue"} » ne correspond à aucune de leurs ${trims.length} finitions (${trims
         .slice(0, 10)
         .join(", ")}). Le déport dépend de la finition — renseigne-le à la main plutôt que de risquer une valeur fausse.`
     );
   }
-  trace.push(`trim: ${finition || "(non fournie)"} -> ${trim}${trims.length > 1 ? ` (parmi ${trims.length})` : ""}`);
+  trace.push(`trim: ${finition || "(non fournie)"} -> ${preferred}${trims.length > 1 ? ` (parmi ${trims.length})` : ""}`);
 
-  // 4) Cotes.
-  const specsRes = await vdimGet("tiresize", { year: annee, make, model, trim }, apiKey);
-  if (!specsRes.ok) {
-    throw new Error(`Cotes refusées (HTTP ${specsRes.status} ${specsRes.text.slice(0, 250)})`);
+  // 4) Cotes. La finition la mieux notée peut n'avoir aucune cote référencée
+  // (fréquent sur une version européenne absente d'un catalogue américain) :
+  // on tente alors les autres finitions du même modèle avant d'abandonner.
+  const ordered = [preferred, ...trims.filter((t) => t !== preferred)].slice(0, 4);
+  const refus = [];
+  for (const trim of ordered) {
+    const specsRes = await vdimGet("tiresize", { year: annee, make, model, trim }, apiKey);
+    if (!specsRes.ok) {
+      refus.push(`${trim} -> HTTP ${specsRes.status}`);
+      continue;
+    }
+    const entraxe = deepFind(specsRes.json, ["boltpattern", "pcd", "boltcircle", "entraxe"]);
+    const deport = deepFind(specsRes.json, ["offset", "rimoffset", "deport", "et"]);
+    if (!entraxe && !deport) {
+      refus.push(`${trim} -> aucune cote dans la réponse`);
+      continue;
+    }
+    if (trim !== preferred) trace.push(`repli sur la finition « ${trim} » (${preferred} sans cotes)`);
+    return {
+      entraxe: entraxe ? String(entraxe) : null,
+      deport: deport ? String(deport) : null,
+      raw: { trace, trims, trimUtilise: trim, response: specsRes.json },
+    };
   }
 
-  const entraxe = deepFind(specsRes.json, ["boltpattern", "pcd", "boltcircle", "entraxe"]);
-  const deport = deepFind(specsRes.json, ["offset", "rimoffset", "deport", "et"]);
-
-  return {
-    entraxe: entraxe ? String(entraxe) : null,
-    deport: deport ? String(deport) : null,
-    raw: { trace, trims, response: specsRes.json },
-  };
+  throw new Error(
+    `${make} ${model} ${annee} : aucune cote référencée chez eux (${refus.join(" ; ")}). Catalogue probablement nord-américain — cette version européenne n'y figure pas.`
+  );
 }
 
 export async function lookupFitment(marque, modele, annee, finition) {
