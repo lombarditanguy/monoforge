@@ -129,6 +129,19 @@ create table if not exists commande_counter (
   last_number integer not null default 0
 );
 
+create table if not exists catalog_extra_items (
+  code text primary key,
+  slug text not null unique,
+  family text not null,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists item_photos (
+  code text primary key,
+  images jsonb not null default '[]'::jsonb,
+  updated_at timestamptz not null default now()
+);
+
 create table if not exists invoices (
   id serial primary key,
   numero text not null unique,

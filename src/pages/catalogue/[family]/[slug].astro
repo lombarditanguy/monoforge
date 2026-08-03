@@ -4,17 +4,19 @@ import Layout from "../../../layouts/Layout.astro";
 import Breadcrumbs from "../../../components/Breadcrumbs.astro";
 import WheelPhotoCard from "../../../components/WheelPhotoCard.astro";
 import CTASection from "../../../components/CTASection.astro";
-import { FAMILIES, catalogItems, itemsForFamily } from "../../../data/catalog.js";
+import { FAMILIES } from "../../../data/catalog.js";
+import { getCatalogItem, listItemsForFamily } from "../../../lib/catalogDb.js";
 import { breadcrumbLd, catalogItemLd } from "../../../utils/seo.js";
 import { sql } from "../../../lib/db.js";
 
 const { family: familySlug, slug } = Astro.params;
-const item = catalogItems.find((i) => i.family === familySlug && i.slug === slug);
+const family = FAMILIES.find((f) => f.slug === familySlug);
+if (!family) return Astro.redirect("/catalogue", 302);
+const item = await getCatalogItem(familySlug, slug);
 if (!item) return Astro.redirect("/catalogue", 302);
-const family = FAMILIES.find((f) => f.slug === item.family);
 const gallery = item.images && item.images.length > 0 ? item.images : [item.image];
 
-const siblings = itemsForFamily(family.slug).filter((i) => i.slug !== item.slug);
+const siblings = (await listItemsForFamily(family.slug)).filter((i) => i.slug !== item.slug);
 const related = siblings.sort(() => 0.5 - Math.random()).slice(0, 6);
 
 let itemPriceHt = 0;

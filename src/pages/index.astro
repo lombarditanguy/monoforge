@@ -3,9 +3,12 @@ import Layout from "../layouts/Layout.astro";
 import FamilyCard from "../components/FamilyCard.astro";
 import CTASection from "../components/CTASection.astro";
 import FaqList from "../components/FaqList.astro";
-import { FAMILIES, catalogItems } from "../data/catalog.js";
+import { FAMILIES } from "../data/catalog.js";
+import { countAllItems } from "../lib/catalogDb.js";
 import { faqLd } from "../utils/seo.js";
 import { SITE } from "../data/site.js";
+
+const totalItems = await countAllItems();
 
 const homeFaqs = [
   {
@@ -199,7 +202,7 @@ const homeFaqs = [
   <section class="container-mf py-24">
     <div class="flex flex-wrap items-end justify-between gap-6">
       <div class="max-w-xl">
-        <p class="section-label">{catalogItems.length} références en photo</p>
+        <p class="section-label">{totalItems} références en photo</p>
         <h2 class="mt-4 text-balance font-display text-3xl font-bold text-(--color-paper) md:text-4xl">
           Un aperçu de ce que notre atelier sait forger — pas un stock.
         </h2>

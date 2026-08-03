@@ -1,0 +1,76 @@
+---
+export const prerender = false;
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import { FAMILIES } from "../../../data/catalog.js";
+import { listAllItemsForAdmin, isStaticItem } from "../../../lib/catalogDb.js";
+
+let items = [];
+let dbError = null;
+try {
+  items = await listAllItemsForAdmin();
+} catch (err) {
+  dbError = err.message;
+}
+
+const itemsByFamily = FAMILIES.map((family) => ({
+  family,
+  items: items.filter((i) => i.family === family.slug),
+}));
+---
+
+<AdminLayout title="Catalogue">
+  <h1>Catalogue</h1>
+  <p class="muted" style="margin-top:-.5rem">
+    {items.length} références au total. Le catalogue fournisseur (jantes déjà présentes) n'est pas listé pour
+    suppression ici — seules ses photos sont modifiables. Les jantes que tu ajoutes toi-même peuvent être gérées
+    librement.
+  </p>
+  {dbError && <div class="notice">{dbError}</div>}
+
+  {!dbError && (
+    <>
+      <div class="card" style="display:flex;gap:.75rem;flex-wrap:wrap">
+        <a class="btn" href="/admin/catalogue/nouveau">+ Ajouter une jante</a>
+        <input id="mf-search" placeholder="Filtrer par référence (ex: DZ-014)" style="margin:0;max-width:20rem" />
+      </div>
+
+      {itemsByFamily.map(({ family, items: familyItems }) => (
+        <div class="card">
+          <h2 style="margin-top:0">{family.label} <span class="muted">({familyItems.length} références)</span></h2>
+          <table>
+            <thead>
+              <tr>
+                <th style="width:4.5rem">Photo</th>
+                <th>Référence</th>
+                <th>Origine</th>
+                <th style="width:10rem"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {familyItems.map((item) => (
+                <tr data-row data-code={item.code.toLowerCase()}>
+                  <td><img src={item.image} alt="" width="40" height="40" style="border-radius:.25rem;object-fit:cover;display:block" /></td>
+                  <td>{item.code}</td>
+                  <td class="muted">{isStaticItem(item.code) ? "Catalogue fournisseur" : "Ajoutée par l'admin"}</td>
+                  <td><a class="btn btn-outline" href={`/admin/catalogue/${item.code}`}>Gérer les photos</a></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ))}
+    </>
+  )}
+
+  <script>
+    const search = document.getElementById("mf-search") as HTMLInputElement | null;
+    const rows = Array.from(document.querySelectorAll<HTMLTableRowElement>("tr[data-row]"));
+    search?.addEventListener("input", () => {
+      const q = (search.value || "").trim().toLowerCase();
+      for (const row of rows) {
+        const match = !q || (row.dataset.code || "").includes(q);
+        row.style.display = match ? "" : "none";
+      }
+    });
+  </script>
+</AdminLayout>

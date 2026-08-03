@@ -1,0 +1,62 @@
+---
+export const prerender = false;
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import { FAMILIES } from "../../../data/catalog.js";
+---
+
+<AdminLayout title="Ajouter une jante">
+  <h1>Ajouter une jante</h1>
+  <p class="muted" style="margin-top:-.5rem">
+    Crée la référence, puis tu pourras uploader ses photos sur la page suivante.
+  </p>
+
+  <div class="card">
+    <form id="mf-new-item-form">
+      <div class="field-row">
+        <div>
+          <label for="code">Référence (code)</label>
+          <input id="code" name="code" placeholder="Ex : DZ-500" required />
+        </div>
+        <div>
+          <label for="family">Famille</label>
+          <select id="family" name="family" required>
+            {FAMILIES.map((f) => <option value={f.slug}>{f.label}</option>)}
+          </select>
+        </div>
+        <div>
+          <label for="prixAchatHt">Prix d'achat HT (€)</label>
+          <input id="prixAchatHt" name="prixAchatHt" type="number" step="0.01" min="0" required />
+        </div>
+      </div>
+      <button class="btn" type="submit">Créer la jante</button>
+      <span id="mf-status" class="muted" style="margin-left:.75rem"></span>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById("mf-new-item-form") as HTMLFormElement | null;
+    const statusEl = document.getElementById("mf-status");
+    form?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+      const payload = {
+        code: String(data.get("code") || "").trim(),
+        family: String(data.get("family") || ""),
+        prixAchatHt: Number(data.get("prixAchatHt") || 0),
+      };
+      if (statusEl) statusEl.textContent = "Création...";
+      try {
+        const res = await fetch("/api/admin/catalogue/nouveau", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const body = await res.json();
+        if (!res.ok) throw new Error(body.error || "Erreur inconnue");
+        window.location.href = `/admin/catalogue/${encodeURIComponent(payload.code)}`;
+      } catch (err) {
+        if (statusEl) statusEl.textContent = `Erreur : ${(err as Error).message}`;
+      }
+    });
+  </script>
+</AdminLayout>

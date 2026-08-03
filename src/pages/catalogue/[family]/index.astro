@@ -4,14 +4,15 @@ import Layout from "../../../layouts/Layout.astro";
 import Breadcrumbs from "../../../components/Breadcrumbs.astro";
 import WheelPhotoCard from "../../../components/WheelPhotoCard.astro";
 import CTASection from "../../../components/CTASection.astro";
-import { FAMILIES, itemsForFamily } from "../../../data/catalog.js";
+import { FAMILIES } from "../../../data/catalog.js";
+import { listItemsForFamily } from "../../../lib/catalogDb.js";
 import { breadcrumbLd } from "../../../utils/seo.js";
 import { sql } from "../../../lib/db.js";
 
 const { family: familySlug } = Astro.params;
 const family = FAMILIES.find((f) => f.slug === familySlug);
 if (!family) return Astro.redirect("/catalogue", 302);
-const items = itemsForFamily(family.slug);
+const items = await listItemsForFamily(family.slug);
 
 let itemsWithPrice = items.map((i) => ({ ...i, startingPrice: 0 }));
 let startingPrice = 0;

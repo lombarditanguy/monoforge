@@ -3,24 +3,27 @@ import Layout from "../../layouts/Layout.astro";
 import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import FamilyCard from "../../components/FamilyCard.astro";
 import CTASection from "../../components/CTASection.astro";
-import { FAMILIES, catalogItems } from "../../data/catalog.js";
+import { FAMILIES } from "../../data/catalog.js";
+import { countAllItems } from "../../lib/catalogDb.js";
 import { breadcrumbLd } from "../../utils/seo.js";
+
+const totalItems = await countAllItems();
 ---
 
 <Layout
-  title={`Catalogue de jantes forgées — plus de ${catalogItems.length} références`}
-  description={`Plus de ${catalogItems.length} références de jantes forgées (monobloc, multi-pièces, tout-terrain), avec photo et code fournisseur. Chaque dessin est adaptable à toute taille sur demande.`}
+  title={`Catalogue de jantes forgées — plus de ${totalItems} références`}
+  description={`Plus de ${totalItems} références de jantes forgées (monobloc, multi-pièces, tout-terrain), avec photo et code fournisseur. Chaque dessin est adaptable à toute taille sur demande.`}
   jsonLd={breadcrumbLd([{ name: "Catalogue", path: "/catalogue" }])}
 >
   <Breadcrumbs items={[{ name: "Catalogue", path: "/catalogue" }]} />
 
   <section class="container-mf pb-16 pt-6">
-    <p class="chip">{catalogItems.length} références en photo</p>
+    <p class="chip">{totalItems} références en photo</p>
     <h1 class="mt-6 max-w-2xl text-balance font-display text-4xl font-bold leading-tight text-(--color-paper) sm:text-5xl">
       Le catalogue KESSLER WHEELS
     </h1>
     <p class="mt-5 max-w-2xl text-balance text-lg leading-relaxed text-(--color-mist)">
-      Ces <strong class="text-(--color-paper)">{catalogItems.length} références</strong>, organisées en {FAMILIES.length} familles, sont un aperçu de ce que notre atelier partenaire sait forger — <strong class="text-(--color-paper)">pas un stock</strong>. Chaque jante est fabriquée à la commande, dans la taille et le déport définis pour votre véhicule, et le dessin lui-même peut être adapté sur demande.
+      Ces <strong class="text-(--color-paper)">{totalItems} références</strong>, organisées en {FAMILIES.length} familles, sont un aperçu de ce que notre atelier partenaire sait forger — <strong class="text-(--color-paper)">pas un stock</strong>. Chaque jante est fabriquée à la commande, dans la taille et le déport définis pour votre véhicule, et le dessin lui-même peut être adapté sur demande.
     </p>
   </section>
 

@@ -1,0 +1,148 @@
+---
+export const prerender = false;
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import { findItemByCode, isStaticItem } from "../../../lib/catalogDb.js";
+
+const { code } = Astro.params;
+let item = null;
+let dbError = null;
+try {
+  item = await findItemByCode(String(code));
+} catch (err) {
+  dbError = err.message;
+}
+if (!dbError && !item) return Astro.redirect("/admin/catalogue", 302);
+---
+
+<AdminLayout title={item ? `Photos — ${item.code}` : "Photos"}>
+  {dbError && <div class="notice">{dbError}</div>}
+  {item && (
+    <>
+      <h1>{item.code}</h1>
+      <p class="muted" style="margin-top:-1rem">
+        {item.family} · {isStaticItem(item.code) ? "Catalogue fournisseur" : "Ajoutée par l'admin"}
+      </p>
+
+      <div class="card">
+        <h2 style="margin-top:0">Photos actuelles</h2>
+        <p class="muted">La première photo (à gauche) est celle utilisée comme vignette sur le site.</p>
+        <div id="mf-photos-grid" style="display:flex;flex-wrap:wrap;gap:1rem;margin-top:1rem" data-code={item.code}>
+          {item.images.map((src, i) => (
+            <div class="mf-photo-item" data-src={src} style="width:9rem;border:1px solid #26262b;border-radius:.4rem;padding:.5rem;background:#1c1c20">
+              <img src={src} alt="" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:.3rem;display:block" />
+              <p class="muted" style="margin:.4rem 0;font-size:.75rem;text-align:center">Position {i + 1}</p>
+              <div style="display:flex;gap:.3rem;justify-content:center">
+                <button type="button" class="btn btn-outline" data-move="up" style="padding:.3rem .5rem;font-size:.75rem">↑</button>
+                <button type="button" class="btn btn-outline" data-move="down" style="padding:.3rem .5rem;font-size:.75rem">↓</button>
+                <button type="button" class="btn btn-outline btn-danger" data-delete-photo style="padding:.3rem .5rem;font-size:.75rem">Suppr.</button>
+              </div>
+            </div>
+          ))}
+        </div>
+        {item.images.length === 0 && <p class="muted">Aucune photo pour l'instant — ajoutes-en une ci-dessous.</p>}
+        <p id="mf-photos-status" class="muted" style="margin-top:1rem"></p>
+      </div>
+
+      <div class="card">
+        <h2 style="margin-top:0">Ajouter des photos</h2>
+        <form id="mf-upload-form">
+          <input type="file" name="files" accept="image/*" multiple required />
+          <button class="btn" type="submit">Uploader</button>
+          <span id="mf-upload-status" class="muted" style="margin-left:.75rem"></span>
+        </form>
+      </div>
+
+      <a class="btn btn-outline" href="/admin/catalogue">← Retour au catalogue</a>
+    </>
+  )}
+
+  <script define:vars={{ code: item?.code }}>
+    const grid = document.getElementById("mf-photos-grid");
+    const photosStatus = document.getElementById("mf-photos-status");
+    const uploadForm = document.getElementById("mf-upload-form");
+    const uploadStatus = document.getElementById("mf-upload-status");
+
+    function currentImages() {
+      return Array.from(grid.querySelectorAll(".mf-photo-item")).map((el) => el.dataset.src);
+    }
+
+    async function saveOrder(images) {
+      photosStatus.textContent = "Enregistrement...";
+      try {
+        const res = await fetch("/api/admin/photos/reorder", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code, images }),
+        });
+        if (!res.ok) throw new Error((await res.json()).error || "Erreur");
+        photosStatus.textContent = "Enregistré.";
+      } catch (err) {
+        photosStatus.textContent = `Erreur : ${err.message}`;
+      }
+    }
+
+    grid?.addEventListener("click", async (e) => {
+      const target = e.target;
+      if (!(target instanceof HTMLElement)) return;
+      const item = target.closest(".mf-photo-item");
+      if (!item) return;
+
+      if (target.dataset.move === "up" || target.dataset.move === "down") {
+        const items = Array.from(grid.querySelectorAll(".mf-photo-item"));
+        const idx = items.indexOf(item);
+        const swapWith = target.dataset.move === "up" ? idx - 1 : idx + 1;
+        if (swapWith < 0 || swapWith >= items.length) return;
+        if (target.dataset.move === "up") {
+          grid.insertBefore(item, items[swapWith]);
+        } else {
+          grid.insertBefore(items[swapWith], item);
+        }
+        Array.from(grid.querySelectorAll(".mf-photo-item")).forEach((el, i) => {
+          el.querySelector("p").textContent = `Position ${i + 1}`;
+        });
+        await saveOrder(currentImages());
+      }
+
+      if (target.hasAttribute("data-delete-photo")) {
+        if (!confirm("Supprimer cette photo ?")) return;
+        const src = item.dataset.src;
+        photosStatus.textContent = "Suppression...";
+        try {
+          const res = await fetch("/api/admin/photos/delete", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code, src }),
+          });
+          if (!res.ok) throw new Error((await res.json()).error || "Erreur");
+          item.remove();
+          Array.from(grid.querySelectorAll(".mf-photo-item")).forEach((el, i) => {
+            el.querySelector("p").textContent = `Position ${i + 1}`;
+          });
+          photosStatus.textContent = "Photo supprimée.";
+        } catch (err) {
+          photosStatus.textContent = `Erreur : ${err.message}`;
+        }
+      }
+    });
+
+    uploadForm?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const input = uploadForm.querySelector('input[type="file"]');
+      const files = input.files;
+      if (!files || files.length === 0) return;
+      uploadStatus.textContent = `Upload de ${files.length} photo(s)...`;
+      try {
+        for (const file of files) {
+          const fd = new FormData();
+          fd.append("code", code);
+          fd.append("file", file);
+          const res = await fetch("/api/admin/photos/upload", { method: "POST", body: fd });
+          if (!res.ok) throw new Error((await res.json()).error || "Erreur d'upload");
+        }
+        window.location.reload();
+      } catch (err) {
+        uploadStatus.textContent = `Erreur : ${err.message}`;
+      }
+    });
+  </script>
+</AdminLayout>

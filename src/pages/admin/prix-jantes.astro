@@ -2,14 +2,17 @@
 export const prerender = false;
 import AdminLayout from "../../layouts/AdminLayout.astro";
 import { sql } from "../../lib/db.js";
-import { FAMILIES, catalogItems } from "../../data/catalog.js";
+import { FAMILIES } from "../../data/catalog.js";
+import { listAllItemsForAdmin } from "../../lib/catalogDb.js";
 
 let priceRows = [];
 let familyRows = [];
+let allItems = [];
 let dbError = null;
 try {
   priceRows = await sql`select code, prix_achat_ht from item_prices`;
   familyRows = await sql`select famille, coefficient_revente from price_bases`;
+  allItems = await listAllItemsForAdmin();
 } catch (err) {
   dbError = err.message;
 }
@@ -19,7 +22,7 @@ const coeffByFamily = new Map(familyRows.map((r) => [r.famille, Number(r.coeffic
 const itemsByFamily = FAMILIES.map((family) => ({
   family,
   coefficient: coeffByFamily.get(family.slug) ?? 0,
-  items: catalogItems
+  items: allItems
     .filter((i) => i.family === family.slug)
     .map((i) => ({ ...i, prixAchatHt: priceByCode.get(i.code) ?? 0 })),
 }));

@@ -1,11 +1,12 @@
 ---
 export const prerender = false;
 import Layout from "../../layouts/Layout.astro";
-import { catalogItems, getFamily } from "../../data/catalog.js";
+import { getFamily } from "../../data/catalog.js";
+import { findItemByCode } from "../../lib/catalogDb.js";
 
 const params = Astro.url.searchParams;
 const code = params.get("code") || "";
-const item = catalogItems.find((i) => i.code === code);
+const item = await findItemByCode(code);
 if (!item) return Astro.redirect("/catalogue", 302);
 const family = getFamily(item.family);
 

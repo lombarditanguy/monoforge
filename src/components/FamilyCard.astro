@@ -1,8 +1,8 @@
 ---
-import { itemsForFamily } from "../data/catalog.js";
+import { listItemsForFamily } from "../lib/catalogDb.js";
 interface Props { family: any }
 const { family } = Astro.props;
-const items = itemsForFamily(family.slug);
+const items = await listItemsForFamily(family.slug);
 const cover = (family.cover && items.find((i) => i.slug === family.cover)) || items[Math.floor(items.length / 3)] || items[0];
 ---
 
