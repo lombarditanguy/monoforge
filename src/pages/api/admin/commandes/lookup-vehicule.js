@@ -54,7 +54,7 @@ async function handlePost({ request }) {
   } else {
     if (isFitmentLookupConfigured()) {
       try {
-        fitment = { ...(await lookupFitment(vehicle.marque, vehicle.modele, vehicle.annee)), source: "api" };
+        fitment = { ...(await lookupFitment(vehicle.marque, vehicle.modele, vehicle.annee, vehicle.finition)), source: "api" };
       } catch (err) {
         fitmentError = `API entraxe indisponible (${err.message}) — valeur issue de la table interne.`;
       }
@@ -85,6 +85,7 @@ async function handlePost({ request }) {
       marque: vehicle.marque,
       modele: vehicle.modele,
       annee: vehicle.annee,
+      finition: vehicle.finition,
       entraxe: fitment.entraxe,
       deport: fitment.deport,
       source: fitment.source,

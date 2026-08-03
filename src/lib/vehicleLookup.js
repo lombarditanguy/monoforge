@@ -65,6 +65,10 @@ export async function lookupVehicleByPlate(plaque) {
   // Volontairement sans "version" : chez auto-ways c'est la finition
   // ("E320 CDI ELEGANCE BA"), pas le modèle attendu par les bases de fitment.
   const modele = deepFind(raw, ["modele", "model", "modelevehicule", "carmodel"]);
+
+  // La finition conditionne les cotes d'origine (donc le déport) : sans elle,
+  // on ne saurait pas distinguer une E320 d'une E63 AMG.
+  const finition = deepFind(raw, ["version", "finition", "trim", "grade"]);
   const dateMiseEnCirculation = deepFind(raw, [
     "datemiseencirculation",
     "circulationdate",
@@ -93,7 +97,7 @@ export async function lookupVehicleByPlate(plaque) {
     }
   }
 
-  return { marque, modele, annee, raw };
+  return { marque, modele, annee, finition, raw };
 }
 
 // Entraxe depuis la table interne (gratuite, sans API). Le déport n'y figure
@@ -263,7 +267,7 @@ function bestMatch(candidates, wanted) {
   );
 }
 
-export async function lookupFitmentVdim(marque, modele, annee) {
+export async function lookupFitmentVdim(marque, modele, annee, finition) {
   const apiKey = process.env.VDIM_API_KEY;
   if (!apiKey) throw new Error("VDIM_API_KEY manquante.");
   if (!marque) throw new Error("Marque manquante — impossible de chercher le déport.");
@@ -297,17 +301,27 @@ export async function lookupFitmentVdim(marque, modele, annee) {
   }
   trace.push(`model: ${modele} -> ${model}`);
 
-  // 3) Finition : obligatoire pour tiresize. Sans information sur la version
-  // exacte du véhicule, on prend la première proposée — l'admin corrige au
-  // besoin, la valeur retenue étant tracée dans la réponse brute.
+  // 3) Finition : c'est elle qui fixe les cotes d'origine, donc le déport.
+  // Une E320 et une E63 AMG n'ont pas le même déport : prendre la première
+  // finition venue produirait une valeur fausse sans le dire. On exige donc
+  // une correspondance avec la finition réelle du véhicule, et à défaut on
+  // s'arrête en listant les possibilités plutôt que de deviner.
   const trimsRes = await vdimGet("trim", { make, model, year: annee }, apiKey);
   if (!trimsRes.ok) {
     throw new Error(`Liste des finitions refusée (HTTP ${trimsRes.status} ${trimsRes.text.slice(0, 200)})`);
   }
   const trims = extractLabels(trimsRes.json);
-  const trim = trims[0];
-  if (!trim) throw new Error(`Aucune finition listée pour ${make} ${model} ${annee}.`);
-  trace.push(`trim: ${trim}${trims.length > 1 ? ` (parmi ${trims.length})` : ""}`);
+  if (trims.length === 0) throw new Error(`Aucune finition listée pour ${make} ${model} ${annee}.`);
+
+  let trim = trims.length === 1 ? trims[0] : bestMatch(trims, finition);
+  if (!trim) {
+    throw new Error(
+      `Finition non déterminée : « ${finition || "inconnue"} » ne correspond à aucune de leurs ${trims.length} finitions (${trims
+        .slice(0, 10)
+        .join(", ")}). Le déport dépend de la finition — renseigne-le à la main plutôt que de risquer une valeur fausse.`
+    );
+  }
+  trace.push(`trim: ${finition || "(non fournie)"} -> ${trim}${trims.length > 1 ? ` (parmi ${trims.length})` : ""}`);
 
   // 4) Cotes.
   const specsRes = await vdimGet("tiresize", { year: annee, make, model, trim }, apiKey);
@@ -325,9 +339,9 @@ export async function lookupFitmentVdim(marque, modele, annee) {
   };
 }
 
-export async function lookupFitment(marque, modele, annee) {
+export async function lookupFitment(marque, modele, annee, finition) {
   if (process.env.VDIM_API_KEY) {
-    return lookupFitmentVdim(marque, modele, annee);
+    return lookupFitmentVdim(marque, modele, annee, finition);
   }
 
   const userKey = process.env.WHEELSIZE_API_KEY;

@@ -201,7 +201,7 @@ const STATUTS = [
         if (lookupStatus) {
           const vehicule = `${json.marque || "?"} ${json.modele || ""} ${json.annee || ""}`.trim();
           const origine = json.source === "api" ? "via l'API" : "table interne";
-          const parts = [`Véhicule : ${vehicule}.`];
+          const parts = [`Véhicule : ${vehicule}${json.finition ? ` — ${json.finition}` : ""}.`];
           if (json.entraxe) parts.push(`Entraxe ${json.entraxe} (${origine}).`);
           if (json.confiance && json.confiance !== "haute") parts.push(`Fiabilité ${json.confiance} — à confirmer.`);
           if (json.fitmentError) parts.push(json.fitmentError);
