@@ -5,16 +5,20 @@ import { sql } from "../../lib/db.js";
 import { FAMILIES, catalogItems } from "../../data/catalog.js";
 
 let priceRows = [];
+let familyRows = [];
 let dbError = null;
 try {
   priceRows = await sql`select code, prix_achat_ht from item_prices`;
+  familyRows = await sql`select famille, coefficient_revente from price_bases`;
 } catch (err) {
   dbError = err.message;
 }
 const priceByCode = new Map(priceRows.map((r) => [r.code, Number(r.prix_achat_ht || 0)]));
+const coeffByFamily = new Map(familyRows.map((r) => [r.famille, Number(r.coefficient_revente || 0)]));
 
 const itemsByFamily = FAMILIES.map((family) => ({
   family,
+  coefficient: coeffByFamily.get(family.slug) ?? 0,
   items: catalogItems
     .filter((i) => i.family === family.slug)
     .map((i) => ({ ...i, prixAchatHt: priceByCode.get(i.code) ?? 0 })),
@@ -24,8 +28,12 @@ const itemsByFamily = FAMILIES.map((family) => ({
 <AdminLayout title="Prix par jante">
   <h1>Prix par jante</h1>
   <p class="muted" style="margin-top:-.5rem">
-    Prix d'achat HT propre à chaque référence. Le prix de vente affiché au client = prix d'achat de la jante ×
-    coefficient de revente de la famille (réglable dans <a href="/admin/prix" style="color:#ff7a45">Prix &amp; coefficients</a>).
+    Prix d'achat HT propre à chaque référence — c'est le seul champ à modifier ici. La colonne "Prix de vente" à
+    droite est calculée automatiquement (achat × coefficient de revente de la famille, réglable dans
+    <a href="/admin/prix" style="color:#ff7a45">Prix &amp; coefficients</a>) : c'est le prix affiché au client
+    <strong>pour une seule jante</strong>, à la taille et largeur de base. <strong>Sur la fiche produit du site,
+    le prix affiché par défaut est pour un jeu de 4 jantes</strong> (quantité pré-réglée) — normal qu'il paraisse
+    ~4× plus élevé que ce que tu vois ici, ce n'est pas une erreur.
   </p>
   {dbError && <div class="notice">{dbError}</div>}
 
@@ -38,15 +46,16 @@ const itemsByFamily = FAMILIES.map((family) => ({
         <span id="mf-status" class="muted"></span>
       </div>
 
-      {itemsByFamily.map(({ family, items }) => (
+      {itemsByFamily.map(({ family, items, coefficient }) => (
         <div class="card">
-          <h2 style="margin-top:0">{family.label} <span class="muted">({items.length} références)</span></h2>
+          <h2 style="margin-top:0">{family.label} <span class="muted">({items.length} références · coefficient ×{coefficient.toFixed(2)})</span></h2>
           <table>
             <thead>
               <tr>
                 <th style="width:4.5rem">Photo</th>
                 <th>Référence</th>
                 <th style="width:12rem">Prix d'achat HT (€)</th>
+                <th style="width:10rem">Prix de vente (1 jante)</th>
               </tr>
             </thead>
             <tbody>
@@ -62,9 +71,11 @@ const itemsByFamily = FAMILIES.map((family) => ({
                       value={item.prixAchatHt}
                       data-price-input
                       data-code={item.code}
+                      data-coefficient={coefficient}
                       style="margin:0"
                     />
                   </td>
+                  <td data-sell-price style="font-weight:600">{(item.prixAchatHt * coefficient).toFixed(2)} €</td>
                 </tr>
               ))}
             </tbody>
@@ -99,6 +110,10 @@ const itemsByFamily = FAMILIES.map((family) => ({
       input.addEventListener("input", () => {
         if (input.dataset.code) dirty.add(input.dataset.code);
         if (statusEl) statusEl.textContent = `${dirty.size} modification(s) non enregistrée(s)`;
+        const sellCell = input.closest("tr")?.querySelector<HTMLElement>("[data-sell-price]");
+        const coefficient = Number(input.dataset.coefficient || 0);
+        const achat = Number(input.value || 0);
+        if (sellCell) sellCell.textContent = `${(achat * coefficient).toFixed(2)} €`;
       });
     });
 
