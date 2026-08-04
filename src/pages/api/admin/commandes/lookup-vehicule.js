@@ -5,6 +5,7 @@ import {
   fitmentFromTable,
   isFitmentLookupConfigured,
 } from "../../../../lib/vehicleLookup.js";
+import { proposeFitmentPourCommande } from "../../../../lib/fitment.js";
 
 export const prerender = false;
 
@@ -34,7 +35,9 @@ async function handlePost({ request }) {
   const id = Number(body?.id);
   if (!id) return jsonError("Commande invalide.");
 
-  const [commande] = await sql`select id, plaque_immatriculation from commandes where id = ${id} limit 1`;
+  const [commande] = await sql`
+    select id, plaque_immatriculation, taille, largeur from commandes where id = ${id} limit 1
+  `;
   if (!commande) return jsonError("Commande introuvable.", 404);
   if (!commande.plaque_immatriculation) return jsonError("Aucune plaque enregistrée pour cette commande.");
 
@@ -66,14 +69,33 @@ async function handlePost({ request }) {
     }
   }
 
+  // Emplacement de la jante : déport de la monte d'origine pour la taille
+  // commandée. Indépendant de la chaîne ci-dessus (qui ne sert plus qu'à
+  // l'entraxe), et sans effet si le jeu de données n'est pas chargé.
+  const oe = await proposeFitmentPourCommande(vehicle, {
+    sizeLabel: commande.taille,
+    widthLabel: commande.largeur,
+  });
+  const propose = oe.proposition;
+
   const combinedRaw = { plate_lookup: vehicle.raw, fitment_lookup: fitment.raw };
 
   await sql`
     update commandes set
       vehicule_marque = ${vehicle.marque},
       vehicule_modele = ${vehicle.modele},
-      entraxe = coalesce(${fitment.entraxe}, entraxe),
+      vehicule_annee = ${vehicle.annee},
+      vehicule_finition = ${vehicle.finition},
+      entraxe = coalesce(${fitment.entraxe}, ${propose?.entraxe || null}, entraxe),
       deport = coalesce(${fitment.deport}, deport),
+      deport_propose = ${propose?.resume || null},
+      deport_source = ${propose ? (propose.verificationRequise ? "constructeur_approche" : "constructeur_exact") : "aucun"},
+      monte_origine = ${JSON.stringify({
+        montes: oe.montes,
+        trace: oe.trace,
+        note: oe.note,
+        proposition: propose,
+      })},
       vehicule_lookup_raw = ${JSON.stringify(combinedRaw)},
       updated_at = now()
     where id = ${id}
@@ -86,11 +108,16 @@ async function handlePost({ request }) {
       modele: vehicle.modele,
       annee: vehicle.annee,
       finition: vehicle.finition,
-      entraxe: fitment.entraxe,
+      entraxe: fitment.entraxe || propose?.entraxe || null,
       deport: fitment.deport,
       source: fitment.source,
       confiance: fitment.confiance,
       fitmentError,
+      deportPropose: propose?.resume || null,
+      deportConfiance: propose?.confiance || null,
+      deportVerification: Boolean(propose?.verificationRequise),
+      montesTrouvees: oe.montes.length,
+      oeNote: oe.note,
     }),
     { status: 200, headers: { "Content-Type": "application/json" } }
   );

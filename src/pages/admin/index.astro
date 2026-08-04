@@ -2,6 +2,7 @@
 export const prerender = false;
 import AdminLayout from "../../layouts/AdminLayout.astro";
 import { sql } from "../../lib/db.js";
+import { countOeFitments } from "../../lib/fitment.js";
 
 let counts = { clients: 0, factures: 0, brouillons: 0 };
 let dbError = null;
@@ -20,6 +21,15 @@ if (!dbError) {
     await sql`select 1 from item_prices limit 1`;
   } catch {
     itemPricesMissing = true;
+  }
+}
+
+let cotes = { lignes: 0, marques: 0 };
+if (!dbError) {
+  try {
+    cotes = await countOeFitments();
+  } catch {
+    cotes = { lignes: 0, marques: 0 };
   }
 }
 
@@ -56,10 +66,20 @@ const integrations = [
     aide: "Compte auto-ways.net → Clés API.",
   },
   {
-    nom: "Cotes jante (déport)",
+    nom: "Cotes constructeur",
+    ok: cotes.lignes > 0,
+    manque: "Aucune donnée chargée",
+    role:
+      cotes.lignes > 0
+        ? `${cotes.lignes.toLocaleString("fr-FR")} montes d'origine sur ${cotes.marques} marques — le déport des commandes est calculé automatiquement.`
+        : "Déport de la monte d'origine sur les commandes catalogue.",
+    aide: "Charge le jeu de données acheté depuis /admin/fitments. Sans lui, le déport se renseigne à la main.",
+  },
+  {
+    nom: "API cotes jante (déport)",
     ok: Boolean(process.env.VDIM_API_KEY || process.env.WHEELSIZE_API_KEY),
     variable: "VDIM_API_KEY",
-    role: "Optionnel. Sans, l'entraxe vient de la table interne et le déport se renseigne à la main.",
+    role: "Abandonné : catalogue nord-américain, non fiable sur les véhicules européens. Remplacé par les cotes constructeur ci-dessus.",
     aide: "Non configuré = fonctionnement normal aujourd'hui.",
     facultatif: true,
   },
@@ -93,7 +113,7 @@ const integrations = [
               <div>{s.role}</div>
               {!s.ok && (
                 <div class="muted" style="font-size:.85em;margin-top:.25rem">
-                  <code>{s.variable}</code> absente — {s.aide}
+                  {s.manque ? s.manque : <><code>{s.variable}</code> absente</>} — {s.aide}
                 </div>
               )}
             </td>

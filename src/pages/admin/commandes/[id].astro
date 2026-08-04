@@ -20,6 +20,18 @@ const STATUTS = [
   { value: "expediee", label: "Expédiée" },
   { value: "annulee", label: "Annulée" },
 ];
+
+// Montes d'origine relevées au moment de la commande. Le déport proposé n'est
+// jamais écrit dans `deport` : c'est l'atelier qui valide, et cette séparation
+// rend visible ce qui a été proposé par le calcul et ce qui a été décidé.
+const monte = commande?.monte_origine || null;
+const proposition = monte?.proposition || null;
+const propositions = proposition
+  ? [
+      { cote: proposition.decale ? "Avant" : null, detail: proposition.avant },
+      ...(proposition.decale ? [{ cote: "Arrière", detail: proposition.arriere }] : []),
+    ].filter((p) => p.detail)
+  : [];
 ---
 
 <AdminLayout title={commande ? commande.reference : "Commande"}>
@@ -80,10 +92,13 @@ const STATUTS = [
               <th>Véhicule annoncé par le client</th>
               <td>
                 {commande.vehicule_marque
-                  ? `${commande.vehicule_marque} ${commande.vehicule_modele || ""}`.trim()
+                  ? `${commande.vehicule_marque} ${commande.vehicule_modele || ""} ${commande.vehicule_annee || ""}`.trim()
                   : "— (non vérifié à la commande)"}
               </td>
             </tr>
+            {commande.vehicule_finition && (
+              <tr><th>Version</th><td>{commande.vehicule_finition}</td></tr>
+            )}
           </tbody>
         </table>
 
@@ -121,6 +136,72 @@ const STATUTS = [
           <details style="margin-top:1rem">
             <summary class="muted" style="cursor:pointer">Réponse brute de la dernière recherche (debug)</summary>
             <pre style="white-space:pre-wrap;font-size:.75rem;overflow-x:auto;background:#0a0a0b;padding:.75rem;border-radius:.3rem">{JSON.stringify(commande.vehicule_lookup_raw, null, 2)}</pre>
+          </details>
+        )}
+      </div>
+
+      <div class="card">
+        <h2 style="margin-top:0">Emplacement de la jante (données constructeur)</h2>
+        {proposition ? (
+          <>
+            <p style="margin-top:0">
+              Déport proposé : <strong style="font-size:1.15rem">{proposition.resume}</strong>
+              <span class="muted"> — fiabilité {proposition.confiance}</span>
+            </p>
+            {proposition.verificationRequise && (
+              <div class="notice" style="margin:.75rem 0">
+                <strong>À valider avant fabrication.</strong> La taille commandée ne correspond pas exactement à une
+                monte d'origine : la valeur ci-dessus est reprise de la monte la plus proche.
+              </div>
+            )}
+            {propositions.map((p) => (
+              <p class="muted" style="margin:.4rem 0">
+                {p.cote && <strong>{p.cote} — </strong>}
+                {p.detail.note}
+              </p>
+            ))}
+            <div style="display:flex;gap:.75rem;align-items:center;margin-top:1rem;flex-wrap:wrap">
+              <button
+                type="button"
+                id="mf-reprendre-deport"
+                class="btn btn-outline"
+                data-deport={propositions.length === 1 ? `ET${propositions[0].detail.deport}` : proposition.resume}
+              >
+                Reprendre dans le champ Déport
+              </button>
+              <span id="mf-reprendre-status" class="muted"></span>
+            </div>
+          </>
+        ) : (
+          <p class="muted" style="margin-top:0">
+            Aucune monte d'origine trouvée pour ce véhicule{monte?.note ? ` — ${monte.note}` : "."} Le déport se
+            renseigne à la main ci-dessus, comme avant. Si le jeu de données constructeur vient d'être chargé, relance
+            la recherche avec le bouton « Rechercher via l'API ».
+          </p>
+        )}
+
+        {monte?.montes?.length > 0 && (
+          <details style="margin-top:1rem">
+            <summary class="muted" style="cursor:pointer">
+              Montes d'origine référencées ({monte.montes.length})
+            </summary>
+            <table style="margin-top:.5rem">
+              <tbody>
+                <tr><th>Version</th><th>Diamètre</th><th>Largeur</th><th>Déport</th><th>Entraxe</th></tr>
+                {monte.montes.slice(0, 40).map((m) => (
+                  <tr>
+                    <td>{m.finition || "—"}</td>
+                    <td>{m.diametre ?? "—"}</td>
+                    <td>{m.largeur ?? "—"}</td>
+                    <td>{m.deport === null || m.deport === undefined ? "—" : `ET${m.deport}`}</td>
+                    <td>{m.entraxe || "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {monte.trace?.length > 0 && (
+              <p class="muted" style="font-size:.8rem;margin-top:.5rem">{monte.trace.join(" · ")}</p>
+            )}
           </details>
         )}
       </div>
@@ -174,6 +255,17 @@ const STATUTS = [
   )}
 
   <script define:vars={{ commandeId: commande?.id }}>
+    // Le déport proposé n'écrase jamais le champ tout seul : la reprise est un
+    // geste explicite de l'atelier, et il reste à enregistrer.
+    const reprendreBtn = document.getElementById("mf-reprendre-deport");
+    reprendreBtn?.addEventListener("click", () => {
+      const champ = document.getElementById("deport");
+      if (!champ) return;
+      champ.value = reprendreBtn.dataset.deport || "";
+      const status = document.getElementById("mf-reprendre-status");
+      if (status) status.textContent = "Reporté — pense à enregistrer.";
+    });
+
     const lookupBtn = document.getElementById("mf-lookup-btn");
     const lookupStatus = document.getElementById("mf-lookup-status");
     lookupBtn?.addEventListener("click", async () => {
@@ -216,7 +308,13 @@ const STATUTS = [
           if (json.entraxe) parts.push(`Entraxe ${json.entraxe} (${origine}).`);
           if (json.confiance && json.confiance !== "haute") parts.push(`Fiabilité ${json.confiance} — à confirmer.`);
           if (json.fitmentError) parts.push(json.fitmentError);
-          if (!json.deport) parts.push("Déport non récupéré — à renseigner ici avant fabrication.");
+          if (json.deportPropose) {
+            parts.push(
+              `Déport d'origine : ${json.deportPropose} (fiabilité ${json.deportConfiance}${json.deportVerification ? ", à valider" : ""}) — recharge la page pour le détail.`
+            );
+          } else if (!json.deport) {
+            parts.push(json.oeNote || "Déport non récupéré — à renseigner ici avant fabrication.");
+          }
           parts.push("Vérifie puis enregistre.");
           lookupStatus.textContent = parts.join(" ");
         }

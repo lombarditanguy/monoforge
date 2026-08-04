@@ -1,0 +1,373 @@
+---
+export const prerender = false;
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import { countOeFitments } from "../../lib/fitment.js";
+import { query } from "../../lib/db.js";
+
+let stats = { lignes: 0, marques: 0 };
+let marques = [];
+let dbError = null;
+try {
+  stats = await countOeFitments();
+  if (stats.lignes > 0) {
+    marques = await query(
+      "select marque, count(*)::int as n from oe_fitments group by marque order by n desc limit 40"
+    );
+  }
+} catch (err) {
+  dbError = /relation .*oe_fitments.* does not exist/i.test(err.message)
+    ? "La table des cotes n'existe pas encore. Ouvre /admin/setup et clique sur « Initialiser / vérifier les tables »."
+    : err.message;
+}
+---
+
+<AdminLayout title="Cotes constructeur">
+  <h1>Cotes constructeur</h1>
+  <p class="muted" style="margin-top:-1rem">
+    Le déport (ET) d'une commande catalogue vient de la monte d'origine du véhicule du client. Cette page charge le
+    jeu de données qui le fournit, et permet de le tester avant de s'en servir.
+  </p>
+
+  {dbError && <div class="notice">{dbError}</div>}
+
+  <div class="card">
+    <h2 style="margin-top:0">État</h2>
+    {stats.lignes === 0 ? (
+      <p class="muted">
+        Aucune donnée chargée. Tant que c'est le cas, le déport reste à renseigner à la main sur chaque commande —
+        le reste du site fonctionne normalement.
+      </p>
+    ) : (
+      <p>
+        <strong>{stats.lignes.toLocaleString("fr-FR")}</strong> tailles d'origine référencées, sur
+        <strong> {stats.marques}</strong> marques.
+      </p>
+    )}
+    {marques.length > 0 && (
+      <details>
+        <summary class="muted" style="cursor:pointer">Marques couvertes</summary>
+        <p class="muted" style="font-size:.85rem;margin-top:.5rem">
+          {marques.map((m) => `${m.marque} (${m.n})`).join(" · ")}
+        </p>
+      </details>
+    )}
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0">Charger un fichier</h2>
+    <p class="muted">
+      Fichier CSV du fournisseur de données (séparateur virgule, point-virgule ou tabulation — détecté
+      automatiquement). Le fichier est lu dans le navigateur : rien n'est écrit tant que tu n'as pas validé les
+      colonnes détectées ci-dessous. Un nouvel import remplace intégralement le jeu précédent.
+    </p>
+    <input type="file" id="mf-fit-file" accept=".csv,.tsv,.txt,text/csv" />
+    <p id="mf-fit-lecture" class="muted" style="margin-top:.75rem"></p>
+
+    <div id="mf-fit-apercu" style="display:none">
+      <h3>Colonnes détectées</h3>
+      <p class="muted">
+        Vérifie chaque ligne. Si une colonne est mal reconnue, corrige-la ici — l'aperçu se recalcule aussitôt.
+      </p>
+      <table id="mf-fit-mapping"><tbody></tbody></table>
+
+      <h3>Aperçu</h3>
+      <div style="overflow-x:auto">
+        <table id="mf-fit-echantillon"><tbody></tbody></table>
+      </div>
+
+      <p id="mf-fit-resume" style="margin-top:1rem"></p>
+      <button type="button" id="mf-fit-import" class="btn">Importer</button>
+      <span id="mf-fit-progres" class="muted" style="margin-left:.75rem"></span>
+    </div>
+  </div>
+
+  {stats.lignes > 0 && (
+    <div class="card">
+      <h2 style="margin-top:0">Tester un véhicule</h2>
+      <p class="muted">
+        Reproduit exactement ce que le site calculera pour une commande : montes d'origine trouvées, puis déport
+        retenu pour la taille demandée.
+      </p>
+      <div class="field-row">
+        <div>
+          <label for="t-marque">Marque</label>
+          <input id="t-marque" type="text" placeholder="MERCEDES" />
+        </div>
+        <div>
+          <label for="t-modele">Modèle</label>
+          <input id="t-modele" type="text" placeholder="CLASSE E" />
+        </div>
+        <div>
+          <label for="t-annee">Année</label>
+          <input id="t-annee" type="text" placeholder="2007" />
+        </div>
+      </div>
+      <div class="field-row">
+        <div>
+          <label for="t-finition">Finition</label>
+          <input id="t-finition" type="text" placeholder="E320 CDI ELEGANCE BA" />
+        </div>
+        <div>
+          <label for="t-taille">Diamètre commandé</label>
+          <input id="t-taille" type="text" placeholder='20"' />
+        </div>
+        <div>
+          <label for="t-largeur">Largeur commandée</label>
+          <input id="t-largeur" type="text" placeholder="9,5J" />
+        </div>
+      </div>
+      <button type="button" id="mf-fit-test" class="btn btn-outline">Tester</button>
+      <div id="mf-fit-resultat" style="margin-top:1rem"></div>
+    </div>
+  )}
+
+  <div class="card">
+    <h2 style="margin-top:0">Ce que la règle fait exactement</h2>
+    <p class="muted" style="margin-bottom:.5rem">
+      Le déport n'est jamais inventé. Trois cas, dans cet ordre :
+    </p>
+    <ol class="muted" style="margin:0;padding-left:1.2rem;line-height:1.7">
+      <li>La taille commandée existe d'origine → on reprend son déport, point final.</li>
+      <li>
+        Elle n'existe pas (cas courant : le client commande plus large) → on repart de la monte d'origine la plus
+        proche, on garde son déport, et on affiche en millimètres ce que ça déplace de chaque côté. La commande est
+        marquée « à vérifier ».
+      </li>
+      <li>Le véhicule est absent du jeu de données → rien n'est proposé, le déport se saisit à la main.</li>
+    </ol>
+    <p class="muted" style="margin-bottom:0">
+      Rappel de géométrie : un déport plus grand rentre la jante sous l'aile, un déport plus petit la fait sortir.
+      À déport constant, élargir la jante la fait déborder autant vers l'extérieur que vers l'intérieur.
+    </p>
+  </div>
+
+  <script>
+    import { analyseFichier, normalizeRow, CHAMPS } from "../../lib/fitmentImport.js";
+
+    const fileInput = document.getElementById("mf-fit-file");
+    const lecture = document.getElementById("mf-fit-lecture");
+    const apercu = document.getElementById("mf-fit-apercu");
+    const mappingTable = document.querySelector("#mf-fit-mapping tbody");
+    const echTable = document.querySelector("#mf-fit-echantillon tbody");
+    const resume = document.getElementById("mf-fit-resume");
+    const importBtn = document.getElementById("mf-fit-import");
+    const progres = document.getElementById("mf-fit-progres");
+
+    let texte = "";
+    let analyse = null;
+
+    function rendre() {
+      if (!analyse || analyse.erreur) {
+        lecture.textContent = analyse?.erreur || "";
+        apercu.style.display = "none";
+        return;
+      }
+
+      mappingTable.innerHTML = "";
+      for (const champ of CHAMPS) {
+        const tr = document.createElement("tr");
+        const th = document.createElement("th");
+        th.textContent = champ.label + (champ.requis ? " *" : "");
+        th.style.whiteSpace = "nowrap";
+        const td = document.createElement("td");
+        const select = document.createElement("select");
+        select.style.margin = "0";
+        const vide = document.createElement("option");
+        vide.value = "";
+        vide.textContent = "— aucune —";
+        select.appendChild(vide);
+        analyse.entetes.forEach((h, i) => {
+          const opt = document.createElement("option");
+          opt.value = String(i);
+          opt.textContent = h || `Colonne ${i + 1}`;
+          if (analyse.mapping[champ.cle] === i) opt.selected = true;
+          select.appendChild(opt);
+        });
+        select.addEventListener("change", () => {
+          const mapping = { ...analyse.mapping };
+          if (select.value === "") delete mapping[champ.cle];
+          else mapping[champ.cle] = Number(select.value);
+          analyse = analyseFichier(texte, mapping);
+          rendre();
+        });
+        td.appendChild(select);
+        tr.append(th, td);
+        mappingTable.appendChild(tr);
+      }
+
+      const colonnes = ["marque", "modele", "finition", "anneeDebut", "anneeFin", "diametre", "largeur", "deport", "entraxe"];
+      echTable.innerHTML = "";
+      const entete = document.createElement("tr");
+      for (const c of colonnes) {
+        const th = document.createElement("th");
+        th.textContent = c;
+        entete.appendChild(th);
+      }
+      echTable.appendChild(entete);
+      for (const row of analyse.echantillon) {
+        const tr = document.createElement("tr");
+        for (const c of colonnes) {
+          const td = document.createElement("td");
+          td.textContent = row[c] === null || row[c] === undefined ? "—" : String(row[c]);
+          tr.appendChild(td);
+        }
+        echTable.appendChild(tr);
+      }
+
+      const pct = analyse.total ? Math.round((analyse.exploitables / analyse.total) * 100) : 0;
+      const alertes = [];
+      if (analyse.manquants.length) alertes.push(`Colonnes obligatoires non identifiées : ${analyse.manquants.join(", ")}.`);
+      if (pct < 80) alertes.push(`Seulement ${pct}% des lignes sont exploitables — vérifie le mapping avant d'importer.`);
+      const sansDeport = analyse.echantillon.filter((r) => r.deport === null).length;
+      if (sansDeport === analyse.echantillon.length && analyse.echantillon.length)
+        alertes.push("Aucun déport lu sur l'échantillon : sans cette colonne le jeu de données ne sert à rien ici.");
+
+      resume.innerHTML = "";
+      const ligne = document.createElement("div");
+      ligne.textContent = `${analyse.exploitables.toLocaleString("fr-FR")} lignes exploitables sur ${analyse.total.toLocaleString("fr-FR")} (${pct}%).`;
+      resume.appendChild(ligne);
+      for (const a of alertes) {
+        const p = document.createElement("div");
+        p.className = "muted";
+        p.style.color = "#ff7a45";
+        p.textContent = a;
+        resume.appendChild(p);
+      }
+
+      importBtn.disabled = analyse.manquants.length > 0 || analyse.exploitables === 0;
+      apercu.style.display = "";
+    }
+
+    fileInput?.addEventListener("change", async () => {
+      const file = fileInput.files?.[0];
+      if (!file) return;
+      lecture.textContent = "Lecture du fichier...";
+      apercu.style.display = "none";
+      texte = await file.text();
+      analyse = analyseFichier(texte);
+      lecture.textContent = `${file.name} — ${(file.size / 1024 / 1024).toFixed(1)} Mo, ${analyse.entetes?.length || 0} colonnes.`;
+      rendre();
+    });
+
+    importBtn?.addEventListener("click", async () => {
+      if (!analyse) return;
+      if (!confirm(`Importer ${analyse.exploitables} lignes ? Le jeu de données actuel sera remplacé.`)) return;
+      importBtn.disabled = true;
+
+      const LOT = 1000;
+      let envoyées = 0;
+      let premier = true;
+      let tampon = [];
+
+      async function pousser() {
+        const res = await fetch("/api/admin/fitments/import", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ rows: tampon, reset: premier }),
+        });
+        const json = await res.json().catch(() => null);
+        if (!res.ok || !json?.ok) throw new Error(json?.error || `Erreur serveur (HTTP ${res.status}).`);
+        premier = false;
+        envoyées += tampon.length;
+        tampon = [];
+        progres.textContent = `${envoyées.toLocaleString("fr-FR")} / ${analyse.exploitables.toLocaleString("fr-FR")} lignes importées...`;
+      }
+
+      try {
+        for (const l of analyse.lignes) {
+          const row = normalizeRow(l, analyse.mapping);
+          if (!row) continue;
+          tampon.push(row);
+          if (tampon.length >= LOT) await pousser();
+        }
+        // Toujours un dernier appel : il crée le reset quand le fichier tient
+        // dans un seul lot, et clôt proprement les autres cas.
+        await pousser();
+        progres.textContent = `Terminé : ${envoyées.toLocaleString("fr-FR")} lignes importées.`;
+        setTimeout(() => window.location.reload(), 900);
+      } catch (err) {
+        // Un import interrompu laisse la table partiellement remplie : le
+        // relancer repart d'une table vide, il n'y a rien à nettoyer à la main.
+        progres.textContent = `Erreur : ${err.message} — relance l'import, il repart de zéro.`;
+        importBtn.disabled = false;
+      }
+    });
+
+    const testBtn = document.getElementById("mf-fit-test");
+    const testOut = document.getElementById("mf-fit-resultat");
+    testBtn?.addEventListener("click", async () => {
+      testOut.textContent = "Recherche...";
+      const val = (id) => (document.getElementById(id))?.value || "";
+      try {
+        const res = await fetch("/api/admin/fitments/test", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            marque: val("t-marque"),
+            modele: val("t-modele"),
+            annee: val("t-annee"),
+            finition: val("t-finition"),
+            sizeLabel: val("t-taille"),
+            widthLabel: val("t-largeur"),
+          }),
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || "Erreur");
+
+        testOut.innerHTML = "";
+        const bloc = (texte, muted) => {
+          const p = document.createElement("p");
+          p.textContent = texte;
+          if (muted) p.className = "muted";
+          p.style.margin = ".35rem 0";
+          testOut.appendChild(p);
+        };
+
+        if (json.trace?.length) bloc(json.trace.join(" · "), true);
+        if (json.note) bloc(json.note, true);
+
+        if (json.montes?.length) {
+          bloc(`${json.montes.length} taille(s) d'origine référencée(s) :`);
+          const table = document.createElement("table");
+          const tbody = document.createElement("tbody");
+          const head = document.createElement("tr");
+          for (const c of ["Version", "Diamètre", "Largeur", "Déport", "Entraxe"]) {
+            const th = document.createElement("th");
+            th.textContent = c;
+            head.appendChild(th);
+          }
+          tbody.appendChild(head);
+          for (const m of json.montes.slice(0, 30)) {
+            const tr = document.createElement("tr");
+            for (const v of [m.finition || "—", m.diametre ?? "—", m.largeur ?? "—", m.deport === null ? "—" : `ET${m.deport}`, m.entraxe || "—"]) {
+              const td = document.createElement("td");
+              td.textContent = String(v);
+              tr.appendChild(td);
+            }
+            tbody.appendChild(tr);
+          }
+          table.appendChild(tbody);
+          testOut.appendChild(table);
+        }
+
+        const p = json.proposition;
+        if (p) {
+          const titre = document.createElement("p");
+          titre.style.marginTop = "1rem";
+          titre.innerHTML = `<strong>Déport proposé : ${p.resume}</strong> — fiabilité ${p.confiance}${p.verificationRequise ? " · à vérifier avant fabrication" : ""}`;
+          testOut.appendChild(titre);
+          for (const cote of ["avant", "arriere"]) {
+            const c = p[cote];
+            if (!c) continue;
+            if (cote === "arriere" && !p.decale) continue;
+            bloc(`${p.decale ? (cote === "avant" ? "Avant — " : "Arrière — ") : ""}${c.note}`, true);
+          }
+        } else if (json.montes?.length) {
+          bloc("Aucun déport exploitable dans les montes trouvées.", true);
+        }
+      } catch (err) {
+        testOut.textContent = `Erreur : ${err.message}`;
+      }
+    });
+  </script>
+</AdminLayout>

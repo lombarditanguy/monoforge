@@ -42,6 +42,9 @@ export async function POST({ request }) {
         marque: vehicle.marque,
         modele: vehicle.modele,
         annee: vehicle.annee,
+        // La finition conditionne les cotes d'origine : deux versions du même
+        // modèle n'ont pas le même déport. On la transporte jusqu'à la commande.
+        finition: vehicle.finition,
       }),
       { status: 200, headers: { "Content-Type": "application/json" } }
     );

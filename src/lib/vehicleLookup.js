@@ -14,6 +14,9 @@
 // n'est pas au bon endroit. À ajuster dès la première vraie recherche.
 
 import { guessBoltPattern } from "./boltPatterns.js";
+// « CLASSE E » et « E-Class » désignent le même modèle : le rapprochement des
+// libellés est mutualisé avec la recherche des cotes constructeur.
+import { bestMatch } from "./textMatch.js";
 
 function firstDefined(...values) {
   for (const v of values) {
@@ -227,55 +230,6 @@ function extractLabels(json) {
   };
   walk(json);
   return [...new Set(seen)];
-}
-
-// "CLASSE E" et "E-Class" désignent le même modèle : on compare les mots en
-// écartant les termes de gamme, qui changent de langue et de position.
-const FILLER = /^(classe|class|serie|series|the|de|le|la)$/i;
-
-function tokens(value) {
-  return String(value)
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toUpperCase()
-    .split(/[^A-Z0-9]+/)
-    .filter((t) => t && !FILLER.test(t));
-}
-
-// `hint` sert à départager : "CLASSE E" se réduit au seul mot "E", qui
-// matcherait par préfixe aussi bien E320 que E350 ou E55. La finition
-// ("E320 CDI ELEGANCE BA") tranche. Sans elle, on préfère ne rien renvoyer
-// plutôt que de retenir un homonyme au hasard.
-function bestMatch(candidates, wanted, hint) {
-  if (candidates.length === 0) return null;
-  const flat = (v) => tokens(v).join("");
-  const target = flat(wanted);
-  const hintTokens = hint ? tokens(hint) : [];
-  const hintFlat = hintTokens.join("");
-  if (!target && !hintFlat) return null;
-
-  const scored = candidates.map((c) => {
-    const ct = tokens(c);
-    const cf = ct.join("");
-    let score = 0;
-
-    if (target && cf === target) score += 100;
-    if (target && ct.length && tokens(wanted).every((t) => ct.includes(t))) score += 40;
-
-    // Un rapprochement par préfixe n'a de valeur que sur une chaîne un peu
-    // longue : "E" contre "E320" ne prouve rien.
-    if (target && target.length >= 3 && (cf.startsWith(target) || target.startsWith(cf))) score += 30;
-    if (target && target.length >= 4 && (cf.includes(target) || target.includes(cf))) score += 20;
-
-    // Signal fort : le libellé du candidat apparaît dans la finition réelle.
-    if (hintFlat && cf && (hintFlat.includes(cf) || hintTokens.includes(cf))) score += 60;
-    if (hintTokens.length && ct.length && ct.every((t) => hintTokens.includes(t))) score += 25;
-
-    return { c, score, len: cf.length };
-  });
-
-  scored.sort((a, b) => b.score - a.score || b.len - a.len);
-  return scored[0].score > 0 ? scored[0].c : null;
 }
 
 export async function lookupFitmentVdim(marque, modele, annee, finition) {

@@ -72,6 +72,8 @@ if (unitPriceHt <= 0) return Astro.redirect(`/catalogue/${item.family}/${item.sl
 
             <input type="hidden" id="mf-vehicule-marque" name="vehicule_marque" />
             <input type="hidden" id="mf-vehicule-modele" name="vehicule_modele" />
+            <input type="hidden" id="mf-vehicule-annee" name="vehicule_annee" />
+            <input type="hidden" id="mf-vehicule-finition" name="vehicule_finition" />
           </div>
         </div>
 
@@ -191,6 +193,8 @@ if (unitPriceHt <= 0) return Astro.redirect(`/catalogue/${item.family}/${item.sl
     const confirmBox = document.getElementById("mf-plaque-confirm") as HTMLInputElement | null;
     const hiddenMarque = document.getElementById("mf-vehicule-marque") as HTMLInputElement | null;
     const hiddenModele = document.getElementById("mf-vehicule-modele") as HTMLInputElement | null;
+    const hiddenAnnee = document.getElementById("mf-vehicule-annee") as HTMLInputElement | null;
+    const hiddenFinition = document.getElementById("mf-vehicule-finition") as HTMLInputElement | null;
 
     function showBox(titre: string, message: string, withConfirm: boolean) {
       if (!resultBox || !vehiculeEl || !messageEl) return;
@@ -219,14 +223,23 @@ if (unitPriceHt <= 0) return Astro.redirect(`/catalogue/${item.family}/${item.sl
         const json = await res.json();
         if (!res.ok) {
           showBox("Non identifié", json.error || "Vérification impossible.", false);
-          if (hiddenMarque) hiddenMarque.value = "";
-          if (hiddenModele) hiddenModele.value = "";
+          for (const champ of [hiddenMarque, hiddenModele, hiddenAnnee, hiddenFinition]) {
+            if (champ) champ.value = "";
+          }
           return;
         }
         const nom = [json.marque, json.modele, json.annee].filter(Boolean).join(" ");
-        showBox(nom, "Si ce n'est pas votre véhicule, corrigez la plaque et relancez la vérification.", true);
+        showBox(
+          nom,
+          [json.finition, "Si ce n'est pas votre véhicule, corrigez la plaque et relancez la vérification."]
+            .filter(Boolean)
+            .join(" — "),
+          true
+        );
         if (hiddenMarque) hiddenMarque.value = json.marque || "";
         if (hiddenModele) hiddenModele.value = json.modele || "";
+        if (hiddenAnnee) hiddenAnnee.value = json.annee || "";
+        if (hiddenFinition) hiddenFinition.value = json.finition || "";
       } catch {
         showBox("Non identifié", "Vérification impossible pour le moment. Vous pouvez continuer, nous confirmerons avec vous.", false);
       } finally {

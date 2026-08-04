@@ -9,15 +9,26 @@ function getConnectionString() {
   );
 }
 
+const NO_DB =
+  "Aucune base de données connectée (DATABASE_URL / POSTGRES_URL manquant). Active Vercel Postgres (Neon) dans le dashboard Vercel du projet, puis redéploie.";
+
 export function sql(strings, ...values) {
   const connectionString = getConnectionString();
-  if (!connectionString) {
-    throw new Error(
-      "Aucune base de données connectée (DATABASE_URL / POSTGRES_URL manquant). Active Vercel Postgres (Neon) dans le dashboard Vercel du projet, puis redéploie."
-    );
-  }
+  if (!connectionString) throw new Error(NO_DB);
   const client = neon(connectionString);
   return client(strings, ...values);
+}
+
+/**
+ * Requête paramétrée classique ($1, $2...). Le template `sql` ne permet pas de
+ * composer du SQL conditionnel ni des listes de VALUES de taille variable —
+ * c'est indispensable pour l'import des cotes constructeur (des milliers de
+ * lignes par lot) et pour les filtres optionnels (année, finition).
+ */
+export function query(text, params = []) {
+  const connectionString = getConnectionString();
+  if (!connectionString) throw new Error(NO_DB);
+  return neon(connectionString).query(text, params);
 }
 
 export const SCHEMA_SQL = `
@@ -138,6 +149,37 @@ alter table commandes add column if not exists peinture_aspect text;
 alter table commandes add column if not exists peinture_ral text;
 alter table commandes add column if not exists peinture_nom text;
 alter table commandes add column if not exists peinture_hex text;
+alter table commandes add column if not exists vehicule_annee text;
+alter table commandes add column if not exists vehicule_finition text;
+alter table commandes add column if not exists deport_propose text;
+alter table commandes add column if not exists deport_source text;
+alter table commandes add column if not exists monte_origine jsonb;
+
+-- Cotes de monte d'origine (données constructeur), importées depuis un jeu de
+-- données acheté. Une ligne = une taille de roue proposée d'usine sur une
+-- version de véhicule. C'est cette table qui fixe l'emplacement de la jante
+-- sur une commande catalogue : on reprend le déport constructeur, on n'invente
+-- rien. Voir src/lib/fitment.js pour la règle de sélection.
+create table if not exists oe_fitments (
+  id serial primary key,
+  marque text not null,
+  modele text not null,
+  marque_norm text not null,
+  modele_norm text not null,
+  finition text,
+  annee_debut integer,
+  annee_fin integer,
+  diametre numeric(4,1),
+  largeur numeric(4,1),
+  deport integer,
+  entraxe text,
+  alesage numeric(5,2),
+  origine text not null default 'import',
+  created_at timestamptz not null default now()
+);
+
+create index if not exists oe_fitments_marque_modele on oe_fitments (marque_norm, modele_norm);
+create index if not exists oe_fitments_marque on oe_fitments (marque_norm);
 
 create table if not exists commande_counter (
   year integer primary key,
