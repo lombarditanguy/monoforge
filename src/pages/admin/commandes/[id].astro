@@ -53,6 +53,17 @@ const STATUTS = [
             <tr><th>Diamètre</th><td>{commande.taille || "—"}</td></tr>
             <tr><th>Largeur</th><td>{commande.largeur || "—"}</td></tr>
             <tr><th>Finition</th><td>{commande.finition || "—"}</td></tr>
+            {commande.peinture_ral && (
+              <tr>
+                <th>Peinture</th>
+                <td>
+                  <span style={`display:inline-block;width:1.1rem;height:1.1rem;border-radius:.2rem;vertical-align:-3px;margin-right:.5rem;border:1px solid #26262b;background:${commande.peinture_hex || "#000"}`}></span>
+                  <strong>RAL {commande.peinture_ral}</strong>
+                  {commande.peinture_nom ? ` — ${commande.peinture_nom}` : ""}
+                  {commande.peinture_aspect ? ` · aspect ${commande.peinture_aspect}` : ""}
+                </td>
+              </tr>
+            )}
             <tr><th>Quantité</th><td>{commande.quantite}</td></tr>
             <tr><th>Prix unitaire HT</th><td>{Number(commande.prix_unitaire_ht).toFixed(2)} €</td></tr>
             <tr><th>Total HT</th><td><strong>{Number(commande.total_ht).toFixed(2)} €</strong></td></tr>

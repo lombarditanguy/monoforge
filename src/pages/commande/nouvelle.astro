@@ -13,6 +13,10 @@ const family = getFamily(item.family);
 const sizeLabel = params.get("sizeLabel") || "";
 const widthLabel = params.get("widthLabel") || "";
 const finishLabel = params.get("finishLabel") || "Brut forgé";
+const peintureAspect = params.get("peintureAspect") || "";
+const peintureRal = params.get("peintureRal") || "";
+const peintureNom = params.get("peintureNom") || "";
+const peintureHex = params.get("peintureHex") || "";
 const quantity = Math.max(1, Number(params.get("quantity") || 1));
 const unitPriceHt = Number(params.get("unitPriceHt") || 0);
 const totalHt = unitPriceHt * quantity;
@@ -36,6 +40,10 @@ if (unitPriceHt <= 0) return Astro.redirect(`/catalogue/${item.family}/${item.sl
         <input type="hidden" name="sizeLabel" value={sizeLabel} />
         <input type="hidden" name="widthLabel" value={widthLabel} />
         <input type="hidden" name="finishLabel" value={finishLabel} />
+        <input type="hidden" name="peintureAspect" value={peintureAspect} />
+        <input type="hidden" name="peintureRal" value={peintureRal} />
+        <input type="hidden" name="peintureNom" value={peintureNom} />
+        <input type="hidden" name="peintureHex" value={peintureHex} />
         <input type="hidden" name="quantity" value={quantity} />
         <input type="hidden" name="unitPriceHt" value={unitPriceHt.toFixed(2)} />
 
@@ -153,6 +161,15 @@ if (unitPriceHt <= 0) return Astro.redirect(`/catalogue/${item.family}/${item.sl
           {sizeLabel && <div class="flex justify-between"><dt class="text-(--color-fog)">Diamètre</dt><dd class="text-(--color-paper)">{sizeLabel}</dd></div>}
           {widthLabel && <div class="flex justify-between"><dt class="text-(--color-fog)">Largeur</dt><dd class="text-(--color-paper)">{widthLabel}</dd></div>}
           <div class="flex justify-between"><dt class="text-(--color-fog)">Finition</dt><dd class="text-(--color-paper)">{finishLabel}</dd></div>
+          {peintureRal && (
+            <div class="flex items-center justify-between gap-2">
+              <dt class="text-(--color-fog)">Couleur</dt>
+              <dd class="flex items-center gap-2 text-(--color-paper)">
+                <span class="inline-block h-4 w-4 shrink-0 rounded border border-(--color-line)" style={`background:${peintureHex}`}></span>
+                <span>RAL {peintureRal}{peintureAspect ? ` · ${peintureAspect}` : ""}</span>
+              </dd>
+            </div>
+          )}
           <div class="flex justify-between"><dt class="text-(--color-fog)">Quantité</dt><dd class="text-(--color-paper)">{quantity}</dd></div>
         </dl>
         <div class="mt-5 border-t border-(--color-line) pt-4">

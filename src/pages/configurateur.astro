@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import ColorConfigurator from "../components/ColorConfigurator.astro";
 import Breadcrumbs from "../components/Breadcrumbs.astro";
 import { breadcrumbLd } from "../utils/seo.js";
 import { FAMILIES } from "../data/catalog.js";
@@ -110,6 +111,11 @@ import { VEHICLE_BRANDS } from "../data/vehicles.js";
             <span class="mb-1.5 block text-sm font-medium text-(--color-paper)">Finition envisagée</span>
             <input name="finition" type="text" placeholder="Ex : noir mat, brossé..." class="w-full rounded border border-(--color-line) bg-(--color-surface-2) px-4 py-3 text-sm text-(--color-paper) placeholder:text-(--color-fog) focus:border-(--color-forge-500) focus:outline-none" />
           </label>
+          <label class="mt-5 flex items-start gap-2.5 text-sm text-(--color-mist)">
+            <input type="checkbox" id="mf-veut-peinture" class="mt-0.5 h-4 w-4 shrink-0 accent-(--color-forge-500)" />
+            <span>Je souhaite une peinture, et je veux choisir ma couleur maintenant</span>
+          </label>
+          <ColorConfigurator />
         </fieldset>
 
         <fieldset>
@@ -188,6 +194,17 @@ import { VEHICLE_BRANDS } from "../data/vehicles.js";
   const yearSelect = document.getElementById("mf-year");
   const entraxeInput = document.getElementById("mf-entraxe");
   const manualVehicleWrap = document.getElementById("mf-manual-vehicule");
+
+  // Le nuancier ne s'ouvre que si le client veut effectivement une peinture.
+  const veutPeinture = document.getElementById("mf-veut-peinture");
+  const couleurPanel = document.getElementById("mf-color-panel");
+  function syncPeinture() {
+    const on = !!veutPeinture?.checked;
+    couleurPanel?.classList.toggle("hidden", !on);
+    couleurPanel?.querySelectorAll("input").forEach((i) => { i.disabled = !on; });
+  }
+  veutPeinture?.addEventListener("change", syncPeinture);
+  syncPeinture();
 
   function resetSelect(select, placeholder, disabled) {
     select.innerHTML = "";
@@ -289,6 +306,11 @@ import { VEHICLE_BRANDS } from "../data/vehicles.js";
       `Famille recherchée : ${data.get("famille") || "—"}`,
       `Référence catalogue : ${data.get("reference") || "—"}`,
       `Finition envisagée : ${data.get("finition") || "—"}`,
+      ...(document.getElementById("mf-veut-peinture")?.checked
+        ? [
+            `Peinture : RAL ${data.get("peintureRal") || "—"} (${data.get("peintureNom") || "—"}), aspect ${data.get("peintureAspect") || "—"}`,
+          ]
+        : []),
       "",
       "Projet :",
       String(data.get("message") || "—"),

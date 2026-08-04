@@ -92,6 +92,10 @@ create table if not exists commandes (
   taille text,
   largeur text,
   finition text,
+  peinture_aspect text,
+  peinture_ral text,
+  peinture_nom text,
+  peinture_hex text,
   quantite integer not null default 1,
   prix_unitaire_ht numeric(10,2) not null default 0,
   total_ht numeric(10,2) not null default 0,
@@ -130,6 +134,10 @@ create table if not exists commandes (
 alter table commandes add column if not exists vehicule_marque text;
 alter table commandes add column if not exists vehicule_modele text;
 alter table commandes add column if not exists vehicule_lookup_raw jsonb;
+alter table commandes add column if not exists peinture_aspect text;
+alter table commandes add column if not exists peinture_ral text;
+alter table commandes add column if not exists peinture_nom text;
+alter table commandes add column if not exists peinture_hex text;
 
 create table if not exists commande_counter (
   year integer primary key,

@@ -4,6 +4,7 @@ import Layout from "../../../layouts/Layout.astro";
 import Breadcrumbs from "../../../components/Breadcrumbs.astro";
 import WheelPhotoCard from "../../../components/WheelPhotoCard.astro";
 import CTASection from "../../../components/CTASection.astro";
+import ColorConfigurator from "../../../components/ColorConfigurator.astro";
 import { FAMILIES } from "../../../data/catalog.js";
 import { getCatalogItem, listItemsForFamily } from "../../../lib/catalogDb.js";
 import { breadcrumbLd, catalogItemLd } from "../../../utils/seo.js";
@@ -145,7 +146,7 @@ const ld = [
                 <label for="mf-finish-select" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Finition</label>
                 <select id="mf-finish-select" class="w-full rounded-md border border-(--color-line) bg-(--color-surface) px-3 py-2 text-sm text-(--color-paper)">
                   <option value="0" data-label="Brut forgé">Brut forgé (aucune finition)</option>
-                  {finishesData.map((f) => <option value={f.supplement} data-label={f.label}>{f.label}{f.supplement > 0 ? ` (+${f.supplement.toFixed(0)} €)` : ""}</option>)}
+                  {finishesData.map((f) => <option value={f.supplement} data-label={f.label} data-peinture={/peinture/i.test(f.label) ? "1" : undefined}>{f.label}{f.supplement > 0 ? ` (+${f.supplement.toFixed(0)} €)` : ""}</option>)}
                 </select>
               </div>
               <div>
@@ -157,6 +158,7 @@ const ld = [
                 </select>
               </div>
             </div>
+            <ColorConfigurator />
             <button type="submit" class="btn btn-forge mt-5 w-full sm:w-auto">Commander et payer</button>
           </form>
           <p class="mt-4 text-xs leading-relaxed text-(--color-fog)">
@@ -274,12 +276,28 @@ const ld = [
         if (hiddenQty) hiddenQty.value = String(qty);
         if (hiddenUnitPrice) hiddenUnitPrice.value = unitPrice.toFixed(2);
       }
+      // Le configurateur de couleur ne concerne que les finitions peinture :
+      // on l'affiche à la demande, et on neutralise ses champs sinon pour ne
+      // pas transmettre une couleur sur une jante brute ou polie.
+      const colorPanel = document.getElementById("mf-color-panel");
+      function syncColorPanel() {
+        const isPeinture = finishSelect?.selectedOptions[0]?.dataset.peinture === "1";
+        colorPanel?.classList.toggle("hidden", !isPeinture);
+        colorPanel?.querySelectorAll("input").forEach((input) => {
+          input.disabled = !isPeinture;
+        });
+      }
+
       sizeSelect?.addEventListener("change", recompute);
       widthSelect?.addEventListener("change", recompute);
       widthRearSelect?.addEventListener("change", recompute);
-      finishSelect?.addEventListener("change", recompute);
+      finishSelect?.addEventListener("change", () => {
+        recompute();
+        syncColorPanel();
+      });
       qtySelect?.addEventListener("change", recompute);
       recompute();
+      syncColorPanel();
     </script>
   )}
 </Layout>

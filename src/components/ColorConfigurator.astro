@@ -1,0 +1,182 @@
+---
+// Configurateur de couleur pour l'option peinture.
+// Trois entrées : les teintes courantes, le nuancier RAL complet, et une
+// couleur libre dont on calcule le RAL le plus proche. Ce qui part en
+// fabrication est toujours un code RAL — l'aperçu écran n'est qu'indicatif.
+import { RAL_COLORS, POPULAR_RAL, FINITIONS_PEINTURE } from "../data/ralColors.js";
+
+const populaires = POPULAR_RAL.map((code) => RAL_COLORS.find((c) => c.ral === code)).filter(Boolean);
+---
+
+<div id="mf-color-panel" class="mt-5 hidden rounded-lg border border-(--color-line) bg-(--color-surface) p-5">
+  <p class="text-xs uppercase tracking-widest text-(--color-fog)">Peinture</p>
+
+  <fieldset class="mt-4">
+    <legend class="mb-2 text-sm text-(--color-mist)">Aspect</legend>
+    <div class="flex flex-wrap gap-2">
+      {FINITIONS_PEINTURE.map((f, i) => (
+        <label class="mf-aspect cursor-pointer rounded-md border border-(--color-line) px-4 py-2 text-sm text-(--color-mist) has-checked:border-(--color-forge-500) has-checked:text-(--color-paper)">
+          <input type="radio" name="peintureAspect" value={f.id} checked={i === 0} class="sr-only" />
+          {f.label}
+        </label>
+      ))}
+    </div>
+  </fieldset>
+
+  <div class="mt-6">
+    <div class="flex flex-wrap gap-1 border-b border-(--color-line)">
+      <button type="button" data-tab="courantes" class="mf-tab -mb-px border-b-2 border-(--color-forge-500) px-2 py-2 text-[0.78rem] whitespace-nowrap text-(--color-paper)">Couleurs courantes</button>
+      <button type="button" data-tab="nuancier" class="mf-tab -mb-px border-b-2 border-transparent px-2 py-2 text-[0.78rem] whitespace-nowrap text-(--color-fog)">Nuancier RAL</button>
+      <button type="button" data-tab="libre" class="mf-tab -mb-px border-b-2 border-transparent px-2 py-2 text-[0.78rem] whitespace-nowrap text-(--color-fog)">Couleur personnalisée</button>
+    </div>
+
+    <div data-panel="courantes" class="mt-4">
+      <div class="grid grid-cols-4 gap-2">
+        {populaires.map((c) => (
+          <button type="button" class="mf-swatch group rounded-md border border-(--color-line) p-1.5 text-left hover:border-(--color-forge-500)" data-ral={c.ral} data-nom={c.nom} data-hex={c.hex}>
+            <span class="block h-10 w-full rounded" style={`background:${c.hex}`}></span>
+            <span class="mt-1 block text-center text-[0.7rem] text-(--color-fog)">{c.ral}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <div data-panel="nuancier" class="mt-4 hidden">
+      <input type="search" id="mf-ral-search" placeholder="Rechercher un RAL ou un nom (ex : 7016, anthracite)" class="w-full rounded-md border border-(--color-line) bg-(--color-surface-2) px-3 py-2 text-sm text-(--color-paper) placeholder:text-(--color-fog) focus:border-(--color-forge-500) focus:outline-none" />
+      <div id="mf-ral-grid" class="mt-3 grid max-h-64 grid-cols-4 gap-2 overflow-y-auto">
+        {RAL_COLORS.map((c) => (
+          <button type="button" class="mf-swatch mf-ral-item rounded-md border border-(--color-line) p-1.5 text-left hover:border-(--color-forge-500)" data-ral={c.ral} data-nom={c.nom} data-hex={c.hex} data-search={`${c.ral} ${c.nom.toLowerCase()}`}>
+            <span class="block h-10 w-full rounded" style={`background:${c.hex}`}></span>
+            <span class="mt-1 block text-center text-[0.7rem] text-(--color-fog)">{c.ral}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <div data-panel="libre" class="mt-4 hidden">
+      <div class="flex flex-wrap items-center gap-3">
+        <input type="color" id="mf-free-color" value="#8C6239" class="h-12 w-16 cursor-pointer rounded border border-(--color-line) bg-transparent" />
+        <input type="text" id="mf-free-hex" value="#8C6239" spellcheck="false" class="w-32 rounded-md border border-(--color-line) bg-(--color-surface-2) px-3 py-2 font-mono text-sm text-(--color-paper) focus:border-(--color-forge-500) focus:outline-none" />
+        <p class="text-xs text-(--color-fog)">Choisissez librement : nous retenons le RAL le plus proche.</p>
+      </div>
+      <div id="mf-free-matches" class="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3"></div>
+    </div>
+  </div>
+
+  <div class="mt-5 flex items-center gap-3 border-t border-(--color-line) pt-4">
+    <span id="mf-color-preview" class="h-10 w-10 shrink-0 rounded border border-(--color-line)" style="background:#0A0A0A"></span>
+    <div class="min-w-0">
+      <p id="mf-color-label" class="truncate font-display text-base font-bold text-(--color-paper)">RAL 9005 — Noir foncé</p>
+      <p id="mf-color-note" class="text-xs text-(--color-fog)">Teinte affichée à titre indicatif : un écran ne reproduit pas fidèlement une peinture. C'est la référence RAL qui fait foi en fabrication.</p>
+    </div>
+  </div>
+
+  <input type="hidden" name="peintureRal" id="mf-hidden-ral" value="9005" />
+  <input type="hidden" name="peintureNom" id="mf-hidden-nom" value="Noir foncé" />
+  <input type="hidden" name="peintureHex" id="mf-hidden-hex" value="#0A0A0A" />
+</div>
+
+<script>
+  import { nearestRal } from "../lib/colorMatch.js";
+
+  const panel = document.getElementById("mf-color-panel");
+  if (panel) {
+    const preview = document.getElementById("mf-color-preview");
+    const label = document.getElementById("mf-color-label");
+    const hiddenRal = document.getElementById("mf-hidden-ral") as HTMLInputElement;
+    const hiddenNom = document.getElementById("mf-hidden-nom") as HTMLInputElement;
+    const hiddenHex = document.getElementById("mf-hidden-hex") as HTMLInputElement;
+
+    function select(ral: string, nom: string, hex: string) {
+      if (preview) preview.style.background = hex;
+      if (label) label.textContent = `RAL ${ral} — ${nom}`;
+      hiddenRal.value = ral;
+      hiddenNom.value = nom;
+      hiddenHex.value = hex;
+      document.querySelectorAll(".mf-swatch").forEach((el) => {
+        el.classList.toggle("border-(--color-forge-500)", (el as HTMLElement).dataset.ral === ral);
+      });
+      panel.dispatchEvent(new CustomEvent("mf:color", { bubbles: true }));
+    }
+
+    panel.addEventListener("click", (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLElement>(".mf-swatch");
+      if (!btn) return;
+      select(btn.dataset.ral || "", btn.dataset.nom || "", btn.dataset.hex || "");
+    });
+
+    // Onglets
+    panel.querySelectorAll<HTMLElement>(".mf-tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const name = tab.dataset.tab;
+        panel.querySelectorAll<HTMLElement>(".mf-tab").forEach((t) => {
+          const on = t === tab;
+          t.classList.toggle("border-(--color-forge-500)", on);
+          t.classList.toggle("border-transparent", !on);
+          t.classList.toggle("text-(--color-paper)", on);
+          t.classList.toggle("text-(--color-fog)", !on);
+        });
+        panel.querySelectorAll<HTMLElement>("[data-panel]").forEach((p) => {
+          p.classList.toggle("hidden", p.dataset.panel !== name);
+        });
+      });
+    });
+
+    // Recherche dans le nuancier
+    const search = document.getElementById("mf-ral-search") as HTMLInputElement | null;
+    search?.addEventListener("input", () => {
+      const q = search.value.trim().toLowerCase();
+      panel.querySelectorAll<HTMLElement>(".mf-ral-item").forEach((el) => {
+        el.classList.toggle("hidden", !!q && !(el.dataset.search || "").includes(q));
+      });
+    });
+
+    // Couleur libre -> RAL les plus proches
+    const freeColor = document.getElementById("mf-free-color") as HTMLInputElement | null;
+    const freeHex = document.getElementById("mf-free-hex") as HTMLInputElement | null;
+    const matches = document.getElementById("mf-free-matches");
+
+    function renderMatches(hex: string) {
+      if (!matches) return;
+      const found = nearestRal(hex, 3);
+      if (!found) return;
+      matches.innerHTML = "";
+      (found as any[]).forEach((c, i) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className =
+          "mf-swatch flex items-center gap-2 rounded-md border p-2 text-left hover:border-(--color-forge-500) " +
+          (i === 0 ? "border-(--color-forge-500)" : "border-(--color-line)");
+        btn.dataset.ral = c.ral;
+        btn.dataset.nom = c.nom;
+        btn.dataset.hex = c.hex;
+        // L'écart perceptuel : en dessous de 2 l'œil ne fait pas la différence.
+        const proximite = c.ecart < 2 ? "identique à l'œil" : c.ecart < 5 ? "très proche" : "proche";
+        btn.innerHTML =
+          `<span class="h-8 w-8 shrink-0 rounded" style="background:${c.hex}"></span>` +
+          `<span class="min-w-0"><span class="block truncate text-xs text-(--color-paper)">RAL ${c.ral}</span>` +
+          `<span class="block truncate text-[0.65rem] text-(--color-fog)">${c.nom} · ${proximite}</span></span>`;
+        matches.appendChild(btn);
+      });
+      const best = (found as any[])[0];
+      select(best.ral, best.nom, best.hex);
+    }
+
+    freeColor?.addEventListener("input", () => {
+      if (freeHex) freeHex.value = freeColor.value.toUpperCase();
+      renderMatches(freeColor.value);
+    });
+    freeHex?.addEventListener("input", () => {
+      const v = freeHex.value.trim();
+      if (!/^#?[0-9a-fA-F]{6}$/.test(v)) return;
+      const hex = v.startsWith("#") ? v : `#${v}`;
+      if (freeColor) freeColor.value = hex;
+      renderMatches(hex);
+    });
+    renderMatches("#8C6239");
+
+    // La sélection par défaut reste le noir : renderMatches ci-dessus a
+    // sélectionné un bronze, on rétablit l'état initial attendu.
+    select("9005", "Noir foncé", "#0A0A0A");
+  }
+</script>
