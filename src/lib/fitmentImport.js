@@ -23,13 +23,21 @@ export function detectDelimiter(text) {
   return [";", "\t", ",", "|"].sort((a, b) => compte(b) - compte(a))[0];
 }
 
-/** Parseur CSV minimal mais correct : guillemets, séparateurs échappés, CRLF. */
-export function parseCsv(text, delimiter) {
+/**
+ * Parseur CSV minimal mais correct : guillemets, séparateurs échappés, CRLF.
+ *
+ * Générateur, et pas tableau : le jeu de données complet fait plus de cent
+ * mille lignes, et les matérialiser toutes coûte plusieurs centaines de
+ * mégaoctets dans l'onglet du navigateur — de quoi faire tomber un poste
+ * modeste avant même le premier envoi. Les appelants qui ont besoin de tout
+ * garder le font explicitement avec `parseCsv`.
+ */
+export function* lignesCsv(text, delimiter) {
   const sep = delimiter || detectDelimiter(text);
-  const lignes = [];
   let champ = "";
   let ligne = [];
   let inQuotes = false;
+  const utile = (l) => l.some((v) => String(v).trim() !== "");
 
   for (let i = 0; i < text.length; i++) {
     const c = text[i];
@@ -48,16 +56,29 @@ export function parseCsv(text, delimiter) {
       champ = "";
     } else if (c === "\n") {
       ligne.push(champ);
-      lignes.push(ligne);
+      if (utile(ligne)) yield ligne;
       ligne = [];
       champ = "";
     } else if (c !== "\r") champ += c;
   }
   if (champ !== "" || ligne.length) {
     ligne.push(champ);
-    lignes.push(ligne);
+    if (utile(ligne)) yield ligne;
   }
-  return lignes.filter((l) => l.some((v) => String(v).trim() !== ""));
+}
+
+export function parseCsv(text, delimiter) {
+  return [...lignesCsv(text, delimiter)];
+}
+
+/** Les n premières lignes, pour reconnaître le format sans tout lire. */
+export function teteCsv(text, n, delimiter) {
+  const tete = [];
+  for (const l of lignesCsv(text, delimiter)) {
+    tete.push(l);
+    if (tete.length >= n) break;
+  }
+  return tete;
 }
 
 /* ------------------------------------------------------------------ */
@@ -112,10 +133,10 @@ export function looksLikeVehicleGrid(lignes) {
   return avecJante.length / echantillon.length > 0.5;
 }
 
-function rolesDeGrille(lignes) {
-  const n = Math.max(...lignes.map((l) => l.length));
+function rolesDeGrille(tete) {
+  const n = Math.max(...tete.map((l) => l.length));
   const roles = [];
-  for (let i = 0; i < n; i++) roles.push(roleColonne(lignes.slice(0, 300).map((l) => l[i])));
+  for (let i = 0; i < n; i++) roles.push(roleColonne(tete.map((l) => l[i])));
 
   const iAnnee = roles.indexOf("annee");
   // Les colonnes d'identité (marque, modèle, carrosserie, motorisation) sont
@@ -159,14 +180,21 @@ function eclaterCellule(cellule, groupe) {
   return montes;
 }
 
-export function parseVehicleGrid(lignes) {
-  const cols = rolesDeGrille(lignes);
+export function parseVehicleGrid(lignes, tete = null) {
+  const cols = rolesDeGrille(tete || lignes);
   if (cols.jantes.length === 0 || cols.identite.length < 2) {
     return { rows: [], cols, erreur: "Colonnes de tailles ou d'identité introuvables." };
   }
+  let total = 0;
 
-  const brut = [];
+  // On regroupe au fil de la lecture plutôt qu'après : le fichier complet
+  // produit un demi-million de montes avant regroupement, et les matérialiser
+  // toutes en mémoire fait tomber le navigateur d'un poste modeste. Ici seules
+  // les lignes finales existent, chacune accompagnée de ses années.
+  const groupes = new Map();
+  let brut = 0;
   for (const l of lignes) {
+    total++;
     const textes = cols.identite.map((i) => String(l[i] ?? "").trim());
     const marque = textes[0];
     const modele = textes[1];
@@ -186,54 +214,53 @@ export function parseVehicleGrid(lignes) {
 
     cols.jantes.forEach((ci, rang) => {
       for (const m of eclaterCellule(l[ci], rang + 1)) {
-        brut.push({
-          marque, modele, finition,
-          marqueNorm: normaliseCle(marque),
-          modeleNorm: normaliseCle(modele),
-          annee: Number.isFinite(annee) ? annee : null,
-          diametre: m.diametre,
-          largeur: m.largeur,
-          deport: m.deport,
-          essieu: m.essieu,
-          groupe: m.groupe,
-          entraxe,
-          alesage: Number.isFinite(alesage) && alesage >= 40 && alesage <= 120 ? alesage : null,
-        });
+        brut++;
+        const cle = `${marque}|${modele}|${finition}|${m.diametre}|${m.largeur}|${m.deport}|${m.essieu}|${m.groupe}|${entraxe}|${alesage}`;
+        let g = groupes.get(cle);
+        if (!g) {
+          g = {
+            ligne: {
+              marque, modele, finition,
+              marqueNorm: normaliseCle(marque),
+              modeleNorm: normaliseCle(modele),
+              diametre: m.diametre,
+              largeur: m.largeur,
+              deport: m.deport,
+              essieu: m.essieu,
+              groupe: m.groupe,
+              entraxe,
+              alesage: Number.isFinite(alesage) && alesage >= 40 && alesage <= 120 ? alesage : null,
+            },
+            annees: new Set(),
+          };
+          groupes.set(cle, g);
+        }
+        if (Number.isFinite(annee)) g.annees.add(annee);
       }
     });
   }
 
-  return { rows: compacterAnnees(brut), cols, brut: brut.length };
+  return { rows: decouperEnIntervalles(groupes), cols, brut, total };
 }
 
 /**
- * Le fichier répète la même monte pour chaque millésime. On rassemble les
- * années consécutives en intervalles : même information, dix fois moins de
- * lignes à transférer et à interroger.
+ * Le fichier répète la même monte pour chaque millésime. On rend une ligne par
+ * plage d'années consécutives : même information, dix fois moins de lignes à
+ * transférer et à interroger. Une coupure dans la suite des années crée deux
+ * lignes — un modèle peut avoir été retiré du catalogue puis réintroduit.
  */
-function compacterAnnees(rows) {
-  const groupes = new Map();
-  for (const r of rows) {
-    const cle = [
-      r.marque, r.modele, r.finition, r.diametre, r.largeur, r.deport,
-      r.essieu, r.groupe, r.entraxe, r.alesage,
-    ].join(" ");
-    if (!groupes.has(cle)) groupes.set(cle, { modele: r, annees: [] });
-    if (r.annee !== null) groupes.get(cle).annees.push(r.annee);
-  }
-
+function decouperEnIntervalles(groupes) {
   const sortie = [];
-  for (const { modele, annees } of groupes.values()) {
-    const { annee, ...base } = modele;
-    if (annees.length === 0) {
-      sortie.push({ ...base, anneeDebut: null, anneeFin: null });
+  for (const { ligne, annees } of groupes.values()) {
+    if (annees.size === 0) {
+      sortie.push({ ...ligne, anneeDebut: null, anneeFin: null });
       continue;
     }
-    const tri = [...new Set(annees)].sort((a, b) => a - b);
+    const tri = [...annees].sort((a, b) => a - b);
     let debut = tri[0];
     for (let i = 1; i <= tri.length; i++) {
       if (i === tri.length || tri[i] !== tri[i - 1] + 1) {
-        sortie.push({ ...base, anneeDebut: debut, anneeFin: tri[i - 1] });
+        sortie.push({ ...ligne, anneeDebut: debut, anneeFin: tri[i - 1] });
         debut = tri[i];
       }
     }
@@ -423,21 +450,23 @@ export function normalizeRow(cellules, mapping) {
  * laisser corriger le mapping avant d'écrire quoi que ce soit.
  */
 export function analyseFichier(texte, mappingForce = null) {
-  const lignes = parseCsv(texte);
-  if (lignes.length < 2) {
+  // On reconnaît le format et on cale les colonnes sur les premières lignes :
+  // inutile — et coûteux — de matérialiser le fichier entier pour ça.
+  const tete = teteCsv(texte, 300);
+  if (tete.length < 2) {
     return { erreur: "Fichier vide ou sans ligne de données." };
   }
 
   // Deux familles de fichiers coexistent sur le marché : la grille véhicule
   // (sans en-tête, tailles empilées) et le tableau classique une-ligne-par-
   // taille. On reconnaît la première à son contenu et on la traite à part.
-  if (!mappingForce && looksLikeVehicleGrid(lignes)) {
-    const { rows, cols, erreur, brut } = parseVehicleGrid(lignes);
+  if (!mappingForce && looksLikeVehicleGrid(tete)) {
+    const { rows, cols, erreur, brut, total } = parseVehicleGrid(lignesCsv(texte), tete);
     if (erreur) return { erreur };
     return {
       grille: true,
       roles: cols.roles,
-      total: lignes.length,
+      total,
       brut,
       exploitables: rows.length,
       echantillon: rows.slice(0, 5),
@@ -447,6 +476,7 @@ export function analyseFichier(texte, mappingForce = null) {
     };
   }
 
+  const lignes = parseCsv(texte);
   const entetes = lignes[0].map((h) => String(h).trim());
   const donnees = lignes.slice(1);
   const mapping = mappingForce || detectMapping(entetes, donnees.slice(0, 200));
