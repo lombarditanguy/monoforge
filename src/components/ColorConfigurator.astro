@@ -63,14 +63,15 @@ const populaires = POPULAR_RAL.map((code) => RAL_COLORS.find((c) => c.ral === co
           </label>
         </div>
         <div class="min-w-0 flex-1">
-          <label class="block">
-            <span class="mb-1 block text-[0.7rem] uppercase tracking-widest text-(--color-fog)">Code couleur</span>
+          <p class="text-xs leading-relaxed text-(--color-fog)">
+            Chaque pastille est une teinte de peinture réelle : sa position donne la nuance, le curseur fait varier
+            la clarté. Les zones vides correspondent à des couleurs qu'aucune peinture ne produit — un bleu d'écran,
+            par exemple, est bien plus vif que tout ce qui existe en pot.
+          </p>
+          <label class="mt-4 block">
+            <span class="mb-1 block text-[0.7rem] uppercase tracking-widest text-(--color-fog)">Ou saisissez un code couleur</span>
             <input type="text" id="mf-free-hex" value="#8C6239" spellcheck="false" class="w-32 rounded-md border border-(--color-line) bg-(--color-surface-2) px-3 py-2 font-mono text-sm text-(--color-paper) focus:border-(--color-forge-500) focus:outline-none" />
           </label>
-          <p class="mt-3 text-xs text-(--color-fog)">
-            Tournez dans le cercle pour la teinte, vers le centre pour l'adoucir, et réglez la luminosité en dessous.
-            Nous retenons ensuite le RAL le plus proche.
-          </p>
           <div id="mf-free-matches" class="mt-4 grid grid-cols-1 gap-2"></div>
         </div>
       </div>
@@ -91,7 +92,7 @@ const populaires = POPULAR_RAL.map((code) => RAL_COLORS.find((c) => c.ral === co
 </div>
 
 <script>
-  import { nearestRal } from "../lib/colorMatch.js";
+  import { nearestRal, RAL_WHEEL } from "../lib/colorMatch.js";
 
   const panel = document.getElementById("mf-color-panel");
   if (panel) {
@@ -145,90 +146,83 @@ const populaires = POPULAR_RAL.map((code) => RAL_COLORS.find((c) => c.ral === co
       });
     });
 
-    // Roue chromatique : l'angle donne la teinte, la distance au centre la
-    // saturation, le curseur la luminosité. Le disque est dessiné pixel par
-    // pixel avec la même conversion que celle qui produit la valeur retenue —
-    // ainsi ce qu'on voit correspond exactement à ce qu'on obtient.
+    // Roue des teintes RAL. Chaque pastille est une couleur réellement
+    // fabricable : l'angle porte la nuance, le rayon la saturation, et le
+    // curseur choisit la tranche de clarté affichée. Un dégradé continu
+    // laissait choisir des couleurs hors de portée d'une peinture — c'est
+    // ce qui produisait des correspondances décevantes sur les teintes vives.
     const freeHex = document.getElementById("mf-free-hex") as HTMLInputElement | null;
     const matches = document.getElementById("mf-free-matches");
     const wheel = document.getElementById("mf-wheel") as HTMLCanvasElement | null;
     const valueSlider = document.getElementById("mf-wheel-value") as HTMLInputElement | null;
-    let hue = 30;
-    let sat = 0.6;
+    const BANDE = 16;
+    let choisi: string | null = null;
 
-    function hsvToRgb(h: number, s: number, v: number) {
-      const c = v * s;
-      const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
-      const m = v - c;
-      const i = Math.floor(h / 60) % 6;
-      const [r1, g1, b1] = [
-        [c, x, 0], [x, c, 0], [0, c, x], [0, x, c], [x, 0, c], [c, 0, x],
-      ][i];
-      return [Math.round((r1 + m) * 255), Math.round((g1 + m) * 255), Math.round((b1 + m) * 255)];
+    function positions(size: number) {
+      const L = Number(valueSlider?.value || 50);
+      const r = size / 2;
+      const marge = 24;
+      const visibles = (RAL_WHEEL as any[]).filter((c) => Math.abs(c.L - L) <= BANDE);
+      // Le rayon est réparti sur la saturation réellement présente à cette
+      // clarté, pas sur le maximum de tout le nuancier : sinon une tranche de
+      // teintes sombres et peu saturées s'entasse au centre et devient
+      // impossible à viser.
+      const maxR = Math.max(0.08, ...visibles.map((c) => c.rayon));
+      return visibles.map((c) => {
+        const rad = (c.angle * Math.PI) / 180;
+        const d = (0.18 + 0.82 * (c.rayon / maxR)) * (r - marge);
+        return { ...c, x: r + Math.cos(rad) * d, y: r + Math.sin(rad) * d };
+      });
     }
-
-    const toHex = (n: number) => n.toString(16).padStart(2, "0");
 
     function drawWheel() {
       if (!wheel) return;
       const ctx = wheel.getContext("2d");
       if (!ctx) return;
       const size = wheel.width;
-      const r = size / 2;
-      const v = Number(valueSlider?.value || 70) / 100;
-      const img = ctx.createImageData(size, size);
-      for (let y = 0; y < size; y++) {
-        for (let x = 0; x < size; x++) {
-          const dx = x - r + 0.5;
-          const dy = y - r + 0.5;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          const i = (y * size + x) * 4;
-          if (dist > r) {
-            img.data[i + 3] = 0;
-            continue;
-          }
-          const h = (Math.atan2(dy, dx) * (180 / Math.PI) + 360) % 360;
-          const [R, G, B] = hsvToRgb(h, Math.min(1, dist / r), v);
-          img.data[i] = R;
-          img.data[i + 1] = G;
-          img.data[i + 2] = B;
-          // Bord adouci pour éviter l'escalier sur le cercle.
-          img.data[i + 3] = dist > r - 1.5 ? Math.max(0, (r - dist) / 1.5) * 255 : 255;
-        }
-      }
-      ctx.putImageData(img, 0, 0);
-
-      // Repère de la sélection courante.
-      const mx = r + Math.cos((hue * Math.PI) / 180) * sat * r;
-      const my = r + Math.sin((hue * Math.PI) / 180) * sat * r;
+      ctx.clearRect(0, 0, size, size);
       ctx.beginPath();
-      ctx.arc(mx, my, 9, 0, Math.PI * 2);
-      ctx.strokeStyle = "#fff";
-      ctx.lineWidth = 4;
-      ctx.stroke();
-      ctx.strokeStyle = "rgba(0,0,0,.55)";
-      ctx.lineWidth = 2;
-      ctx.stroke();
-    }
+      ctx.arc(size / 2, size / 2, size / 2 - 1, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255,255,255,.05)";
+      ctx.fill();
 
-    function currentWheelHex() {
-      const v = Number(valueSlider?.value || 70) / 100;
-      const [R, G, B] = hsvToRgb(hue, sat, v);
-      return `#${toHex(R)}${toHex(G)}${toHex(B)}`.toUpperCase();
+      const pts = positions(size);
+      for (const c of pts) {
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, 15, 0, Math.PI * 2);
+        ctx.fillStyle = c.hex;
+        ctx.fill();
+        const actif = c.ral === choisi;
+        ctx.strokeStyle = actif ? "#fff" : "rgba(0,0,0,.5)";
+        ctx.lineWidth = actif ? 5 : 1.5;
+        ctx.stroke();
+      }
+      if (pts.length === 0) {
+        ctx.fillStyle = "rgba(255,255,255,.5)";
+        ctx.font = "15px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("Aucune teinte à cette clarté", size / 2, size / 2);
+      }
     }
 
     function pickFromWheel(clientX: number, clientY: number) {
       if (!wheel) return;
       const rect = wheel.getBoundingClientRect();
-      const r = rect.width / 2;
-      const dx = clientX - rect.left - r;
-      const dy = clientY - rect.top - r;
-      hue = (Math.atan2(dy, dx) * (180 / Math.PI) + 360) % 360;
-      sat = Math.min(1, Math.sqrt(dx * dx + dy * dy) / r);
+      const echelle = wheel.width / rect.width;
+      const x = (clientX - rect.left) * echelle;
+      const y = (clientY - rect.top) * echelle;
+      let best: any = null;
+      let bestD = Infinity;
+      for (const c of positions(wheel.width)) {
+        const d = Math.hypot(c.x - x, c.y - y);
+        if (d < bestD) { bestD = d; best = c; }
+      }
+      if (!best || bestD > 34) return;
+      choisi = best.ral;
       drawWheel();
-      const hex = currentWheelHex();
-      if (freeHex) freeHex.value = hex;
-      renderMatches(hex);
+      if (freeHex) freeHex.value = best.hex;
+      select(best.ral, best.nom, best.hex);
+      renderMatches(best.hex, false);
     }
 
     let dragging = false;
@@ -242,13 +236,7 @@ const populaires = POPULAR_RAL.map((code) => RAL_COLORS.find((c) => c.ral === co
     });
     wheel?.addEventListener("pointerup", () => { dragging = false; });
     wheel?.addEventListener("pointercancel", () => { dragging = false; });
-
-    valueSlider?.addEventListener("input", () => {
-      drawWheel();
-      const hex = currentWheelHex();
-      if (freeHex) freeHex.value = hex;
-      renderMatches(hex);
-    });
+    valueSlider?.addEventListener("input", drawWheel);
 
     function renderMatches(hex: string, autoSelect = true) {
       if (!matches) return;
@@ -279,31 +267,22 @@ const populaires = POPULAR_RAL.map((code) => RAL_COLORS.find((c) => c.ral === co
       select(best.ral, best.nom, best.hex);
     }
 
-    // Saisie d'un code : on replace le repère sur la roue en conséquence.
+    // Saisie d'un code : on retient le RAL le plus proche et on amène la roue
+    // sur sa tranche de clarté pour que le repère soit visible.
     freeHex?.addEventListener("input", () => {
       const v = freeHex.value.trim();
       if (!/^#?[0-9a-fA-F]{6}$/.test(v)) return;
       const hex = (v.startsWith("#") ? v : `#${v}`).toUpperCase();
-      const r = parseInt(hex.slice(1, 3), 16) / 255;
-      const g = parseInt(hex.slice(3, 5), 16) / 255;
-      const b = parseInt(hex.slice(5, 7), 16) / 255;
-      const max = Math.max(r, g, b);
-      const min = Math.min(r, g, b);
-      const d = max - min;
-      hue = d === 0 ? 0 : max === r ? ((g - b) / d) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
-      hue = ((hue * 60) + 360) % 360;
-      sat = max === 0 ? 0 : d / max;
-      if (valueSlider) valueSlider.value = String(Math.max(10, Math.round(max * 100)));
+      const best = nearestRal(hex) as any;
+      if (!best) return;
+      choisi = best.ral;
+      const w = (RAL_WHEEL as any[]).find((c) => c.ral === best.ral);
+      if (w && valueSlider) valueSlider.value = String(Math.round(w.L));
       drawWheel();
       renderMatches(hex);
     });
 
     drawWheel();
-    renderMatches(currentWheelHex(), false);
-    if (freeHex) freeHex.value = currentWheelHex();
-
-    // La sélection par défaut reste le noir : renderMatches ci-dessus a
-    // sélectionné un bronze, on rétablit l'état initial attendu.
     select("9005", "Noir foncé", "#0A0A0A");
   }
 </script>

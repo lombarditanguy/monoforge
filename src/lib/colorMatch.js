@@ -114,8 +114,45 @@ export function deltaE2000(lab1, lab2) {
   return Math.sqrt(dL * dL + dC * dC + dH * dH + RT * dC * dH);
 }
 
+export function chroma(lab) {
+  return Math.hypot(lab.a, lab.b);
+}
+
 // Lab pré-calculé une seule fois pour les 213 teintes.
-const RAL_LAB = RAL_COLORS.map((c) => ({ ...c, lab: rgbToLab(hexToRgb(c.hex)) }));
+const RAL_LAB = RAL_COLORS.map((c) => {
+  const lab = rgbToLab(hexToRgb(c.hex));
+  return { ...c, lab, C: chroma(lab) };
+});
+
+export const RAL_CHROMA_MAX = Math.max(...RAL_LAB.map((c) => c.C));
+
+// CIEDE2000 seul se comporte mal quand la couleur visée sort du gamut RAL :
+// son terme de saturation est divisé par (1 + 0,045·chroma), donc plus la
+// couleur est vive, moins la perte de saturation est pénalisée — et un bleu
+// éclatant se voit apparier à un bleu grisâtre. On ajoute donc une pénalité
+// sur la perte de chroma, pondérée par la vivacité de la cible : nulle sur un
+// gris (où l'écart de teinte n'a aucun sens), forte sur une couleur saturée.
+function matchScore(target, candidate) {
+  const perte = Math.max(0, chroma(target) - candidate.C);
+  const poids = chroma(target) / (chroma(target) + 35);
+  return deltaE2000(target, candidate.lab) + 0.5 * perte * poids;
+}
+
+/**
+ * Position de chaque RAL sur une roue chromatique : l'angle est la teinte,
+ * le rayon la saturation, et `L` la clarté. Sert à afficher le nuancier sous
+ * forme de cercle où l'on ne peut cliquer que sur des teintes réellement
+ * fabricables — plutôt qu'un dégradé continu qui laisse croire à des couleurs
+ * hors de portée d'une peinture.
+ */
+export const RAL_WHEEL = RAL_LAB.map((c) => ({
+  ral: c.ral,
+  nom: c.nom,
+  hex: c.hex,
+  L: c.lab.L,
+  angle: (Math.atan2(c.lab.b, c.lab.a) * 180) / Math.PI,
+  rayon: c.C / RAL_CHROMA_MAX,
+}));
 
 /**
  * Renvoie le RAL le plus proche d'une couleur hexadécimale, avec l'écart
@@ -132,8 +169,11 @@ export function nearestRal(hex, count = 1) {
     ral: c.ral,
     nom: c.nom,
     hex: c.hex,
+    // `ecart` reste l'écart perceptuel réel, affiché à l'utilisateur ; le
+    // classement, lui, tient compte de la perte de saturation.
     ecart: deltaE2000(lab, c.lab),
-  })).sort((a, b) => a.ecart - b.ecart);
+    score: matchScore(lab, c),
+  })).sort((a, b) => a.score - b.score);
 
   return count === 1 ? scored[0] : scored.slice(0, count);
 }
