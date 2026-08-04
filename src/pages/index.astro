@@ -64,18 +64,21 @@ const homeFaqs = [
             <a href="/configurateur" class="btn btn-forge">Démarrer une étude gratuite</a>
             <a href="/catalogue" class="btn btn-outline">Explorer le catalogue</a>
           </div>
-          <dl class="mt-14 grid grid-cols-3 gap-6 border-t border-(--color-line) pt-8">
-            <div>
+          <!-- Sur mobile : liste étiquette/valeur alignée. Trois colonnes de
+               texte display n'y tiennent pas — les valeurs se coupaient en
+               deux lignes et débordaient les unes sur les autres. -->
+          <dl class="mt-12 grid grid-cols-1 gap-3 border-t border-(--color-line) pt-6 sm:mt-14 sm:grid-cols-3 sm:gap-6 sm:pt-8">
+            <div class="flex items-baseline justify-between gap-4 sm:block">
               <dt class="text-xs uppercase tracking-widest text-(--color-fog)">Tailles</dt>
-              <dd class="mt-1 font-display text-2xl font-bold text-(--color-paper)">15″ – 26″</dd>
+              <dd class="font-display text-xl font-bold whitespace-nowrap text-(--color-paper) sm:mt-1 sm:text-2xl">15″ – 26″</dd>
             </div>
-            <div>
+            <div class="flex items-baseline justify-between gap-4 sm:block">
               <dt class="text-xs uppercase tracking-widest text-(--color-fog)">Dessin</dt>
-              <dd class="mt-1 font-display text-2xl font-bold text-(--color-paper)">100% modifiable</dd>
+              <dd class="font-display text-xl font-bold whitespace-nowrap text-(--color-paper) sm:mt-1 sm:text-2xl sm:whitespace-normal">100% modifiable</dd>
             </div>
-            <div>
+            <div class="flex items-baseline justify-between gap-4 sm:block">
               <dt class="text-xs uppercase tracking-widest text-(--color-fog)">Alliage</dt>
-              <dd class="mt-1 font-display text-2xl font-bold text-(--color-paper)">6061-T6</dd>
+              <dd class="font-display text-xl font-bold whitespace-nowrap text-(--color-paper) sm:mt-1 sm:text-2xl">6061-T6</dd>
             </div>
           </dl>
         </div>
