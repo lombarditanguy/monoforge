@@ -30,15 +30,32 @@ export async function POST({ request }) {
 
   let blob;
   try {
+    // `public` n'est pas un choix : ces photos illustrent les fiches produit
+    // d'un site ouvert. Un store privé obligerait à signer une URL à chaque
+    // affichage d'image, pour des visuels qui n'ont rien de confidentiel.
     blob = await put(filename, file, { access: "public" });
   } catch (err) {
+    const message = err.message || "";
+
+    // Le mode d'accès d'un store Blob se fixe à sa création et ne se modifie
+    // plus ensuite : sans cette précision, on cherche longtemps un réglage qui
+    // n'existe pas.
+    if (/private store|public access/i.test(message)) {
+      return jsonError(
+        "Le store Blob connecté est en accès privé, or les photos du catalogue doivent être publiques pour s'afficher sur le site. " +
+          "Ce mode ne se change pas après coup : dans Vercel → Storage, crée un nouveau store Blob en cochant « Public », connecte-le à ce projet, puis redéploie. " +
+          "Rien à récupérer dans l'ancien, aucun envoi n'y a abouti.",
+        500
+      );
+    }
+
     // Distingue le défaut de configuration du reste : c'est la question qu'on
     // se pose en premier quand un envoi échoue.
-    const auth = /token|unauthorized|forbidden|credential|not found/i.test(err.message || "");
+    const auth = /token|unauthorized|forbidden|credential|not found/i.test(message);
     return jsonError(
       auth
-        ? `Stockage des photos inaccessible : ${err.message}. Vérifie que le store Blob est connecté au projet dans Vercel → Storage, puis redéploie.`
-        : `Échec de l'upload : ${err.message}`,
+        ? `Stockage des photos inaccessible : ${message}. Vérifie que le store Blob est connecté au projet dans Vercel → Storage, puis redéploie.`
+        : `Échec de l'upload : ${message}`,
       500
     );
   }

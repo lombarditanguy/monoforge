@@ -18,6 +18,10 @@ if (!dbError && !item) return Astro.redirect("/admin/catalogue", 302);
 // et une authentification implicite sur les récents. On considère donc le
 // stockage disponible dès qu'un de ces indices est présent — et en cas de
 // doute on laisse tenter plutôt que de bloquer une installation valide.
+//
+// Ces variables ne disent rien du mode d'accès du store : un store privé est
+// indiscernable d'un store public tant qu'on n'a pas tenté d'écrire. C'est
+// l'envoi lui-même qui le révèle, avec la marche à suivre.
 const blobConfigured = Object.keys(process.env).some((k) => k.startsWith("BLOB_"));
 ---
 
