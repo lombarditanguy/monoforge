@@ -119,10 +119,18 @@ try {
           <input id="t-taille" type="text" placeholder='20"' />
         </div>
         <div>
-          <label for="t-largeur">Largeur commandée</label>
+          <label for="t-largeur">Largeur avant</label>
           <input id="t-largeur" type="text" placeholder="9,5J" />
         </div>
+        <div>
+          <label for="t-largeur-arriere">Largeur arrière</label>
+          <input id="t-largeur-arriere" type="text" placeholder="laisser vide si identique" />
+        </div>
       </div>
+      <p class="muted" style="margin-top:-.25rem;font-size:.85rem">
+        Renseigne la largeur arrière seulement pour un montage décalé — c'est ce que la fiche produit envoie quand
+        le client commande quatre jantes de largeurs différentes. Les deux trains sont alors calculés séparément.
+      </p>
       <button type="button" id="mf-fit-test" class="btn btn-outline">Tester</button>
       <div id="mf-fit-resultat" style="margin-top:1rem"></div>
     </div>
@@ -345,7 +353,13 @@ try {
     const testOut = document.getElementById("mf-fit-resultat");
     testBtn?.addEventListener("click", async () => {
       testOut.textContent = "Recherche...";
-      const val = (id) => (document.getElementById(id))?.value || "";
+      const val = (id) => ((document.getElementById(id))?.value || "").trim();
+      // On reconstitue exactement le libellé que la fiche produit envoie sur
+      // une commande décalée, pour que le banc d'essai teste le vrai chemin.
+      const avant = val("t-largeur");
+      const arriere = val("t-largeur-arriere");
+      const widthLabel =
+        arriere && arriere !== avant ? `${avant} avant / ${arriere} arrière` : avant;
       try {
         const res = await fetch("/api/admin/fitments/test", {
           method: "POST",
@@ -356,7 +370,7 @@ try {
             annee: val("t-annee"),
             finition: val("t-finition"),
             sizeLabel: val("t-taille"),
-            widthLabel: val("t-largeur"),
+            widthLabel,
           }),
         });
         const json = await res.json();
@@ -385,7 +399,7 @@ try {
             head.appendChild(th);
           }
           tbody.appendChild(head);
-          const NATURE = { 1: "série", 2: "homologuée", 3: "grande taille" };
+          const NATURE = { 1: "série", 2: "taille sup.", 3: "très grande" };
           for (const m of json.montes.slice(0, 40)) {
             const tr = document.createElement("tr");
             const essieu = m.essieu === "arriere" ? "arrière" : m.essieu === "avant" ? "avant" : "les 4";

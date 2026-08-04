@@ -197,6 +197,12 @@ export function proposeDeportPourTaille(montes, { diametre, largeur, essieu = nu
     // La taille commandée dépasse ce que le véhicule recevait d'usine. Fait
     // distinct de l'extrapolation géométrique : ici le déport est bien celui
     // du fichier, c'est le montage lui-même qui demande un contrôle.
+    // Trois motifs d'alerte bien distincts, jamais fondus en un seul : la cote
+    // a été déduite d'une taille voisine / la taille dépasse la monte de série
+    // / plusieurs versions donnent des déports différents. Confondre les trois
+    // sous un « à vérifier » unique afficherait un motif faux dans deux cas
+    // sur trois, et l'atelier cesserait de lire l'alerte.
+    extrapole: !exact,
     horsSerie: base.groupe > 1,
     diametresSerie: [
       ...new Set(utilisables.filter((m) => m.groupe === 1 && m.diametre !== null).map((m) => m.diametre)),
@@ -204,7 +210,7 @@ export function proposeDeportPourTaille(montes, { diametre, largeur, essieu = nu
   };
 
   // Une taille trouvée telle quelle est fiable ; qu'elle vienne de la monte de
-  // série ou d'une taille homologuée ne change pas le déport, seulement ce
+  // série ou d'une taille supérieure ne change pas le déport, seulement ce
   // qu'on a le droit d'en dire. On réserve donc « haute » à la monte de série,
   // pour que le mot garde son sens dans la fiche commande.
   proposition.confiance = exact
@@ -324,7 +330,9 @@ export function proposeFitment(montes, { sizeLabel, widthLabel }) {
     resume,
     entraxe: avant?.entraxe || arriere?.entraxe || null,
     verificationRequise: Boolean(avant?.verificationRequise || arriere?.verificationRequise),
+    extrapole: Boolean(avant?.extrapole || arriere?.extrapole),
     horsSerie: Boolean(avant?.horsSerie || arriere?.horsSerie),
+    ambigu: Boolean(avant?.deportsConcurrents || arriere?.deportsConcurrents),
     confiance:
       [avant, arriere].some((p) => p?.confiance === "faible")
         ? "faible"

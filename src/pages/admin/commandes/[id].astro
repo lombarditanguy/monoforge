@@ -148,10 +148,17 @@ const propositions = proposition
               Déport proposé : <strong style="font-size:1.15rem">{proposition.resume}</strong>
               <span class="muted"> — fiabilité {proposition.confiance}</span>
             </p>
-            {proposition.verificationRequise && (
+            {proposition.extrapole && (
               <div class="notice" style="margin:.75rem 0">
                 <strong>Déport extrapolé.</strong> Aucune taille référencée ne correspond exactement à la commande :
                 la valeur ci-dessus est reprise de la taille la plus proche, avec l'écart chiffré ci-dessous.
+              </div>
+            )}
+            {proposition.ambigu && (
+              <div class="notice" style="margin:.75rem 0">
+                <strong>Plusieurs déports possibles.</strong> Cette taille est référencée avec des déports différents
+                selon la version exacte du véhicule. Le détail ci-dessous les liste — à trancher avec le client avant
+                fabrication.
               </div>
             )}
             {proposition.horsSerie && (
@@ -199,7 +206,7 @@ const propositions = proposition
                 {monte.montes.slice(0, 40).map((m) => (
                   <tr>
                     <td>{m.finition || "—"}</td>
-                    <td>{{ 1: "série", 2: "homologuée", 3: "grande taille" }[m.groupe] || "—"}</td>
+                    <td>{{ 1: "série", 2: "taille sup.", 3: "très grande" }[m.groupe] || "—"}</td>
                     <td>{m.essieu === "arriere" ? "arrière" : m.essieu === "avant" ? "avant" : "les 4"}</td>
                     <td>{m.diametre ?? "—"}</td>
                     <td>{m.largeur ?? "—"}</td>
