@@ -87,6 +87,28 @@ export function libelleEssieu(essieu) {
   return essieu === "arriere" ? "arrière" : essieu === "avant" ? "avant" : null;
 }
 
+/**
+ * Le fournisseur classe les tailles d'un véhicule en trois rangs. Ce que
+ * chacun contient, mesuré sur le jeu de données complet (29 276 lignes) :
+ *
+ *   1 — une ou deux tailles par véhicule, 17,0″ de moyenne : la monte de série.
+ *   2 — beaucoup plus de tailles, jusqu'à 30″ : les tailles supérieures.
+ *   3 — 18,5″ de moyenne et majoritairement décalé : les très grandes tailles.
+ *
+ * Les rangs 2 et 3 ne sont PAS des options constructeur, contrairement à ce
+ * qu'on pourrait croire : le rang 2 contient du 30″ sur Hummer H2, que personne
+ * n'homologue. Ce sont les tailles que le fournisseur juge montables, avec le
+ * déport qui va avec. L'information reste utile — c'est bien la cote à donner
+ * si on monte cette taille — mais elle n'engage pas le constructeur, et le
+ * passage de roue reste à vérifier sur le véhicule.
+ */
+export function libelleGroupe(groupe) {
+  if (groupe === 1) return "monte de série";
+  if (groupe === 2) return "taille supérieure";
+  if (groupe === 3) return "très grande taille";
+  return null;
+}
+
 /* ------------------------------------------------------------------ */
 /* Règle de sélection                                                   */
 /* ------------------------------------------------------------------ */
@@ -158,6 +180,7 @@ export function proposeDeportPourTaille(montes, { diametre, largeur, essieu = nu
       entraxe: base.entraxe || null,
       finition: base.finition || null,
       essieu: base.essieu || null,
+      groupe: base.groupe ?? null,
       taille: formatTaille(base),
     },
     exact,
@@ -171,12 +194,25 @@ export function proposeDeportPourTaille(montes, { diametre, largeur, essieu = nu
     deportMemeBordInterieur: deplacement !== null ? base.deport - deplacement : null,
     deportsConcurrents: deportsConcurrents.length > 1 ? deportsConcurrents : null,
     montesConnues: utilisables.length,
+    // La taille commandée dépasse ce que le véhicule recevait d'usine. Fait
+    // distinct de l'extrapolation géométrique : ici le déport est bien celui
+    // du fichier, c'est le montage lui-même qui demande un contrôle.
+    horsSerie: base.groupe > 1,
+    diametresSerie: [
+      ...new Set(utilisables.filter((m) => m.groupe === 1 && m.diametre !== null).map((m) => m.diametre)),
+    ].sort((a, b) => a - b),
   };
 
+  // Une taille trouvée telle quelle est fiable ; qu'elle vienne de la monte de
+  // série ou d'une taille homologuée ne change pas le déport, seulement ce
+  // qu'on a le droit d'en dire. On réserve donc « haute » à la monte de série,
+  // pour que le mot garde son sens dans la fiche commande.
   proposition.confiance = exact
     ? deportsConcurrents.length > 1
       ? "moyenne"
-      : "haute"
+      : base.groupe === 1 || base.groupe == null
+        ? "haute"
+        : "moyenne"
     : Math.abs(ecartLargeur ?? 9) <= 0.5
       ? "moyenne"
       : "faible";
@@ -189,21 +225,26 @@ function redigerNote(p) {
   const parties = [];
   const precisions = [
     p.base.finition,
-    p.base.essieu ? `monte d'origine ${libelleEssieu(p.base.essieu)}` : null,
+    libelleGroupe(p.base.groupe),
+    p.base.essieu ? `train ${libelleEssieu(p.base.essieu)}` : null,
   ]
     .filter(Boolean)
     .join(", ");
   const finition = precisions ? ` (${precisions})` : "";
 
   if (p.exact) {
-    parties.push(
-      `Monte d'origine exacte : ${p.base.taille} ${formatDeport(p.base.deport)}${finition}.`
-    );
+    // On ne dit « d'origine » que du rang 1 : sur une voiture livrée en 16″,
+    // une 20″ reste une 20″, quoi qu'en dise le fichier.
+    const nature =
+      p.base.groupe === 1 || p.base.groupe == null
+        ? "Monte d'origine exacte"
+        : "Taille référencée telle quelle pour ce véhicule";
+    parties.push(`${nature} : ${p.base.taille} ${formatDeport(p.base.deport)}${finition}.`);
   } else {
     parties.push(
-      `Pas de monte d'origine dans la taille commandée. Base retenue : ${p.base.taille} ${formatDeport(
-        p.base.deport
-      )}${finition}.`
+      `Aucune taille référencée ne correspond exactement à la commande. Base retenue : ${
+        p.base.taille
+      } ${formatDeport(p.base.deport)}${finition}.`
     );
     if (p.ecartLargeurPouces) {
       const signe = p.ecartLargeurPouces > 0 ? "plus large" : "plus étroite";
@@ -225,9 +266,23 @@ function redigerNote(p) {
     }
   }
 
+  if (p.horsSerie) {
+    // « Monte de base référencée » et pas « livrée d'usine » : le rang 1 du
+    // fichier donne la taille d'entrée de gamme de la version, or un même
+    // véhicule a pu sortir avec une taille d'option supérieure.
+    const serie = p.diametresSerie.length
+      ? ` — la monte de base référencée pour cette version est en ${p.diametresSerie
+          .map((d) => `${String(d).replace(".", ",")}″`)
+          .join(" / ")}`
+      : "";
+    parties.push(
+      `Taille au-dessus de la monte de série${serie}. Le déport vient bien du fichier constructeur, mais ce montage n'est pas garanti par la marque : passage de roue et garde à vérifier sur le véhicule.`
+    );
+  }
+
   if (p.deportsConcurrents) {
     parties.push(
-      `Attention : cette taille existe d'origine avec plusieurs déports (${p.deportsConcurrents
+      `Attention : cette taille est référencée avec plusieurs déports (${p.deportsConcurrents
         .map(formatDeport)
         .join(", ")}) selon la version — à trancher avec le client.`
     );
@@ -269,6 +324,7 @@ export function proposeFitment(montes, { sizeLabel, widthLabel }) {
     resume,
     entraxe: avant?.entraxe || arriere?.entraxe || null,
     verificationRequise: Boolean(avant?.verificationRequise || arriere?.verificationRequise),
+    horsSerie: Boolean(avant?.horsSerie || arriere?.horsSerie),
     confiance:
       [avant, arriere].some((p) => p?.confiance === "faible")
         ? "faible"

@@ -146,6 +146,23 @@ try {
       Rappel de géométrie : un déport plus grand rentre la jante sous l'aile, un déport plus petit la fait sortir.
       À déport constant, élargir la jante la fait déborder autant vers l'extérieur que vers l'intérieur.
     </p>
+
+    <h3>Les trois natures de taille</h3>
+    <p class="muted" style="margin-bottom:.5rem">
+      Le fournisseur classe les tailles d'un véhicule en trois rangs. Ce qu'ils contiennent réellement, mesuré sur
+      l'ensemble du jeu de données :
+    </p>
+    <ul class="muted" style="margin:0;padding-left:1.2rem;line-height:1.7">
+      <li><strong>Série</strong> — une ou deux tailles par véhicule, 17,0″ de moyenne. C'est la monte livrée d'usine.</li>
+      <li><strong>Taille supérieure</strong> — le gros du fichier, jusqu'à 30″.</li>
+      <li><strong>Très grande taille</strong> — 18,5″ de moyenne, majoritairement des montages décalés.</li>
+    </ul>
+    <p class="muted" style="margin-bottom:0">
+      Les deux derniers rangs ne sont pas des options constructeur, même s'ils en ont l'air : le rang « taille
+      supérieure » contient du 30″ sur Hummer H2, que personne n'homologue. Ce sont les tailles que le fournisseur
+      juge montables, avec le déport correspondant. La cote reste la bonne si on monte cette taille — mais le
+      montage n'engage pas la marque, et la commande le signale explicitement.
+    </p>
   </div>
 
   <script>
@@ -362,16 +379,17 @@ try {
           const table = document.createElement("table");
           const tbody = document.createElement("tbody");
           const head = document.createElement("tr");
-          for (const c of ["Version", "Essieu", "Diamètre", "Largeur", "Déport", "Entraxe"]) {
+          for (const c of ["Version", "Nature", "Essieu", "Diamètre", "Largeur", "Déport", "Entraxe"]) {
             const th = document.createElement("th");
             th.textContent = c;
             head.appendChild(th);
           }
           tbody.appendChild(head);
-          for (const m of json.montes.slice(0, 30)) {
+          const NATURE = { 1: "série", 2: "homologuée", 3: "grande taille" };
+          for (const m of json.montes.slice(0, 40)) {
             const tr = document.createElement("tr");
             const essieu = m.essieu === "arriere" ? "arrière" : m.essieu === "avant" ? "avant" : "les 4";
-            for (const v of [m.finition || "—", essieu, m.diametre ?? "—", m.largeur ?? "—", m.deport === null ? "—" : `ET${m.deport}`, m.entraxe || "—"]) {
+            for (const v of [m.finition || "—", NATURE[m.groupe] || "—", essieu, m.diametre ?? "—", m.largeur ?? "—", m.deport === null ? "—" : `ET${m.deport}`, m.entraxe || "—"]) {
               const td = document.createElement("td");
               td.textContent = String(v);
               tr.appendChild(td);

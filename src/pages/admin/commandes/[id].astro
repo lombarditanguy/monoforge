@@ -150,8 +150,16 @@ const propositions = proposition
             </p>
             {proposition.verificationRequise && (
               <div class="notice" style="margin:.75rem 0">
-                <strong>À valider avant fabrication.</strong> La taille commandée ne correspond pas exactement à une
-                monte d'origine : la valeur ci-dessus est reprise de la monte la plus proche.
+                <strong>Déport extrapolé.</strong> Aucune taille référencée ne correspond exactement à la commande :
+                la valeur ci-dessus est reprise de la taille la plus proche, avec l'écart chiffré ci-dessous.
+              </div>
+            )}
+            {proposition.horsSerie && (
+              <div class="notice" style="margin:.75rem 0">
+                <strong>Taille au-dessus de la monte de série.</strong> Le déport vient du fichier constructeur, mais
+                ce diamètre n'était pas monté d'usine sur ce véhicule — le passage de roue est à vérifier avec le
+                client. C'est un point distinct de l'extrapolation : ici la cote est juste, c'est le montage qui
+                demande un contrôle.
               </div>
             )}
             {propositions.map((p) => (
@@ -187,10 +195,11 @@ const propositions = proposition
             </summary>
             <table style="margin-top:.5rem">
               <tbody>
-                <tr><th>Version</th><th>Essieu</th><th>Diamètre</th><th>Largeur</th><th>Déport</th><th>Entraxe</th></tr>
+                <tr><th>Version</th><th>Nature</th><th>Essieu</th><th>Diamètre</th><th>Largeur</th><th>Déport</th><th>Entraxe</th></tr>
                 {monte.montes.slice(0, 40).map((m) => (
                   <tr>
                     <td>{m.finition || "—"}</td>
+                    <td>{{ 1: "série", 2: "homologuée", 3: "grande taille" }[m.groupe] || "—"}</td>
                     <td>{m.essieu === "arriere" ? "arrière" : m.essieu === "avant" ? "avant" : "les 4"}</td>
                     <td>{m.diametre ?? "—"}</td>
                     <td>{m.largeur ?? "—"}</td>
