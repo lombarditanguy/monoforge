@@ -61,6 +61,187 @@ export function parseCsv(text, delimiter) {
 }
 
 /* ------------------------------------------------------------------ */
+/* Format « grille véhicule »                                           */
+/* ------------------------------------------------------------------ */
+//
+// Le jeu de données TyresAddict n'a pas d'en-tête et n'a pas une ligne par
+// taille : une ligne = un véhicule pour une année, avec toutes les tailles
+// admises empilées dans quelques cellules.
+//
+//   Jaguar;F-Type;F-Type Coupe;3.0 V6;2013;…;7.5 x 17 ET45|8.5 x 18 ET49,9.5 x 18 ET27;…;5*108;63.3
+//
+//   « | » sépare deux montes alternatives,
+//   « , » sépare l'avant et l'arrière d'une même monte décalée.
+//
+// On éclate donc chaque cellule en montes individuelles, puis on recompacte
+// les années : le fichier répète la même ligne pour 2013, 2014, 2015… ce qui
+// gonfle le volume d'un facteur 10 pour zéro information.
+
+const TOKEN_JANTE = /^\s*(\d+(?:[.,]\d+)?)\s*[x×]\s*(\d+(?:[.,]\d+)?)\s*ET\s*(-?\d+)\s*$/i;
+const TOKEN_PNEU = /\d{3}\s*\/\s*\d{2}\s*R\s*\d{2}/i;
+// Entraxe « 5*108 ». Le nombre de trous tient sur un chiffre, ce qui écarte le
+// pas de filetage « 12*1.5 » qui vit dans une colonne voisine.
+const TOKEN_PCD = /^\s*(\d)\s*[*x×]\s*(\d{2,3}(?:[.,]\d)?)\s*$/i;
+const TOKEN_FILETAGE = /^\s*\d{2}\s*[*x×]\s*[\d.,]+\s*$/i;
+
+const nb = (v) => Number(String(v).replace(",", "."));
+
+function roleColonne(valeurs) {
+  const utiles = valeurs.map((v) => String(v ?? "").trim()).filter(Boolean);
+  if (utiles.length === 0) return "vide";
+  const part = (test) => utiles.filter(test).length / utiles.length;
+  const morceaux = (v) => v.split(/[|,]/).map((t) => t.trim()).filter(Boolean);
+
+  if (part((v) => morceaux(v).some((t) => TOKEN_JANTE.test(t))) > 0.7) return "jantes";
+  if (part((v) => morceaux(v).some((t) => TOKEN_PNEU.test(t))) > 0.7) return "pneus";
+  if (part((v) => TOKEN_PCD.test(v) && nb(v.split(/[*x×]/i)[1]) >= 90 && nb(v.split(/[*x×]/i)[1]) <= 180) > 0.7)
+    return "pcd";
+  if (part((v) => TOKEN_FILETAGE.test(v)) > 0.7) return "filetage";
+  if (part((v) => Number.isInteger(nb(v)) && nb(v) >= 1950 && nb(v) <= 2100) > 0.9) return "annee";
+  if (part((v) => Number.isFinite(nb(v)) && nb(v) >= 40 && nb(v) <= 120) > 0.9) return "alesage";
+  return "texte";
+}
+
+/** Ce format se reconnaît à ses cellules de tailles, pas à ses intitulés. */
+export function looksLikeVehicleGrid(lignes) {
+  const echantillon = lignes.slice(0, 30);
+  if (echantillon.length === 0) return false;
+  const avecJante = echantillon.filter((l) =>
+    l.some((c) => String(c || "").split(/[|,]/).some((t) => TOKEN_JANTE.test(t.trim())))
+  );
+  return avecJante.length / echantillon.length > 0.5;
+}
+
+function rolesDeGrille(lignes) {
+  const n = Math.max(...lignes.map((l) => l.length));
+  const roles = [];
+  for (let i = 0; i < n; i++) roles.push(roleColonne(lignes.slice(0, 300).map((l) => l[i])));
+
+  const iAnnee = roles.indexOf("annee");
+  // Les colonnes d'identité (marque, modèle, carrosserie, motorisation) sont
+  // celles qui précèdent l'année ; au-delà on ne trouve que des cotes.
+  const identite = roles
+    .map((r, i) => ({ r, i }))
+    .filter((c) => c.r === "texte" && (iAnnee === -1 || c.i < iAnnee))
+    .map((c) => c.i);
+
+  return {
+    roles,
+    identite,
+    annee: iAnnee === -1 ? null : iAnnee,
+    jantes: roles.map((r, i) => (r === "jantes" ? i : -1)).filter((i) => i >= 0),
+    pcd: roles.indexOf("pcd") === -1 ? null : roles.indexOf("pcd"),
+    alesage: roles.indexOf("alesage") === -1 ? null : roles.indexOf("alesage"),
+  };
+}
+
+function eclaterCellule(cellule, groupe) {
+  const montes = [];
+  for (const combo of String(cellule || "").split("|")) {
+    const parts = combo.split(",").map((p) => p.trim()).filter(Boolean);
+    parts.forEach((p, k) => {
+      const m = TOKEN_JANTE.exec(p);
+      if (!m) return;
+      const largeur = nb(m[1]);
+      const diametre = nb(m[2]);
+      // Le fichier contient des « 0 x 0 ET0 » : la dimension pneu est connue
+      // mais pas la cote de jante. Une cote absente doit rester absente.
+      if (!(diametre >= 10 && diametre <= 30) || !(largeur >= 4 && largeur <= 16)) return;
+      montes.push({
+        largeur,
+        diametre,
+        deport: nb(m[3]),
+        essieu: parts.length === 1 ? null : k === 0 ? "avant" : "arriere",
+        groupe,
+      });
+    });
+  }
+  return montes;
+}
+
+export function parseVehicleGrid(lignes) {
+  const cols = rolesDeGrille(lignes);
+  if (cols.jantes.length === 0 || cols.identite.length < 2) {
+    return { rows: [], cols, erreur: "Colonnes de tailles ou d'identité introuvables." };
+  }
+
+  const brut = [];
+  for (const l of lignes) {
+    const textes = cols.identite.map((i) => String(l[i] ?? "").trim());
+    const marque = textes[0];
+    const modele = textes[1];
+    if (!marque || !modele) continue;
+
+    // Carrosserie et motorisation vont dans un seul libellé de version : c'est
+    // là-dedans que la finition renvoyée par la plaque ira se reconnaître.
+    const finition = textes.slice(2).filter((t) => t && t !== modele).join(" · ") || null;
+    const annee = cols.annee === null ? null : nb(l[cols.annee]);
+
+    let entraxe = null;
+    if (cols.pcd !== null) {
+      const m = TOKEN_PCD.exec(String(l[cols.pcd] ?? ""));
+      if (m) entraxe = `${m[1]}x${String(m[2]).replace(",", ".")}`;
+    }
+    const alesage = cols.alesage === null ? null : nb(l[cols.alesage]);
+
+    cols.jantes.forEach((ci, rang) => {
+      for (const m of eclaterCellule(l[ci], rang + 1)) {
+        brut.push({
+          marque, modele, finition,
+          marqueNorm: normaliseCle(marque),
+          modeleNorm: normaliseCle(modele),
+          annee: Number.isFinite(annee) ? annee : null,
+          diametre: m.diametre,
+          largeur: m.largeur,
+          deport: m.deport,
+          essieu: m.essieu,
+          groupe: m.groupe,
+          entraxe,
+          alesage: Number.isFinite(alesage) && alesage >= 40 && alesage <= 120 ? alesage : null,
+        });
+      }
+    });
+  }
+
+  return { rows: compacterAnnees(brut), cols, brut: brut.length };
+}
+
+/**
+ * Le fichier répète la même monte pour chaque millésime. On rassemble les
+ * années consécutives en intervalles : même information, dix fois moins de
+ * lignes à transférer et à interroger.
+ */
+function compacterAnnees(rows) {
+  const groupes = new Map();
+  for (const r of rows) {
+    const cle = [
+      r.marque, r.modele, r.finition, r.diametre, r.largeur, r.deport,
+      r.essieu, r.groupe, r.entraxe, r.alesage,
+    ].join(" ");
+    if (!groupes.has(cle)) groupes.set(cle, { modele: r, annees: [] });
+    if (r.annee !== null) groupes.get(cle).annees.push(r.annee);
+  }
+
+  const sortie = [];
+  for (const { modele, annees } of groupes.values()) {
+    const { annee, ...base } = modele;
+    if (annees.length === 0) {
+      sortie.push({ ...base, anneeDebut: null, anneeFin: null });
+      continue;
+    }
+    const tri = [...new Set(annees)].sort((a, b) => a - b);
+    let debut = tri[0];
+    for (let i = 1; i <= tri.length; i++) {
+      if (i === tri.length || tri[i] !== tri[i - 1] + 1) {
+        sortie.push({ ...base, anneeDebut: debut, anneeFin: tri[i - 1] });
+        debut = tri[i];
+      }
+    }
+  }
+  return sortie;
+}
+
+/* ------------------------------------------------------------------ */
 /* Détection des colonnes                                               */
 /* ------------------------------------------------------------------ */
 
@@ -246,6 +427,26 @@ export function analyseFichier(texte, mappingForce = null) {
   if (lignes.length < 2) {
     return { erreur: "Fichier vide ou sans ligne de données." };
   }
+
+  // Deux familles de fichiers coexistent sur le marché : la grille véhicule
+  // (sans en-tête, tailles empilées) et le tableau classique une-ligne-par-
+  // taille. On reconnaît la première à son contenu et on la traite à part.
+  if (!mappingForce && looksLikeVehicleGrid(lignes)) {
+    const { rows, cols, erreur, brut } = parseVehicleGrid(lignes);
+    if (erreur) return { erreur };
+    return {
+      grille: true,
+      roles: cols.roles,
+      total: lignes.length,
+      brut,
+      exploitables: rows.length,
+      echantillon: rows.slice(0, 5),
+      rows,
+      manquants: rows.length === 0 ? ["Tailles de jantes"] : [],
+      entetes: cols.roles.map((r, i) => `Colonne ${i + 1} — ${r}`),
+    };
+  }
+
   const entetes = lignes[0].map((h) => String(h).trim());
   const donnees = lignes.slice(1);
   const mapping = mappingForce || detectMapping(entetes, donnees.slice(0, 200));
@@ -261,6 +462,7 @@ export function analyseFichier(texte, mappingForce = null) {
   }
 
   return {
+    grille: false,
     entetes,
     mapping,
     manquants,

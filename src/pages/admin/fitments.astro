@@ -40,7 +40,7 @@ try {
     ) : (
       <p>
         <strong>{stats.lignes.toLocaleString("fr-FR")}</strong> tailles d'origine référencées, sur
-        <strong> {stats.marques}</strong> marques.
+        <strong> {stats.marques}</strong> {stats.marques > 1 ? "marques" : "marque"}.
       </p>
     )}
     {marques.length > 0 && (
@@ -64,11 +64,18 @@ try {
     <p id="mf-fit-lecture" class="muted" style="margin-top:.75rem"></p>
 
     <div id="mf-fit-apercu" style="display:none">
-      <h3>Colonnes détectées</h3>
-      <p class="muted">
-        Vérifie chaque ligne. Si une colonne est mal reconnue, corrige-la ici — l'aperçu se recalcule aussitôt.
-      </p>
-      <table id="mf-fit-mapping"><tbody></tbody></table>
+      <div id="mf-fit-grille" style="display:none">
+        <h3>Format reconnu</h3>
+        <p class="muted" id="mf-fit-grille-texte"></p>
+      </div>
+
+      <div id="mf-fit-mapping-bloc">
+        <h3>Colonnes détectées</h3>
+        <p class="muted">
+          Vérifie chaque ligne. Si une colonne est mal reconnue, corrige-la ici — l'aperçu se recalcule aussitôt.
+        </p>
+        <table id="mf-fit-mapping"><tbody></tbody></table>
+      </div>
 
       <h3>Aperçu</h3>
       <div style="overflow-x:auto">
@@ -148,6 +155,9 @@ try {
     const lecture = document.getElementById("mf-fit-lecture");
     const apercu = document.getElementById("mf-fit-apercu");
     const mappingTable = document.querySelector("#mf-fit-mapping tbody");
+    const mappingBloc = document.getElementById("mf-fit-mapping-bloc");
+    const grilleBloc = document.getElementById("mf-fit-grille");
+    const grilleTexte = document.getElementById("mf-fit-grille-texte");
     const echTable = document.querySelector("#mf-fit-echantillon tbody");
     const resume = document.getElementById("mf-fit-resume");
     const importBtn = document.getElementById("mf-fit-import");
@@ -163,8 +173,21 @@ try {
         return;
       }
 
+      // La grille véhicule n'a pas d'en-tête : il n'y a pas de colonnes à
+      // réattribuer, on montre plutôt ce que le fichier a livré.
+      grilleBloc.style.display = analyse.grille ? "" : "none";
+      mappingBloc.style.display = analyse.grille ? "none" : "";
+      if (analyse.grille) {
+        const roles = analyse.roles.reduce((acc, r) => ({ ...acc, [r]: (acc[r] || 0) + 1 }), {});
+        grilleTexte.textContent =
+          `Fichier sans en-tête, une ligne par véhicule et par année, avec les tailles empilées ` +
+          `(${analyse.roles.length} colonnes : ${Object.entries(roles).map(([r, n]) => `${n} ${r}`).join(", ")}). ` +
+          `${analyse.brut.toLocaleString("fr-FR")} montes lues, regroupées en ` +
+          `${analyse.exploitables.toLocaleString("fr-FR")} lignes par intervalles d'années.`;
+      }
+
       mappingTable.innerHTML = "";
-      for (const champ of CHAMPS) {
+      for (const champ of analyse.grille ? [] : CHAMPS) {
         const tr = document.createElement("tr");
         const th = document.createElement("th");
         th.textContent = champ.label + (champ.requis ? " *" : "");
@@ -196,6 +219,7 @@ try {
       }
 
       const colonnes = ["marque", "modele", "finition", "anneeDebut", "anneeFin", "diametre", "largeur", "deport", "entraxe"];
+      if (analyse.grille) colonnes.push("essieu", "groupe");
       echTable.innerHTML = "";
       const entete = document.createElement("tr");
       for (const c of colonnes) {
@@ -217,14 +241,17 @@ try {
       const pct = analyse.total ? Math.round((analyse.exploitables / analyse.total) * 100) : 0;
       const alertes = [];
       if (analyse.manquants.length) alertes.push(`Colonnes obligatoires non identifiées : ${analyse.manquants.join(", ")}.`);
-      if (pct < 80) alertes.push(`Seulement ${pct}% des lignes sont exploitables — vérifie le mapping avant d'importer.`);
+      if (!analyse.grille && pct < 80)
+        alertes.push(`Seulement ${pct}% des lignes sont exploitables — vérifie le mapping avant d'importer.`);
       const sansDeport = analyse.echantillon.filter((r) => r.deport === null).length;
       if (sansDeport === analyse.echantillon.length && analyse.echantillon.length)
         alertes.push("Aucun déport lu sur l'échantillon : sans cette colonne le jeu de données ne sert à rien ici.");
 
       resume.innerHTML = "";
       const ligne = document.createElement("div");
-      ligne.textContent = `${analyse.exploitables.toLocaleString("fr-FR")} lignes exploitables sur ${analyse.total.toLocaleString("fr-FR")} (${pct}%).`;
+      ligne.textContent = analyse.grille
+        ? `${analyse.exploitables.toLocaleString("fr-FR")} montes à importer, issues de ${analyse.total.toLocaleString("fr-FR")} lignes de fichier.`
+        : `${analyse.exploitables.toLocaleString("fr-FR")} lignes exploitables sur ${analyse.total.toLocaleString("fr-FR")} (${pct}%).`;
       resume.appendChild(ligne);
       for (const a of alertes) {
         const p = document.createElement("div");
@@ -274,8 +301,12 @@ try {
       }
 
       try {
-        for (const l of analyse.lignes) {
-          const row = normalizeRow(l, analyse.mapping);
+        // La grille véhicule est déjà normalisée par l'analyse ; le tableau
+        // classique se convertit ligne à ligne au moment de l'envoi.
+        const source = analyse.grille
+          ? analyse.rows
+          : analyse.lignes.map((l) => normalizeRow(l, analyse.mapping));
+        for (const row of source) {
           if (!row) continue;
           tampon.push(row);
           if (tampon.length >= LOT) await pousser();
@@ -331,7 +362,7 @@ try {
           const table = document.createElement("table");
           const tbody = document.createElement("tbody");
           const head = document.createElement("tr");
-          for (const c of ["Version", "Diamètre", "Largeur", "Déport", "Entraxe"]) {
+          for (const c of ["Version", "Essieu", "Diamètre", "Largeur", "Déport", "Entraxe"]) {
             const th = document.createElement("th");
             th.textContent = c;
             head.appendChild(th);
@@ -339,7 +370,8 @@ try {
           tbody.appendChild(head);
           for (const m of json.montes.slice(0, 30)) {
             const tr = document.createElement("tr");
-            for (const v of [m.finition || "—", m.diametre ?? "—", m.largeur ?? "—", m.deport === null ? "—" : `ET${m.deport}`, m.entraxe || "—"]) {
+            const essieu = m.essieu === "arriere" ? "arrière" : m.essieu === "avant" ? "avant" : "les 4";
+            for (const v of [m.finition || "—", essieu, m.diametre ?? "—", m.largeur ?? "—", m.deport === null ? "—" : `ET${m.deport}`, m.entraxe || "—"]) {
               const td = document.createElement("td");
               td.textContent = String(v);
               tr.appendChild(td);

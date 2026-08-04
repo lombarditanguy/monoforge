@@ -21,6 +21,8 @@ const COLONNES = [
   "deport",
   "entraxe",
   "alesage",
+  "essieu",
+  "groupe",
 ];
 
 function json(payload, status = 200) {
@@ -61,7 +63,9 @@ export async function POST({ request }) {
           r.largeur ?? null,
           r.deport ?? null,
           r.entraxe ? String(r.entraxe).slice(0, 40) : null,
-          r.alesage ?? null
+          r.alesage ?? null,
+          r.essieu === "avant" || r.essieu === "arriere" ? r.essieu : null,
+          Number.isInteger(r.groupe) ? r.groupe : null
         );
         insérées++;
       }

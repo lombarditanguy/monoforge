@@ -187,10 +187,11 @@ const propositions = proposition
             </summary>
             <table style="margin-top:.5rem">
               <tbody>
-                <tr><th>Version</th><th>Diamètre</th><th>Largeur</th><th>Déport</th><th>Entraxe</th></tr>
+                <tr><th>Version</th><th>Essieu</th><th>Diamètre</th><th>Largeur</th><th>Déport</th><th>Entraxe</th></tr>
                 {monte.montes.slice(0, 40).map((m) => (
                   <tr>
                     <td>{m.finition || "—"}</td>
+                    <td>{m.essieu === "arriere" ? "arrière" : m.essieu === "avant" ? "avant" : "les 4"}</td>
                     <td>{m.diametre ?? "—"}</td>
                     <td>{m.largeur ?? "—"}</td>
                     <td>{m.deport === null || m.deport === undefined ? "—" : `ET${m.deport}`}</td>

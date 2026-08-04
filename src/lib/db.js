@@ -174,9 +174,18 @@ create table if not exists oe_fitments (
   deport integer,
   entraxe text,
   alesage numeric(5,2),
+  -- 'avant' / 'arriere' sur une monte décalée d'origine, null quand la même
+  -- jante va aux quatre coins.
+  essieu text,
+  -- Rang de la taille chez le fournisseur de données : 1 = monte la plus
+  -- courante, puis les tailles supérieures. Sert à départager à égalité.
+  groupe integer,
   origine text not null default 'import',
   created_at timestamptz not null default now()
 );
+
+alter table oe_fitments add column if not exists essieu text;
+alter table oe_fitments add column if not exists groupe integer;
 
 create index if not exists oe_fitments_marque_modele on oe_fitments (marque_norm, modele_norm);
 create index if not exists oe_fitments_marque on oe_fitments (marque_norm);

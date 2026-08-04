@@ -82,21 +82,34 @@ export function formatDeport(n) {
   return n === null || n === undefined ? null : `ET${Math.round(n)}`;
 }
 
+/** L'essieu est stocké sans accent (clé technique), affiché avec. */
+export function libelleEssieu(essieu) {
+  return essieu === "arriere" ? "arrière" : essieu === "avant" ? "avant" : null;
+}
+
 /* ------------------------------------------------------------------ */
 /* Règle de sélection                                                   */
 /* ------------------------------------------------------------------ */
 
 // Le diamètre pèse plus lourd que la largeur : c'est lui qui identifie une
-// monte d'origine. Entre deux montes également proches en largeur, on retient
-// la plus large — son déport tient déjà compte d'une jante plus encombrante,
-// donc l'écart à corriger est moindre.
-function choisirBase(montes, diametre, largeur) {
+// monte d'origine. À égalité on préfère, dans l'ordre : le bon essieu (une
+// monte décalée d'origine ne mélange pas avant et arrière), la taille la plus
+// courante chez le fournisseur, puis la plus large — son déport tient déjà
+// compte d'une jante encombrante, donc l'écart à corriger est moindre.
+function choisirBase(montes, diametre, largeur, essieu) {
   const ecart = (m) => {
     const dD = m.diametre !== null && diametre !== null ? Math.abs(m.diametre - diametre) : 99;
     const dL = m.largeur !== null && largeur !== null ? Math.abs(m.largeur - largeur) : 9;
     return dD * 10 + dL;
   };
-  return [...montes].sort((a, b) => ecart(a) - ecart(b) || (b.largeur || 0) - (a.largeur || 0))[0];
+  const essieuOk = (m) => (!essieu || !m.essieu || m.essieu === essieu ? 0 : 1);
+  return [...montes].sort(
+    (a, b) =>
+      ecart(a) - ecart(b) ||
+      essieuOk(a) - essieuOk(b) ||
+      (a.groupe || 9) - (b.groupe || 9) ||
+      (b.largeur || 0) - (a.largeur || 0)
+  )[0];
 }
 
 function formatTaille(m) {
@@ -111,11 +124,11 @@ function formatTaille(m) {
  * un cas normal (véhicule absent du jeu de données), pas une erreur : la fiche
  * commande reste alors renseignable à la main.
  */
-export function proposeDeportPourTaille(montes, { diametre, largeur }) {
+export function proposeDeportPourTaille(montes, { diametre, largeur, essieu = null }) {
   const utilisables = (montes || []).filter((m) => Number.isFinite(m.deport));
   if (utilisables.length === 0) return null;
 
-  const base = choisirBase(utilisables, diametre, largeur);
+  const base = choisirBase(utilisables, diametre, largeur, essieu);
   const exactDiametre = base.diametre !== null && diametre !== null && base.diametre === diametre;
   const exactLargeur = base.largeur !== null && largeur !== null && base.largeur === largeur;
   const exact = exactDiametre && exactLargeur;
@@ -124,7 +137,10 @@ export function proposeDeportPourTaille(montes, { diametre, largeur }) {
   // déports différents (Elegance vs AMG). Tant qu'on n'a pas tranché la
   // finition, on ne choisit pas à leur place.
   const memeTaille = utilisables.filter(
-    (m) => m.diametre === base.diametre && m.largeur === base.largeur
+    (m) =>
+      m.diametre === base.diametre &&
+      m.largeur === base.largeur &&
+      (!essieu || !m.essieu || m.essieu === essieu)
   );
   const deportsConcurrents = [...new Set(memeTaille.map((m) => m.deport))];
 
@@ -141,6 +157,7 @@ export function proposeDeportPourTaille(montes, { diametre, largeur }) {
       deport: base.deport,
       entraxe: base.entraxe || null,
       finition: base.finition || null,
+      essieu: base.essieu || null,
       taille: formatTaille(base),
     },
     exact,
@@ -170,7 +187,13 @@ export function proposeDeportPourTaille(montes, { diametre, largeur }) {
 
 function redigerNote(p) {
   const parties = [];
-  const finition = p.base.finition ? ` (${p.base.finition})` : "";
+  const precisions = [
+    p.base.finition,
+    p.base.essieu ? `monte d'origine ${libelleEssieu(p.base.essieu)}` : null,
+  ]
+    .filter(Boolean)
+    .join(", ");
+  const finition = precisions ? ` (${precisions})` : "";
 
   if (p.exact) {
     parties.push(
@@ -219,9 +242,15 @@ export function proposeFitment(montes, { sizeLabel, widthLabel }) {
   const diametre = parseDiametre(sizeLabel);
   const largeurs = parseLargeurs(widthLabel);
 
-  const avant = proposeDeportPourTaille(montes, { diametre, largeur: largeurs.avant });
+  // Sur une commande décalée on cherche la référence du bon côté du véhicule :
+  // un train arrière d'origine plus large n'est pas une référence pour l'avant.
+  const avant = proposeDeportPourTaille(montes, {
+    diametre,
+    largeur: largeurs.avant,
+    essieu: largeurs.decale ? "avant" : null,
+  });
   const arriere = largeurs.decale
-    ? proposeDeportPourTaille(montes, { diametre, largeur: largeurs.arriere })
+    ? proposeDeportPourTaille(montes, { diametre, largeur: largeurs.arriere, essieu: "arriere" })
     : avant;
 
   if (!avant && !arriere) return null;
@@ -339,10 +368,10 @@ export async function findOeFitments({ marque, modele, annee, finition }) {
 
   // 3) Tailles.
   const rows = await query(
-    `select finition, diametre, largeur, deport, entraxe, alesage, annee_debut, annee_fin
+    `select finition, diametre, largeur, deport, entraxe, alesage, essieu, groupe, annee_debut, annee_fin
        from oe_fitments
       where marque_norm = $1 and modele_norm = $2 ${FILTRE_ANNEE.replaceAll("$ANNEE", "$3")}
-      order by diametre, largeur`,
+      order by groupe nulls last, diametre, largeur`,
     [marqueNorm, modeleNorm, an]
   );
 
@@ -353,6 +382,8 @@ export async function findOeFitments({ marque, modele, annee, finition }) {
     deport: r.deport === null ? null : Number(r.deport),
     entraxe: r.entraxe,
     alesage: r.alesage === null ? null : Number(r.alesage),
+    essieu: r.essieu,
+    groupe: r.groupe === null ? null : Number(r.groupe),
   }));
 
   // 4) Finition. Une E320 et une E63 AMG n'ont pas le même déport : quand le
