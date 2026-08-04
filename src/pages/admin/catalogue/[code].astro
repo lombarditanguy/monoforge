@@ -13,19 +13,20 @@ try {
 }
 if (!dbError && !item) return Astro.redirect("/admin/catalogue", 302);
 
-// L'upload passe par Vercel Blob : sans jeton, il échoue. On le signale avant
-// que quelqu'un sélectionne ses fichiers, plutôt qu'après.
-const blobConfigured = Boolean(import.meta.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN);
+// Vercel expose l'accès au stockage sous plusieurs noms selon l'âge de
+// l'intégration : BLOB_READ_WRITE_TOKEN sur les anciens projets, BLOB_STORE_ID
+// et une authentification implicite sur les récents. On considère donc le
+// stockage disponible dès qu'un de ces indices est présent — et en cas de
+// doute on laisse tenter plutôt que de bloquer une installation valide.
+const blobConfigured = Object.keys(process.env).some((k) => k.startsWith("BLOB_"));
 ---
 
 <AdminLayout title={item ? `Photos — ${item.code}` : "Photos"}>
   {dbError && <div class="notice">{dbError}</div>}
   {!dbError && !blobConfigured && (
     <div class="notice">
-      Ajout de photos indisponible sur cet environnement : le stockage Vercel Blob n'y est pas accessible.
-      Réordonner et supprimer fonctionnent normalement. Pour rétablir l'ajout : dashboard Vercel → Storage →
-      vérifier que le store Blob est bien connecté à ce projet, que <code>BLOB_READ_WRITE_TOKEN</code> est présent
-      dans Settings → Environment Variables et coché pour l'environnement utilisé, puis redéployer.
+      Aucun stockage de photos détecté sur cet environnement. L'ajout est tout de même possible : s'il échoue,
+      le message d'erreur indiquera la cause exacte. Réordonner et supprimer fonctionnent dans tous les cas.
     </div>
   )}
   {item && (
@@ -77,12 +78,9 @@ const blobConfigured = Boolean(import.meta.env.BLOB_READ_WRITE_TOKEN || process.
 
       <div class="card">
         <h2 style="margin-top:0">Ajouter des photos</h2>
-        {!blobConfigured && (
-          <p class="muted">Indisponible ici — voir l'avertissement en haut de page.</p>
-        )}
         <form id="mf-upload-form">
-          <input type="file" name="files" accept="image/*" multiple required disabled={!blobConfigured} />
-          <button class="btn" type="submit" disabled={!blobConfigured}>Uploader</button>
+          <input type="file" name="files" accept="image/*" multiple required />
+          <button class="btn" type="submit">Uploader</button>
           <span id="mf-upload-status" class="muted" style="margin-left:.75rem"></span>
         </form>
       </div>

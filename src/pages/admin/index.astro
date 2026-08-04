@@ -22,10 +22,86 @@ if (!dbError) {
     itemPricesMissing = true;
   }
 }
+
+// État des services externes. On n'expose jamais les valeurs, uniquement la
+// présence de la variable : c'est ce qui distingue « pas configuré » d'un
+// vrai bug, et évite de fouiller le dashboard Vercel à chaque incident.
+const integrations = [
+  {
+    nom: "Base de données",
+    ok: !dbError,
+    variable: "DATABASE_URL",
+    role: "Commandes, clients, prix, factures.",
+    aide: "Vercel → Storage → connecter la base Postgres au projet, puis /admin/setup.",
+  },
+  {
+    nom: "Stockage des photos",
+    ok: Object.keys(process.env).some((k) => k.startsWith("BLOB_")),
+    variable: "BLOB_STORE_ID / BLOB_READ_WRITE_TOKEN",
+    role: "Ajout de photos sur les jantes. Réordonner et supprimer marchent sans.",
+    aide: "Vercel → Storage → ouvrir le store Blob → onglet Projects → connecter ce projet, puis redéployer.",
+  },
+  {
+    nom: "Paiement Stripe",
+    ok: Boolean(process.env.STRIPE_SECRET_KEY),
+    variable: "STRIPE_SECRET_KEY",
+    role: "Encaissement des commandes. Sans clé, la commande est enregistrée mais non payée.",
+    aide: "Dashboard Stripe → clé secrète → Vercel → Settings → Environment Variables.",
+  },
+  {
+    nom: "Recherche par plaque",
+    ok: Boolean(process.env.AUTOWAYS_API_KEY),
+    variable: "AUTOWAYS_API_KEY",
+    role: "Identifie le véhicule du client (marque, modèle, année, finition).",
+    aide: "Compte auto-ways.net → Clés API.",
+  },
+  {
+    nom: "Cotes jante (déport)",
+    ok: Boolean(process.env.VDIM_API_KEY || process.env.WHEELSIZE_API_KEY),
+    variable: "VDIM_API_KEY",
+    role: "Optionnel. Sans, l'entraxe vient de la table interne et le déport se renseigne à la main.",
+    aide: "Non configuré = fonctionnement normal aujourd'hui.",
+    facultatif: true,
+  },
+];
 ---
 
 <AdminLayout title="Tableau de bord">
   <h1>Tableau de bord</h1>
+
+  <div class="card">
+    <h2 style="margin-top:0">État des services</h2>
+    <p class="muted">
+      Ce que le site voit réellement depuis l'environnement en cours d'exécution. Aucune clé n'est affichée,
+      seulement leur présence — c'est ce qui permet de distinguer un service non configuré d'un vrai
+      dysfonctionnement.
+    </p>
+    <table>
+      <tbody>
+        {integrations.map((s) => (
+          <tr>
+            <td style="width:1.5rem">
+              <span
+                title={s.ok ? "Configuré" : s.facultatif ? "Non configuré (facultatif)" : "Non configuré"}
+                style={`display:inline-block;width:.65rem;height:.65rem;border-radius:50%;background:${
+                  s.ok ? "#3fb950" : s.facultatif ? "#8b949e" : "#ff7a45"
+                }`}
+              ></span>
+            </td>
+            <th style="white-space:nowrap">{s.nom}</th>
+            <td>
+              <div>{s.role}</div>
+              {!s.ok && (
+                <div class="muted" style="font-size:.85em;margin-top:.25rem">
+                  <code>{s.variable}</code> absente — {s.aide}
+                </div>
+              )}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
 
   {dbError && (
     <div class="notice">

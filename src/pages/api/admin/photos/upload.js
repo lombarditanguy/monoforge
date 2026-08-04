@@ -11,13 +11,11 @@ function jsonError(message, status = 400) {
 }
 
 export async function POST({ request }) {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return jsonError(
-      "Stockage des photos non configuré : active Vercel Blob dans le dashboard Vercel du projet, puis redéploie.",
-      500
-    );
-  }
-
+  // Volontairement sans contrôle préalable d'une variable d'environnement :
+  // l'intégration Vercel Blob n'expose pas toujours BLOB_READ_WRITE_TOKEN
+  // (les projets récents reçoivent BLOB_STORE_ID et une authentification
+  // implicite). Exiger un nom précis rejetait des installations valides —
+  // on tente l'envoi et on remonte l'erreur réelle du SDK.
   const formData = await request.formData().catch(() => null);
   if (!formData) return jsonError("Requête invalide.");
 
@@ -34,7 +32,15 @@ export async function POST({ request }) {
   try {
     blob = await put(filename, file, { access: "public" });
   } catch (err) {
-    return jsonError(`Échec de l'upload : ${err.message}`, 500);
+    // Distingue le défaut de configuration du reste : c'est la question qu'on
+    // se pose en premier quand un envoi échoue.
+    const auth = /token|unauthorized|forbidden|credential|not found/i.test(err.message || "");
+    return jsonError(
+      auth
+        ? `Stockage des photos inaccessible : ${err.message}. Vérifie que le store Blob est connecté au projet dans Vercel → Storage, puis redéploie.`
+        : `Échec de l'upload : ${err.message}`,
+      500
+    );
   }
 
   const current = await getEffectivePhotos(code);
