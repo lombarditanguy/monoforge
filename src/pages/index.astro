@@ -1,14 +1,28 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import FamilyCard from "../components/FamilyCard.astro";
+import WheelPhotoCard from "../components/WheelPhotoCard.astro";
+import VehicleSelector from "../components/VehicleSelector.astro";
 import CTASection from "../components/CTASection.astro";
 import FaqList from "../components/FaqList.astro";
 import { FAMILIES } from "../data/catalog.js";
-import { countAllItems } from "../lib/catalogDb.js";
+import { BEST_SELLERS } from "../data/bestsellers.js";
+import { countAllItems, listItemsByCodes } from "../lib/catalogDb.js";
+import { startingPrices } from "../lib/pricing.js";
 import { faqLd } from "../utils/seo.js";
 import { SITE } from "../data/site.js";
 
 const totalItems = await countAllItems();
+
+// Sélection mise en avant : on rattache à chaque code sa fiche (photo à jour
+// comprise) et son prix plancher. Une référence introuvable est écartée
+// plutôt que rendue en carte vide.
+const itemsMisEnAvant = await listItemsByCodes(BEST_SELLERS.map((b) => b.code));
+const prixMisEnAvant = await startingPrices(itemsMisEnAvant);
+const misEnAvant = BEST_SELLERS.map((b) => {
+  const item = itemsMisEnAvant.find((i) => i.code === b.code);
+  return item ? { ...b, item, prix: prixMisEnAvant.get(b.code) || 0 } : null;
+}).filter(Boolean);
 
 const homeFaqs = [
   {
@@ -83,6 +97,34 @@ const homeFaqs = [
           </dl>
         </div>
       </div>
+    </div>
+  </section>
+
+  <div class="hairline"></div>
+
+  <!-- VEHICLE SELECTOR -->
+  <VehicleSelector />
+
+  <div class="hairline"></div>
+
+  <!-- BEST SELLERS -->
+  <section class="container-mf py-20">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <div class="max-w-xl">
+        <p class="section-label">Les plus demandés</p>
+        <h2 class="mt-4 text-balance font-display text-3xl font-bold text-(--color-paper) md:text-4xl">
+          Six dessins qui marchent, et ce qu'ils coûtent.
+        </h2>
+        <p class="mt-4 text-sm leading-relaxed text-(--color-mist)">
+          Un dessin par tendance de fond du marché. Les prix sont donnés pour la plus petite taille, jeu de quatre non compris — le prix exact dépend du diamètre, de la largeur et de la finition.
+        </p>
+      </div>
+      <a href="/catalogue" class="btn btn-outline shrink-0">Les {totalItems} références</a>
+    </div>
+    <div class="mt-12 grid grid-cols-2 gap-5 lg:grid-cols-3">
+      {misEnAvant.map((b) => (
+        <WheelPhotoCard item={b.item} startingPrice={b.prix} tendance={b.tendance} argument={b.argument} />
+      ))}
     </div>
   </section>
 

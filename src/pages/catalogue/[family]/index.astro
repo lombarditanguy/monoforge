@@ -7,37 +7,16 @@ import CTASection from "../../../components/CTASection.astro";
 import { FAMILIES } from "../../../data/catalog.js";
 import { listItemsForFamily } from "../../../lib/catalogDb.js";
 import { breadcrumbLd } from "../../../utils/seo.js";
-import { sql } from "../../../lib/db.js";
+import { startingPrices } from "../../../lib/pricing.js";
 
 const { family: familySlug } = Astro.params;
 const family = FAMILIES.find((f) => f.slug === familySlug);
 if (!family) return Astro.redirect("/catalogue", 302);
 const items = await listItemsForFamily(family.slug);
 
-let itemsWithPrice = items.map((i) => ({ ...i, startingPrice: 0 }));
-let startingPrice = 0;
-try {
-  const codes = items.map((i) => i.code);
-  const [priceRow] = await sql`select coefficient_revente from price_bases where famille = ${family.slug} limit 1`;
-  const priceRows = await sql`select code, prix_achat_ht from item_prices where code = any(${codes})`;
-  const [minSize] = await sql`select min(coefficient) as min_coeff from size_coefficients`;
-  const [minWidth] = await sql`select min(coefficient) as min_coeff from width_coefficients`;
-  const coefficient = Number(priceRow?.coefficient_revente || 0);
-  const sizeCoeff = Number(minSize?.min_coeff || 0);
-  const widthCoeff = Number(minWidth?.min_coeff || 1);
-  const achatByCode = new Map(priceRows.map((r) => [r.code, Number(r.prix_achat_ht || 0)]));
-
-  if (coefficient > 0 && sizeCoeff > 0) {
-    itemsWithPrice = items.map((i) => ({
-      ...i,
-      startingPrice: (achatByCode.get(i.code) || 0) * coefficient * sizeCoeff * widthCoeff,
-    }));
-    const positivePrices = itemsWithPrice.map((i) => i.startingPrice).filter((p) => p > 0);
-    startingPrice = positivePrices.length > 0 ? Math.min(...positivePrices) : 0;
-  }
-} catch {
-  // Pas de base connectée / pas encore configurée : pas de prix affiché.
-}
+const prix = await startingPrices(items);
+const itemsWithPrice = items.map((i) => ({ ...i, startingPrice: prix.get(i.code) || 0 }));
+const startingPrice = prix.size > 0 ? Math.min(...prix.values()) : 0;
 
 Astro.response.headers.set("Cache-Control", "public, s-maxage=600, stale-while-revalidate=86400");
 

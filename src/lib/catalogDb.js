@@ -87,6 +87,17 @@ export async function findItemByCode(code) {
   return applyPhotoOverride(item, overrides);
 }
 
+// Plusieurs références d'un coup, dans l'ordre demandé. Passer par
+// findItemByCode en boucle ferait une requête de photos par jante ; ici il n'y
+// en a qu'une pour tout le lot. Un code inconnu est simplement absent du
+// résultat — l'appelant décide quoi en faire.
+export async function listItemsByCodes(codes) {
+  if (codes.length === 0) return [];
+  const trouves = codes.map((c) => staticItems.find((i) => i.code === c)).filter(Boolean);
+  const overrides = await loadPhotoOverrides(trouves.map((i) => i.code));
+  return trouves.map((item) => applyPhotoOverride(item, overrides));
+}
+
 export function isStaticItem(code) {
   return staticItems.some((i) => i.code === code);
 }

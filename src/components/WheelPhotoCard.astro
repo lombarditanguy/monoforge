@@ -1,6 +1,6 @@
 ---
-interface Props { item: any; startingPrice?: number }
-const { item, startingPrice = 0 } = Astro.props;
+interface Props { item: any; startingPrice?: number; tendance?: string; argument?: string }
+const { item, startingPrice = 0, tendance = "", argument = "" } = Astro.props;
 ---
 
 <a
@@ -23,8 +23,10 @@ const { item, startingPrice = 0 } = Astro.props;
       Voir la fiche
       <svg width="10" height="10" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M1 7H13M13 7L8 2M13 7L8 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
     </span>
+    {tendance && <span class="chip absolute left-3 top-3 bg-(--color-ink)/80">{tendance}</span>}
   </div>
   <p class="px-3 py-2.5 text-center font-display text-sm font-bold text-(--color-paper)">
     {startingPrice > 0 ? `à partir de ${startingPrice.toFixed(0)} €` : "Sur devis"}
   </p>
+  {argument && <p class="-mt-1 px-3 pb-3.5 text-center text-xs leading-relaxed text-(--color-mist)">{argument}</p>}
 </a>
