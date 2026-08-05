@@ -297,6 +297,27 @@ function redigerNote(p) {
 }
 
 /**
+ * Alésage central du véhicule.
+ *
+ * C'est une cote du moyeu, pas de la jante : elle ne dépend ni de la taille
+ * commandée ni de la version, et le jeu de données le confirme — sur 5 708
+ * véhicules, aucun n'affiche deux valeurs. Rien à extrapoler ici, contrairement
+ * au déport. On garde quand même le pluriel : un autre fichier pourrait être
+ * moins propre, et mieux vaut signaler une contradiction que trancher au hasard
+ * sur la cote qui centre la jante.
+ */
+export function alesageDesMontes(montes) {
+  const valeurs = [...new Set((montes || []).map((m) => m.alesage).filter((a) => Number.isFinite(a)))];
+  if (valeurs.length === 0) return { valeur: null, concurrents: null };
+  if (valeurs.length === 1) return { valeur: valeurs[0], concurrents: null };
+  return { valeur: null, concurrents: valeurs.sort((a, b) => a - b) };
+}
+
+export function formatAlesage(mm) {
+  return Number.isFinite(mm) ? `${String(mm).replace(".", ",")} mm` : null;
+}
+
+/**
  * Applique la règle aux deux trains d'une commande (montage décalé compris).
  */
 export function proposeFitment(montes, { sizeLabel, widthLabel }) {
@@ -314,7 +335,17 @@ export function proposeFitment(montes, { sizeLabel, widthLabel }) {
     ? proposeDeportPourTaille(montes, { diametre, largeur: largeurs.arriere, essieu: "arriere" })
     : avant;
 
-  if (!avant && !arriere) return null;
+  // L'alésage se lit même quand aucun déport n'est exploitable : c'est une
+  // information indépendante, et elle sert à usiner la jante.
+  const alesage = alesageDesMontes(montes);
+  if (!avant && !arriere) {
+    return alesage.valeur === null
+      ? null
+      : { decale: false, avant: null, arriere: null, resume: null, entraxe: null,
+          alesage: alesage.valeur, alesagesConcurrents: alesage.concurrents,
+          verificationRequise: false, extrapole: false, horsSerie: false, ambigu: false,
+          confiance: "haute" };
+  }
 
   const resume = largeurs.decale
     ? [
@@ -329,6 +360,8 @@ export function proposeFitment(montes, { sizeLabel, widthLabel }) {
     arriere,
     resume,
     entraxe: avant?.entraxe || arriere?.entraxe || null,
+    alesage: alesage.valeur,
+    alesagesConcurrents: alesage.concurrents,
     verificationRequise: Boolean(avant?.verificationRequise || arriere?.verificationRequise),
     extrapole: Boolean(avant?.extrapole || arriere?.extrapole),
     horsSerie: Boolean(avant?.horsSerie || arriere?.horsSerie),

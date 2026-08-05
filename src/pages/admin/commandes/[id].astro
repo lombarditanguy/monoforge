@@ -128,6 +128,10 @@ const propositions = proposition
               <label for="deport">Déport</label>
               <input id="deport" name="deport" type="text" value={commande.deport || ""} placeholder="ex : ET35" />
             </div>
+            <div>
+              <label for="alesage">Alésage central</label>
+              <input id="alesage" name="alesage" type="text" value={commande.alesage || ""} placeholder="ex : 66,6 mm" />
+            </div>
           </div>
           <button class="btn" type="submit">Enregistrer</button>
         </form>
@@ -144,10 +148,25 @@ const propositions = proposition
         <h2 style="margin-top:0">Emplacement de la jante (données constructeur)</h2>
         {proposition ? (
           <>
-            <p style="margin-top:0">
-              Déport proposé : <strong style="font-size:1.15rem">{proposition.resume}</strong>
-              <span class="muted"> — fiabilité {proposition.confiance}</span>
-            </p>
+            {proposition.resume && (
+              <p style="margin-top:0">
+                Déport proposé : <strong style="font-size:1.15rem">{proposition.resume}</strong>
+                <span class="muted"> — fiabilité {proposition.confiance}</span>
+              </p>
+            )}
+            {proposition.alesage != null && (
+              <p style="margin-top:0">
+                Alésage central : <strong style="font-size:1.15rem">{String(proposition.alesage).replace(".", ",")} mm</strong>
+                <span class="muted"> — cote du moyeu, indépendante de la taille commandée</span>
+              </p>
+            )}
+            {proposition.alesagesConcurrents && (
+              <div class="notice" style="margin:.75rem 0">
+                <strong>Alésage à confirmer.</strong> Le jeu de données donne plusieurs valeurs pour ce véhicule
+                ({proposition.alesagesConcurrents.join(" / ")} mm) — c'est anormal pour une cote de moyeu. À vérifier
+                avant usinage.
+              </div>
+            )}
             {proposition.extrapole && (
               <div class="notice" style="margin:.75rem 0">
                 <strong>Déport extrapolé.</strong> Aucune taille référencée ne correspond exactement à la commande :
@@ -202,7 +221,7 @@ const propositions = proposition
             </summary>
             <table style="margin-top:.5rem">
               <tbody>
-                <tr><th>Version</th><th>Nature</th><th>Essieu</th><th>Diamètre</th><th>Largeur</th><th>Déport</th><th>Entraxe</th></tr>
+                <tr><th>Version</th><th>Nature</th><th>Essieu</th><th>Diamètre</th><th>Largeur</th><th>Déport</th><th>Entraxe</th><th>Alésage</th></tr>
                 {monte.montes.slice(0, 40).map((m) => (
                   <tr>
                     <td>{m.finition || "—"}</td>
@@ -212,6 +231,7 @@ const propositions = proposition
                     <td>{m.largeur ?? "—"}</td>
                     <td>{m.deport === null || m.deport === undefined ? "—" : `ET${m.deport}`}</td>
                     <td>{m.entraxe || "—"}</td>
+                    <td>{m.alesage == null ? "—" : `${String(m.alesage).replace(".", ",")} mm`}</td>
                   </tr>
                 ))}
               </tbody>

@@ -151,6 +151,7 @@ alter table commandes add column if not exists peinture_nom text;
 alter table commandes add column if not exists peinture_hex text;
 alter table commandes add column if not exists vehicule_annee text;
 alter table commandes add column if not exists vehicule_finition text;
+alter table commandes add column if not exists alesage text;
 alter table commandes add column if not exists deport_propose text;
 alter table commandes add column if not exists deport_source text;
 alter table commandes add column if not exists monte_origine jsonb;

@@ -393,7 +393,7 @@ try {
           const table = document.createElement("table");
           const tbody = document.createElement("tbody");
           const head = document.createElement("tr");
-          for (const c of ["Version", "Nature", "Essieu", "Diamètre", "Largeur", "Déport", "Entraxe"]) {
+          for (const c of ["Version", "Nature", "Essieu", "Diamètre", "Largeur", "Déport", "Entraxe", "Alésage"]) {
             const th = document.createElement("th");
             th.textContent = c;
             head.appendChild(th);
@@ -403,7 +403,7 @@ try {
           for (const m of json.montes.slice(0, 40)) {
             const tr = document.createElement("tr");
             const essieu = m.essieu === "arriere" ? "arrière" : m.essieu === "avant" ? "avant" : "les 4";
-            for (const v of [m.finition || "—", NATURE[m.groupe] || "—", essieu, m.diametre ?? "—", m.largeur ?? "—", m.deport === null ? "—" : `ET${m.deport}`, m.entraxe || "—"]) {
+            for (const v of [m.finition || "—", NATURE[m.groupe] || "—", essieu, m.diametre ?? "—", m.largeur ?? "—", m.deport === null ? "—" : `ET${m.deport}`, m.entraxe || "—", m.alesage == null ? "—" : `${m.alesage} mm`]) {
               const td = document.createElement("td");
               td.textContent = String(v);
               tr.appendChild(td);
@@ -418,7 +418,11 @@ try {
         if (p) {
           const titre = document.createElement("p");
           titre.style.marginTop = "1rem";
-          titre.innerHTML = `<strong>Déport proposé : ${p.resume}</strong> — fiabilité ${p.confiance}${p.verificationRequise ? " · à vérifier avant fabrication" : ""}`;
+          const bouts = [];
+          if (p.resume) bouts.push(`<strong>Déport proposé : ${p.resume}</strong> — fiabilité ${p.confiance}${p.verificationRequise ? " · à vérifier avant fabrication" : ""}`);
+          if (p.alesage != null) bouts.push(`<strong>Alésage : ${String(p.alesage).replace(".", ",")} mm</strong>`);
+          if (p.alesagesConcurrents) bouts.push(`<strong>Alésage contradictoire : ${p.alesagesConcurrents.join(" / ")} mm</strong> — à vérifier`);
+          titre.innerHTML = bouts.join("<br>");
           testOut.appendChild(titre);
           for (const cote of ["avant", "arriere"]) {
             const c = p[cote];

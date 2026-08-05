@@ -17,12 +17,14 @@ export async function POST({ request, redirect }) {
     const modele = String(data.get("vehicule_modele") || "").trim();
     const entraxe = String(data.get("entraxe") || "").trim();
     const deport = String(data.get("deport") || "").trim();
+    const alesage = String(data.get("alesage") || "").trim();
     await sql`
       update commandes set
         vehicule_marque = ${marque || null},
         vehicule_modele = ${modele || null},
         entraxe = ${entraxe || null},
         deport = ${deport || null},
+        alesage = ${alesage || null},
         updated_at = now()
       where id = ${id}
     `;

@@ -26,6 +26,7 @@ async function enregistrerDeportPropose(reference, vehicule, taille) {
         proposition: p,
       })},
       entraxe = coalesce(entraxe, ${p?.entraxe || null}),
+      alesage = coalesce(alesage, ${p?.alesage != null ? `${p.alesage} mm` : null}),
       updated_at = now()
     where reference = ${reference}
   `;
