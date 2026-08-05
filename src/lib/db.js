@@ -209,6 +209,17 @@ create table if not exists item_photos (
   updated_at timestamptz not null default now()
 );
 
+-- Jantes mises en avant sur la page d'accueil. Tant que la table est vide, le
+-- site retombe sur la sélection issue de l'audit de marché : la vitrine n'est
+-- donc jamais vide, même sur une base fraîchement initialisée.
+create table if not exists home_featured (
+  code text primary key,
+  position integer not null default 0,
+  tendance text,
+  argument text,
+  updated_at timestamptz not null default now()
+);
+
 create table if not exists invoices (
   id serial primary key,
   numero text not null unique,
