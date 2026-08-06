@@ -128,18 +128,21 @@ const ld = [
                 <label for="mf-size-select" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Diamètre</label>
                 <select id="mf-size-select" class="w-full rounded-md border border-(--color-line) bg-(--color-surface) px-3 py-2 text-sm text-(--color-paper)">
                   {sizesData.map((s) => <option value={s.coefficient} data-label={s.taille}>{s.taille}</option>)}
+                  <option value="" data-origine="1" data-label="Comme d'origine">Comme mes roues d'origine</option>
                 </select>
               </div>
               <div>
                 <label for="mf-width-select" id="mf-width-label" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Largeur</label>
                 <select id="mf-width-select" class="w-full rounded-md border border-(--color-line) bg-(--color-surface) px-3 py-2 text-sm text-(--color-paper)">
                   {widthsData.map((w) => <option value={w.coefficient} data-label={w.largeur}>{w.largeur}</option>)}
+                  <option value="" data-origine="1" data-label="Comme d'origine">Comme mes roues d'origine</option>
                 </select>
               </div>
               <div id="mf-width-rear-row" class="hidden">
                 <label for="mf-width-rear-select" class="mb-1.5 block text-xs uppercase tracking-widest text-(--color-fog)">Largeur (arrière)</label>
                 <select id="mf-width-rear-select" class="w-full rounded-md border border-(--color-line) bg-(--color-surface) px-3 py-2 text-sm text-(--color-paper)">
                   {widthsData.map((w) => <option value={w.coefficient} data-label={w.largeur}>{w.largeur}</option>)}
+                  <option value="" data-origine="1" data-label="Comme d'origine">Comme mes roues d'origine</option>
                 </select>
               </div>
               <div>
@@ -159,11 +162,27 @@ const ld = [
               </div>
             </div>
             <ColorConfigurator />
-            <button type="submit" class="btn btn-forge mt-5 w-full sm:w-auto">Commander et payer</button>
+            <button type="submit" id="mf-buy-btn" class="btn btn-forge mt-5 w-full sm:w-auto">Commander et payer</button>
           </form>
+          <!-- Choisir « comme mes roues d'origine » rend le prix incalculable :
+               la taille dépend du véhicule, qu'on ne connaît pas encore. On ne
+               facture donc pas au hasard — on bascule sur l'étude, où la plaque
+               donne les cotes d'origine et le prix exact. -->
+          <a
+            href={`/configurateur?ref=${encodeURIComponent(item.code)}`}
+            id="mf-devis-btn"
+            class="btn btn-forge mt-5 hidden w-full sm:w-auto"
+          >Continuer avec ma plaque</a>
+          <!-- La phrase posait la question sans donner la réponse : le bouton
+               sur-mesure est plus bas, hors du regard de qui vient de lire. Le
+               lien ferme la question là où elle est posée. -->
           <p class="mt-4 text-xs leading-relaxed text-(--color-fog)">
             Prix HT pour cette jante telle quelle. Besoin d'une finition, d'un dessin ou d'une contrainte technique
             particulière qui ne figure pas ici ?
+            <a
+              href={`/configurateur?ref=${encodeURIComponent(item.code)}`}
+              class="font-semibold whitespace-nowrap text-(--color-forge-400) underline underline-offset-2 hover:text-(--color-forge-300)"
+            >Faire mon projet sur mesure →</a>
           </p>
         </div>
       ) : null}
@@ -269,7 +288,20 @@ const ld = [
           widthLabelForForm = rearLabel === frontLabel ? frontLabel : `${frontLabel} avant / ${rearLabel} arrière`;
         }
 
-        if (display) display.textContent = `${total.toFixed(0)} € HT (${qty} jante${qty > 1 ? "s" : ""})`;
+        // Une option « comme d'origine » ne porte pas de coefficient : le prix
+        // ne peut pas être calculé, et afficher un chiffre serait mentir.
+        const auxCotesOrigine = [sizeSelect, widthSelect, staggered ? widthRearSelect : null]
+          .some((sel) => sel && sel.selectedOptions[0]?.dataset.origine === "1");
+        const buyBtn = document.getElementById("mf-buy-btn");
+        const devisBtn = document.getElementById("mf-devis-btn");
+        buyBtn?.classList.toggle("hidden", auxCotesOrigine);
+        devisBtn?.classList.toggle("hidden", !auxCotesOrigine);
+
+        if (display) {
+          display.textContent = auxCotesOrigine
+            ? "Prix confirmé avec votre plaque"
+            : `${total.toFixed(0)} € HT (${qty} jante${qty > 1 ? "s" : ""})`;
+        }
         if (hiddenSizeLabel) hiddenSizeLabel.value = sizeSelect?.selectedOptions[0]?.dataset.label || "";
         if (hiddenWidthLabel) hiddenWidthLabel.value = widthLabelForForm;
         if (hiddenFinishLabel) hiddenFinishLabel.value = finishSelect?.selectedOptions[0]?.dataset.label || "";

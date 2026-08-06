@@ -1,33 +1,41 @@
 ---
 // Écran d'accueil.
 //
-// Le bandeau prend exactement le format de la vidéo (16/9). C'est ce qui règle
-// le recadrage : tant que le cadre était plus haut que large, `cover` rognait
-// les bords et on ne voyait qu'une partie de la jante. À format égal, il n'y a
-// plus rien à couper — la jante est entière du début à la fin du plan.
+// Trois couches empilées de haut en bas : l'accroche, la jante, le catalogue.
+// L'accroche est posée par-dessus le haut de l'image et le catalogue remonte
+// par-dessus son bas — les chevauchements sont voulus. Une jante isolée dans
+// son propre bandeau laissait un trou entre elle et le reste : on avait
+// l'impression d'être devant une page de garde et il fallait défiler pour
+// atteindre le site. En serrant les trois couches, le catalogue entre dans le
+// premier écran.
 //
-// Et pas de vidéo sur téléphone. Un 16/9 dans un écran tenu en portrait n'en
+// La jante reste entière malgré le bandeau raccourci : `contain` plutôt que
+// `cover`. Le fond du plan est presque noir, donc l'espace laissé sur les
+// côtés se confond avec celui de la page — on ne voit pas de bandes.
+//
+// Pas de vidéo sur téléphone. Un 16/9 dans un écran tenu en portrait n'en
 // laisse voir qu'environ un tiers de la largeur, à un grossissement où la
-// compression devient visible. Une photo carrée s'y recadre sans rien perdre.
-// La source n'est posée qu'une fois la largeur vérifiée : un visiteur au
-// téléphone ne télécharge donc pas les deux mégaoctets de la vidéo.
+// compression devient visible. La source n'est posée qu'une fois la largeur
+// vérifiée : un visiteur au téléphone ne télécharge pas les deux mégaoctets.
 ---
 
 <section class="mf-affiche">
-  <img class="mf-affiche-photo" src="/kw-hero-mobile.webp" alt="Jante forgée KESSLER WHEELS" width="1200" height="1200" fetchpriority="high" />
-  <video
-    id="mf-affiche-film"
-    class="mf-affiche-film"
-    muted
-    loop
-    playsinline
-    preload="none"
-    poster="/kw-hero-poster.webp"
-    aria-hidden="true"
-  ></video>
+  <div class="mf-affiche-media">
+    <img class="mf-affiche-photo" src="/kw-hero-mobile.webp" alt="Jante forgée KESSLER WHEELS" width="1200" height="1200" fetchpriority="high" />
+    <video
+      id="mf-affiche-film"
+      class="mf-affiche-film"
+      muted
+      loop
+      playsinline
+      preload="none"
+      poster="/kw-hero-poster.webp"
+      aria-hidden="true"
+    ></video>
+  </div>
 
-  <div class="mf-affiche-texte container-mf">
-    <h1 class="font-display text-4xl leading-[.94] font-bold tracking-[-.035em] text-balance text-(--color-paper) sm:text-6xl lg:text-7xl">
+  <div class="mf-affiche-tete container-mf">
+    <h1 class="font-display text-4xl leading-[.96] font-bold tracking-[-.03em] text-balance text-(--color-paper) sm:text-5xl lg:text-6xl">
       Forgée pour une seule voiture&nbsp;: <span class="text-(--color-forge-400)">la vôtre.</span>
     </h1>
     <p class="mf-affiche-specs">
@@ -39,26 +47,33 @@
 <style>
   .mf-affiche {
     position: relative;
-    width: 100%;
-    /* Le format de la vidéo, à l'unité près : c'est ce qui garantit qu'aucun
-       bord n'est coupé. Surtout, aucune borne de hauteur ici — `min-height` ou
-       `max-height` combinés à `aspect-ratio` font grandir la LARGEUR pour tenir
-       le ratio, et la section débordait alors de l'écran. On borne la largeur,
-       jamais la hauteur. */
-    max-width: 96rem;
-    margin-inline: auto;
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
+    /* Assez pour que la jante respire, assez court pour que les puces du
+       catalogue entrent dans le premier écran. Jamais de borne de hauteur avec
+       `aspect-ratio` : les deux ensemble élargissent la boîte au lieu de la
+       raccourcir, et la section débordait de l'écran. */
+    height: clamp(19rem, 52vh, 30rem);
     background: var(--color-ink);
   }
-  /* Sur téléphone il n'y a pas de vidéo, donc plus de ratio à respecter : une
-     bande verticale met bien mieux en valeur une photo carrée, et laisse la
-     place au titre. */
-  @media (max-width: 47.99rem) {
-    .mf-affiche {
-      aspect-ratio: auto;
-      height: min(76vh, 34rem);
-    }
+  .mf-affiche-media { position: absolute; inset: 0; overflow: hidden; }
+  /* `contain` laisse le rectangle de la vidéo se détacher du fond : ses bords
+     tirent sur le #1c1c1c d'un fond de studio, la page est plus noire, et la
+     couture verticale se voit. Ce dégradé latéral la dissout — et resserre au
+     passage le cadrage sur la jante. */
+  .mf-affiche::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(
+      to right,
+      var(--color-ink) 0%,
+      color-mix(in oklab, var(--color-ink) 55%, transparent) 13%,
+      transparent 27%,
+      transparent 73%,
+      color-mix(in oklab, var(--color-ink) 55%, transparent) 87%,
+      var(--color-ink) 100%
+    );
   }
   .mf-affiche-photo,
   .mf-affiche-film {
@@ -66,56 +81,62 @@
     inset: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    object-position: 50% 48%;
+    /* `contain` : la jante entière quelle que soit la hauteur du bandeau. */
+    object-fit: contain;
+    object-position: 50% 50%;
   }
   .mf-affiche-film { display: none; }
-  /* Voile bas pour le titre, voile haut pour l'en-tête du site : sans lui, le
-     menu tombe sur la partie polie de la jante et devient illisible. */
-  .mf-affiche::after,
-  .mf-affiche::before {
+
+  /* Voile haut, pour que l'accroche et le menu tiennent sur la partie polie de
+     la jante ; voile bas, pour que le catalogue émerge sans couture. */
+  .mf-affiche-media::before,
+  .mf-affiche-media::after {
     content: "";
     position: absolute;
     left: 0;
     right: 0;
     pointer-events: none;
-    z-index: 2;
   }
-  .mf-affiche::after {
+  .mf-affiche-media::before {
+    top: 0;
+    height: 62%;
+    background: linear-gradient(to bottom, var(--color-ink) 2%, color-mix(in oklab, var(--color-ink) 62%, transparent) 38%, transparent 100%);
+  }
+  .mf-affiche-media::after {
     bottom: 0;
-    top: 0;
-    background: linear-gradient(to top, var(--color-ink) 4%, color-mix(in oklab, var(--color-ink) 45%, transparent) 34%, transparent 62%);
+    height: 42%;
+    background: linear-gradient(to top, var(--color-ink) 6%, transparent 100%);
   }
-  .mf-affiche::before {
-    top: 0;
-    height: 9rem;
-    background: linear-gradient(to bottom, color-mix(in oklab, var(--color-ink) 80%, transparent), transparent);
-  }
-  .mf-affiche-texte {
-    position: absolute;
-    inset: auto 0 0 0;
+
+  .mf-affiche-tete {
+    position: relative;
     z-index: 3;
-    padding-bottom: clamp(1.5rem, 4vw, 3rem);
+    padding-top: clamp(0.75rem, 2.5vw, 2rem);
   }
   .mf-affiche-specs {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.35rem 1.75rem;
-    margin-top: 1.1rem;
+    gap: 0.3rem 1.6rem;
+    margin-top: 0.9rem;
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--color-mist);
   }
-  /* La vidéo est simplement posée par-dessus la photo, sans qu'on ait à masquer
-     celle-ci : même cadre, même recadrage. Si la lecture échoue, l'affiche de
-     la vidéo prend le relais — la page ne bouge pas d'un pixel. */
+
+  /* La vidéo se pose simplement par-dessus la photo : même cadre, même
+     cadrage. Si la lecture échoue, l'affiche prend le relais et rien ne bouge. */
   @media (min-width: 48rem) {
     .mf-affiche-film { display: block; z-index: 1; }
   }
   @media (prefers-reduced-motion: reduce) {
     .mf-affiche-film { display: none !important; }
+  }
+  /* Sur téléphone la photo est carrée : `cover` la remplit sans perte notable,
+     là où `contain` laisserait deux grosses bandes vides. */
+  @media (max-width: 47.99rem) {
+    .mf-affiche-photo { object-fit: cover; object-position: 50% 42%; }
   }
 </style>
 
@@ -135,9 +156,7 @@
         film.appendChild(s);
       }
       film.load();
-      // Une lecture refusée — économiseur de données, réglage du navigateur —
-      // ne doit pas laisser un cadre noir : la photo reste en place.
-      // Rien à basculer si la lecture échoue : la photo est déjà dessous.
+      // Rien à basculer si la lecture est refusée : la photo est déjà dessous.
       film.play().catch(() => {});
     };
 
