@@ -1,4 +1,5 @@
 import { sql } from "./db.js";
+import { ORDRE_ACCUEIL_INITIAL } from "../data/ordreInitial.js";
 import { catalogItems as staticItems, itemsForFamily as staticItemsForFamily } from "../data/catalog.js";
 
 const PLACEHOLDER_IMAGE = "/catalogue/placeholder.webp";
@@ -53,7 +54,7 @@ export async function listItemsForFamily(familySlug) {
   // la jante de la tête, alors que c'est justement le moment où l'on veut la
   // voir. Le tri est stable, donc l'ordre du catalogue est conservé partout où
   // aucun rang n'est fixé.
-  const rangs = await loadOrdreAccueil();
+  const rangs = await ordreAccueil();
   return items
     .map((item, ordre) => ({ item, ordre, rang: rangs.get(item.code) }))
     .sort((a, b) => {
@@ -65,15 +66,25 @@ export async function listItemsForFamily(familySlug) {
     .map((x) => x.item);
 }
 
-// Rang d'affichage en tête de famille, réglé dans /admin/catalogue. Une base
-// injoignable ou une table vide rend simplement l'ordre du catalogue.
-async function loadOrdreAccueil() {
+/**
+ * Rang d'affichage en tête de famille, réglé dans /admin/catalogue.
+ *
+ * Tant que rien n'a été enregistré, on propose l'ordre initial — les jantes
+ * dont la photo principale est détourée — pour qu'une grille neuve soit déjà
+ * homogène. Dès qu'un ordre est enregistré, il prend seul la main : c'est une
+ * décision, elle ne doit pas être recouverte par une valeur par défaut.
+ *
+ * L'admin lit la même fonction, donc les cases du formulaire montrent
+ * exactement l'ordre que le site applique — sinon on règlerait à l'aveugle.
+ */
+export async function ordreAccueil() {
   try {
     const rows = await sql`select code, position from home_featured`;
-    return new Map(rows.map((r) => [r.code, Number(r.position)]));
+    if (rows.length > 0) return new Map(rows.map((r) => [r.code, Number(r.position)]));
   } catch {
-    return new Map();
+    // Base injoignable : l'ordre initial fait tout aussi bien l'affaire.
   }
+  return new Map(ORDRE_ACCUEIL_INITIAL.map((code, i) => [code, i + 1]));
 }
 
 export async function getCatalogItem(familySlug, slug) {

@@ -2,16 +2,16 @@
 export const prerender = false;
 import AdminLayout from "../../../layouts/AdminLayout.astro";
 import { FAMILIES } from "../../../data/catalog.js";
-import { listAllItemsForAdmin, isStaticItem } from "../../../lib/catalogDb.js";
-import { sql } from "../../../lib/db.js";
+import { listAllItemsForAdmin, isStaticItem, ordreAccueil } from "../../../lib/catalogDb.js";
 
 let items = [];
 let rangs = new Map();
 let dbError = null;
 try {
   items = await listAllItemsForAdmin();
-  const rows = await sql`select code, position from home_featured`;
-  rangs = new Map(rows.map((r) => [r.code, Number(r.position)]));
+  // Même source que le site : les cases montrent l'ordre réellement appliqué,
+  // y compris l'ordre initial tant que rien n'a été enregistré.
+  rangs = await ordreAccueil();
 } catch (err) {
   dbError = err.message;
 }
