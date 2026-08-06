@@ -75,16 +75,16 @@ export const articles = [
     slug: "delai-jantes-sur-mesure-forgees",
     title: "Jantes sur mesure : combien de temps pour un projet forgé ?",
     excerpt:
-      "8 semaines, 14 semaines : à quoi correspondent réellement ces délais, et comment les optimiser sans sacrifier le contrôle qualité.",
+      "Huit semaines en moyenne : à quoi correspond réellement ce délai, étape par étape, et comment le raccourcir sans rogner sur le contrôle qualité.",
     date: "2026-05-12",
     readingTime: "4 min",
     html: `
-      <p>Le <a href="/sur-mesure">sur-mesure forgé</a> n'est pas un produit de stock : chaque commande déclenche une chaîne d'étapes qui prend du temps. Voici comment se décompose un délai moyen de 8 à 14 semaines (voir aussi notre <a href="/faq">FAQ</a> sur le sujet).</p>
-      <h2>Étude & validation (1 à 3 semaines)</h2>
+      <p>Le <a href="/sur-mesure">sur-mesure forgé</a> n'est pas un produit de stock : chaque commande déclenche une chaîne d'étapes qui prend du temps. Voici comment se décompose un délai moyen de 8 semaines (voir aussi notre <a href="/faq">FAQ</a> sur le sujet).</p>
+      <h2>Étude & validation (1 à 2 semaines)</h2>
       <p>Brief, échanges techniques, production du plan et du rendu, validation de votre part. Cette étape peut être raccourcie si votre brief initial est déjà précis (cotes connues, références visuelles claires).</p>
-      <h2>Forgeage (3 à 6 semaines)</h2>
+      <h2>Forgeage (3 à 5 semaines)</h2>
       <p>Fabrication du brut forgé, puis usinage aux cotes exactes du plan validé. La durée dépend de la complexité du dessin et de la charge de l'atelier partenaire au moment de la commande.</p>
-      <h2>Finition & contrôle (2 à 4 semaines)</h2>
+      <h2>Finition & contrôle (2 à 3 semaines)</h2>
       <p>Application de la finition choisie, contrôle dimensionnel, équilibrage statique, puis préparation pour expédition ou remise en main propre.</p>
       <h2>Comment gagner du temps sans rogner sur la qualité</h2>
       <ul>

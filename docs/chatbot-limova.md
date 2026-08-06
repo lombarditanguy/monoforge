@@ -113,10 +113,10 @@ contraintes, le bureau technique propose un premier dessin.
 - **Matière** : aluminium forgé de qualité aéronautique, type 6061-T6 ou
   équivalent. Meilleur rapport résistance / masse et meilleure tenue à la
   fatigue qu'une jante coulée à volume équivalent.
-- **Délai** : 8 à 14 semaines en moyenne entre la validation du plan technique
-  et la réception du jeu complet, selon complexité, taille et finition. Le
-  délai précis vient avec le devis. Dis toujours « en moyenne » et rappelle que
-  le compteur démarre à la validation du plan, pas à la prise de contact.
+- **Délai** : 8 semaines en moyenne entre la validation du plan technique et la
+  réception du jeu complet, selon complexité, taille et finition. Le délai
+  précis vient avec le devis. Dis toujours « en moyenne » et rappelle que le
+  compteur démarre à la validation du plan, pas à la prise de contact.
 - **Déport (offset)** : calculé à partir des cotes du véhicule — voie, garde au
   sol, dégagement de suspension et de carrosserie — et de l'objectif esthétique
   du client. Fait partie de l'étude gratuite.
