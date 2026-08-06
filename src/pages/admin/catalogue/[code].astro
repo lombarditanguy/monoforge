@@ -62,17 +62,36 @@ const blobConfigured = Object.keys(process.env).some((k) => k.startsWith("BLOB_"
 
       <div class="card">
         <h2 style="margin-top:0">Photos actuelles</h2>
-        <p class="muted">La première photo (à gauche) est celle utilisée comme vignette sur le site.</p>
+        <p class="muted">
+          La première photo est la <strong>vignette</strong> : c'est la seule qui apparaît dans le catalogue et sur la
+          page d'accueil. Les autres ne se voient que sur la fiche produit. Une photo que tu ajoutes se place
+          <strong>en dernier</strong> — pour qu'elle devienne la vignette, clique sur « Mettre en vignette ».
+          Le site suit dans la minute, sans redéploiement.
+        </p>
         <div id="mf-photos-grid" style="display:flex;flex-wrap:wrap;gap:1rem;margin-top:1rem" data-code={item.code}>
           {item.images.map((src, i) => (
             <div class="mf-photo-item" data-src={src} style="width:9rem;border:1px solid #26262b;border-radius:.4rem;padding:.5rem;background:#1c1c20">
               <img src={src} alt="" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:.3rem;display:block" />
-              <p class="muted" style="margin:.4rem 0;font-size:.75rem;text-align:center">Position {i + 1}</p>
-              <div style="display:flex;gap:.3rem;justify-content:center">
+              <p class="mf-photo-rang muted" style="margin:.4rem 0;font-size:.75rem;text-align:center">
+                {i === 0 ? "Vignette du site" : `Position ${i + 1}`}
+              </p>
+              <div style="display:flex;gap:.3rem;justify-content:center;flex-wrap:wrap">
                 <button type="button" class="btn btn-outline" data-move="up" style="padding:.3rem .5rem;font-size:.75rem">↑</button>
                 <button type="button" class="btn btn-outline" data-move="down" style="padding:.3rem .5rem;font-size:.75rem">↓</button>
                 <button type="button" class="btn btn-outline btn-danger" data-delete-photo style="padding:.3rem .5rem;font-size:.75rem">Suppr.</button>
               </div>
+              {/* Toujours rendu, masqué pour la première. Le rendre
+                  conditionnellement laissait sans bouton la photo qu'on venait
+                  de rétrograder : elle ne pouvait plus remonter sans recharger
+                  la page, puisque le bouton n'existait pas dans le document. */}
+              <button
+                type="button"
+                class="btn"
+                data-vignette
+                style={`width:100%;margin-top:.3rem;padding:.3rem;font-size:.75rem${i === 0 ? ";display:none" : ""}`}
+              >
+                Mettre en vignette
+              </button>
             </div>
           ))}
         </div>
@@ -116,6 +135,16 @@ const blobConfigured = Object.keys(process.env).some((k) => k.startsWith("BLOB_"
       return Array.from(grid.querySelectorAll(".mf-photo-item")).map((el) => el.dataset.src);
     }
 
+    // Les libellés et le bouton se recalculent à chaque changement d'ordre :
+    // « Vignette du site » désigne une position, pas une photo en particulier.
+    function renumeroter() {
+      Array.from(grid.querySelectorAll(".mf-photo-item")).forEach((el, i) => {
+        el.querySelector(".mf-photo-rang").textContent = i === 0 ? "Vignette du site" : `Position ${i + 1}`;
+        const bouton = el.querySelector("[data-vignette]");
+        if (bouton) bouton.style.display = i === 0 ? "none" : "";
+      });
+    }
+
     async function saveOrder(images) {
       photosStatus.textContent = "Enregistrement...";
       try {
@@ -147,10 +176,15 @@ const blobConfigured = Object.keys(process.env).some((k) => k.startsWith("BLOB_"
         } else {
           grid.insertBefore(items[swapWith], item);
         }
-        Array.from(grid.querySelectorAll(".mf-photo-item")).forEach((el, i) => {
-          el.querySelector("p").textContent = `Position ${i + 1}`;
-        });
+        renumeroter();
         await saveOrder(currentImages());
+      }
+
+      if (target.hasAttribute("data-vignette")) {
+        grid.insertBefore(item, grid.firstElementChild);
+        renumeroter();
+        await saveOrder(currentImages());
+        return;
       }
 
       if (target.hasAttribute("data-delete-photo")) {
@@ -165,9 +199,7 @@ const blobConfigured = Object.keys(process.env).some((k) => k.startsWith("BLOB_"
           });
           if (!res.ok) throw new Error((await res.json()).error || "Erreur");
           item.remove();
-          Array.from(grid.querySelectorAll(".mf-photo-item")).forEach((el, i) => {
-            el.querySelector("p").textContent = `Position ${i + 1}`;
-          });
+          renumeroter();
           photosStatus.textContent = "Photo supprimée.";
         } catch (err) {
           photosStatus.textContent = `Erreur : ${err.message}`;

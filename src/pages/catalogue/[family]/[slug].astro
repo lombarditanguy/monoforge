@@ -64,7 +64,18 @@ if (hasPricing && related.length > 0) {
   }
 }
 
-Astro.response.headers.set("Cache-Control", "public, s-maxage=600, stale-while-revalidate=86400");
+// Dix minutes de cache, c'était trop long pour qui gère le catalogue :
+// changer une photo dans l'admin et ne rien voir bouger sur le site pendant
+// dix minutes ne se distingue pas d'un échec, et on recommence l'envoi. Une
+// minute suffit à absorber les rafales, et la revalidation en tâche de fond
+// est raccourcie d'autant — sinon une page pouvait rester vieille d'un jour.
+//
+// `max-age=0` vise le navigateur, pas le CDN. Sans lui, une réponse `public`
+// sans durée laisse le navigateur inventer la sienne : celui qui vient de
+// changer la photo est justement celui qui recharge, et il pouvait garder sa
+// propre copie périmée en plus de celle du CDN. Le partage reste servi par
+// `s-maxage`, donc rien n'est perdu côté charge.
+Astro.response.headers.set("Cache-Control", "public, max-age=0, s-maxage=60, stale-while-revalidate=300");
 
 const ld = [
   breadcrumbLd([
