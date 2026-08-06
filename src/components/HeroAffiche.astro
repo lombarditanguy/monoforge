@@ -54,37 +54,38 @@
     height: clamp(19rem, 52vh, 30rem);
     background: var(--color-ink);
   }
-  /* Le média est centré et dimensionné au format exact de la vidéo, au lieu
-     d'occuper toute la section en `contain`. La différence est essentielle :
-     la boîte coïncide alors avec l'image, donc un masque appliqué dessus
-     estompe ses vrais bords. En `contain`, le masque se serait appliqué aux
-     bords de la section — c'est-à-dire à du vide. */
-  .mf-affiche-media {
+  .mf-affiche-media { position: absolute; inset: 0; overflow: hidden; }
+
+  /* Fondu latéral. Il est posé par-dessus le média, en dégradé d'encre, plutôt
+     qu'en masque sur l'image elle-même : dimensionner l'image à son propre
+     format pour pouvoir la masquer la faisait déborder de la section et couper
+     la jante. Ici rien ne change de taille, seule la couture des flancs
+     disparaît. */
+  .mf-affiche::after {
+    content: "";
     position: absolute;
     inset: 0;
-    display: grid;
-    place-items: center;
-    overflow: hidden;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(
+      to right,
+      var(--color-ink) 0%,
+      color-mix(in oklab, var(--color-ink) 60%, transparent) 12%,
+      transparent 26%,
+      transparent 74%,
+      color-mix(in oklab, var(--color-ink) 60%, transparent) 88%,
+      var(--color-ink) 100%
+    );
   }
   .mf-affiche-photo,
   .mf-affiche-film {
-    grid-area: 1 / 1;
+    position: absolute;
+    inset: 0;
+    width: 100%;
     height: 100%;
-    width: auto;
-    max-width: 100%;
-    aspect-ratio: 16 / 9;
+    /* `contain` : la jante entière quelle que soit la hauteur du bandeau. */
     object-fit: contain;
-    /* Fondu sur les quatre côtés. Deux dégradés croisés plutôt qu'un halo
-       circulaire : le second garderait un liseré aux angles. `intersect`
-       n'existe pas partout, d'où la déclinaison WebKit juste après. */
-    -webkit-mask-image:
-      linear-gradient(to right, transparent 0, #000 9%, #000 91%, transparent 100%),
-      linear-gradient(to bottom, transparent 0, #000 8%, #000 90%, transparent 100%);
-    -webkit-mask-composite: source-in;
-    mask-image:
-      linear-gradient(to right, transparent 0, #000 9%, #000 91%, transparent 100%),
-      linear-gradient(to bottom, transparent 0, #000 8%, #000 90%, transparent 100%);
-    mask-composite: intersect;
+    object-position: 50% 50%;
   }
   .mf-affiche-film { display: none; }
 
@@ -143,12 +144,6 @@
       aspect-ratio: auto;
       object-fit: cover;
       object-position: 50% 42%;
-      /* Sur téléphone la photo remplit le bandeau : seul le bas a besoin d'un
-         fondu, les côtés touchent le bord de l'écran. */
-      -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 82%, transparent 100%);
-      -webkit-mask-composite: source-over;
-      mask-image: linear-gradient(to bottom, #000 0, #000 82%, transparent 100%);
-      mask-composite: add;
     }
   }
 </style>
