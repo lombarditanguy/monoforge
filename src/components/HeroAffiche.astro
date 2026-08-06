@@ -9,18 +9,17 @@
 // atteindre le site. En serrant les trois couches, le catalogue entre dans le
 // premier écran.
 //
-// Une photo, pas une vidéo. La jante qui tournait sur elle-même se lisait
-// comme un fond d'écran : elle occupait toute la largeur derrière le texte,
-// elle tournait sur place, donc rien ne se passait quand on faisait défiler la
-// page. Un plan fixe et cadré serré fait davantage : la jante remplit le
-// bandeau, l'aile noire de la voiture porte l'accroche, et l'image se comporte
-// comme une affiche plutôt que comme une toile de fond.
+// L'image occupe la moitié droite et s'arrête à mille pixels. C'est une
+// contrainte de définition, pas de mise en page : la photo d'origine fait
+// 800 px de large. Étalée sur toute la largeur d'un écran de bureau, elle
+// était agrandie deux fois et demie et les rayons devenaient pâteux. Bornée
+// ici, elle est réduite jusqu'à 1400 px de fenêtre et agrandie d'un quart au
+// plus au-delà — un facteur qui ne se voit pas. Le reste du cadre laisse
+// passer le fond animé du site, ce qui donne à la moitié gauche autre chose
+// qu'un aplat.
 //
-// `cover`, pas `contain` : l'image est cadrée pour ce bandeau, pas posée
-// dedans. Elle vient d'une photo verticale recadrée en 1600×560 — un peu
-// agrandie, mais c'est une prise de vue à faible profondeur de champ, où le
-// flou du fond couvre l'agrandissement. Un rendu de synthèse ne l'aurait pas
-// supporté.
+// La photo est celle de DZ-169, prise au ras du sol. Sa jumelle DZ-081 est la
+// même prise de vue, mais son cache-moyeu porte la marque du fournisseur.
 ---
 
 <section class="mf-affiche">
@@ -28,10 +27,10 @@
     <img
       class="mf-affiche-photo"
       src="/kw-hero.webp"
-      srcset="/kw-hero-mobile.webp 900w, /kw-hero.webp 1600w"
-      sizes="100vw"
+      srcset="/kw-hero-mobile.webp 760w, /kw-hero.webp 1000w"
+      sizes="(max-width: 47.99rem) 100vw, min(56vw, 1000px)"
       alt="Jante forgée montée sur une berline, vue au ras du sol"
-      width="1600"
+      width="1000"
       height="560"
       fetchpriority="high"
     />
@@ -55,65 +54,49 @@
        `aspect-ratio` : les deux ensemble élargissent la boîte au lieu de la
        raccourcir, et la section débordait de l'écran. */
     height: clamp(19rem, 52vh, 30rem);
-    background: var(--color-ink);
   }
-  .mf-affiche-media { position: absolute; inset: 0; overflow: hidden; }
-
-  .mf-affiche-photo {
+  .mf-affiche-media {
     position: absolute;
-    inset: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(56%, 1000px);
+    overflow: hidden;
+  }
+  .mf-affiche-photo {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    /* La jante est à droite du cadre et l'aile noire à gauche : en gardant ce
-       point d'ancrage, l'accroche tombe toujours sur le noir, quelle que soit
-       la largeur de l'écran. */
-    object-position: 62% 50%;
+    /* La jante est légèrement à droite dans le cadre d'origine : ce point
+       d'ancrage la garde entière quelle que soit la hauteur du bandeau. */
+    object-position: 54% 50%;
   }
 
-  /* Voile haut, pour que l'accroche et le menu tiennent sur la carrosserie ;
-     voile bas, pour que le catalogue émerge sans couture. Le voile de gauche
-     remplace le fondu latéral symétrique de la version vidéo : plus rien ne
-     dépasse sur les côtés puisque la photo remplit le cadre, il ne reste qu'à
-     asseoir le texte. */
+  /* Fondu du bord gauche du panneau, pour que la photo n'ait pas de couture
+     avec le fond, et voile du bas pour souder le catalogue qui remonte
+     dessus. Le rang est indispensable : sans lui, un pseudo-élément et une
+     image tous deux positionnés se peignent dans l'ordre du document, donc le
+     voile passerait derrière la photo et ne masquerait rien. */
   .mf-affiche-media::before,
   .mf-affiche-media::after {
     content: "";
     position: absolute;
     inset: 0;
     pointer-events: none;
-    /* Indispensable. Sans lui, `::before` se peint avant l'image — les
-       pseudo-éléments et l'image sont tous positionnés et sans rang, donc
-       c'est l'ordre du document qui tranche, et ::before vient en premier.
-       Le voile passait donc derrière la photo et ne masquait rien. Le défaut
-       ne s'était jamais vu tant que l'image était sombre de part en part. */
     z-index: 2;
   }
-  /* Dosage : juste ce qu'il faut pour asseoir le menu en haut et souder le
-     catalogue en bas, et rien de plus. Le premier réglage était trois fois
-     trop appuyé — il avait été calibré à l'œil pendant que le voile passait
-     derrière la photo et ne faisait donc rien. Une fois remis devant, il
-     éteignait la jante et rendait exactement le fond d'écran terne qu'on
-     cherchait à quitter. Le centre droit du cadre ne reçoit aucun voile. */
   .mf-affiche-media::before {
-    background:
-      linear-gradient(to bottom, color-mix(in oklab, var(--color-ink) 82%, transparent) 0%, color-mix(in oklab, var(--color-ink) 30%, transparent) 15%, transparent 34%),
-      linear-gradient(to top, var(--color-ink) 0%, var(--color-ink) 7%, color-mix(in oklab, var(--color-ink) 55%, transparent) 18%, transparent 38%);
-  }
-  /* Voile de gauche. Il est plus appuyé que celui du haut parce que c'est lui
-     qui porte le texte : l'accroche est bornée à la moitié gauche du cadre, sur
-     l'aile noire de la voiture, et la jante garde la droite pour elle. Une
-     accroche étalée sur toute la largeur traversait les rayons chromés et s'y
-     perdait — il aurait fallu voiler la photo entière pour la sauver, c'est-à-
-     dire revenir au fond d'écran qu'on voulait quitter. */
-  .mf-affiche-media::after {
     background: linear-gradient(
       to right,
-      color-mix(in oklab, var(--color-ink) 94%, transparent) 0%,
-      color-mix(in oklab, var(--color-ink) 72%, transparent) 18%,
-      color-mix(in oklab, var(--color-ink) 22%, transparent) 36%,
-      transparent 50%
+      var(--color-ink) 0%,
+      color-mix(in oklab, var(--color-ink) 55%, transparent) 14%,
+      transparent 34%
     );
+  }
+  .mf-affiche-media::after {
+    background:
+      linear-gradient(to top, var(--color-ink) 0%, var(--color-ink) 6%, color-mix(in oklab, var(--color-ink) 50%, transparent) 17%, transparent 36%),
+      linear-gradient(to bottom, color-mix(in oklab, var(--color-ink) 62%, transparent) 0%, transparent 22%);
   }
 
   .mf-affiche-tete {
@@ -122,8 +105,8 @@
     padding-top: clamp(0.75rem, 2.5vw, 2rem);
   }
   .mf-affiche-titre { max-width: 34rem; }
-  /* Les caractéristiques passent à la ligne plutôt que de filer vers les
-     rayons : sur une seule ligne, la dernière finissait sur le chrome. */
+  /* Les caractéristiques passent à la ligne plutôt que de filer vers la
+     photo : sur une seule ligne, la dernière finissait sur le chrome. */
   .mf-affiche-specs {
     max-width: 25rem;
     display: flex;
@@ -137,21 +120,20 @@
     color: var(--color-mist);
   }
 
-  /* Sur téléphone, la version portrait de la photo : recadrée pour l'écran
-     tenu debout, la jante reste entière au lieu d'être coupée par les bords
-     d'un cadre trop large. */
+  /* Sur téléphone, pas de colonne : l'écran est trop étroit pour couper en
+     deux, la photo passe derrière le texte dans sa version portrait, et le
+     voile la couvre entièrement puisque le texte s'étale sur toute la
+     largeur. */
   @media (max-width: 47.99rem) {
+    .mf-affiche-media { width: 100%; }
     .mf-affiche-photo { object-position: 50% 46%; }
-    /* Le texte occupe toute la largeur ici, donc le voile ne peut plus se
-       contenter du flanc gauche : il descend jusque sous les caractéristiques,
-       qui autrement finissaient sur le ciel. */
     .mf-affiche-media::before {
-      background:
-        linear-gradient(to bottom, color-mix(in oklab, var(--color-ink) 88%, transparent) 0%, color-mix(in oklab, var(--color-ink) 62%, transparent) 26%, transparent 50%),
-        linear-gradient(to top, var(--color-ink) 0%, var(--color-ink) 7%, color-mix(in oklab, var(--color-ink) 55%, transparent) 18%, transparent 38%);
+      background: linear-gradient(to right, color-mix(in oklab, var(--color-ink) 55%, transparent) 0%, transparent 72%);
     }
     .mf-affiche-media::after {
-      background: linear-gradient(to right, color-mix(in oklab, var(--color-ink) 55%, transparent) 0%, transparent 72%);
+      background:
+        linear-gradient(to top, var(--color-ink) 0%, var(--color-ink) 7%, color-mix(in oklab, var(--color-ink) 55%, transparent) 18%, transparent 38%),
+        linear-gradient(to bottom, color-mix(in oklab, var(--color-ink) 88%, transparent) 0%, color-mix(in oklab, var(--color-ink) 62%, transparent) 26%, transparent 50%);
     }
   }
 </style>

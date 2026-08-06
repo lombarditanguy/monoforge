@@ -1,5 +1,6 @@
 ---
 import Header from "../components/Header.astro";
+import FondFilm from "../components/FondFilm.astro";
 import Footer from "../components/Footer.astro";
 import Analytics from "@vercel/analytics/astro";
 import "../styles/global.css";
@@ -109,6 +110,7 @@ const ldBlocks = [organizationLd, websiteLd, ...(jsonLd ? (Array.isArray(jsonLd)
     <slot name="head" />
   </head>
   <body>
+    <FondFilm />
     <a href="#main" class="skip-link">Aller au contenu principal</a>
     <Header />
     <main id="main">

@@ -31,8 +31,15 @@ html {
   scroll-behavior: smooth;
 }
 
-body {
+/* L'encre est sur `html`, pas sur `body`. Le fond animé du site est un calque
+   fixe en rang négatif : un fond opaque sur `body` le recouvrirait entièrement
+   et on ne verrait jamais rien. `html` est au-dessous des deux et sert de
+   repli quand la vidéo n'est pas chargée. */
+html {
   background-color: var(--color-ink);
+}
+body {
+  background-color: transparent;
   color: var(--color-paper);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;

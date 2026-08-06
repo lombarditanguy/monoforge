@@ -1,0 +1,79 @@
+---
+// Fond de site : la jante qui tourne, fixe derrière la page.
+//
+// Elle ne défile pas avec le contenu, c'est le principe — le texte glisse
+// par-dessus pendant qu'elle tourne en place. Elle a d'abord été essayée en
+// tête de page, à l'endroit de l'image d'accueil, et c'était le mauvais
+// endroit : occupant toute la largeur derrière l'accroche, elle se lisait
+// comme une toile de fond sans en être une, et il n'en restait rien dès qu'on
+// descendait. Reléguée au fond, elle fait ce qu'un fond doit faire.
+//
+// Un voile épais la recouvre. Un fond animé lisible est un fond qui empêche
+// de lire le texte : à 88 % d'encre, il reste une lueur et un mouvement, pas
+// une image qu'on regarde.
+//
+// Rien sur téléphone, et rien pour qui demande moins d'animation : deux
+// mégaoctets pour un décor ne se justifient pas sur un forfait mobile, et la
+// source n'est posée qu'une fois la largeur vérifiée.
+---
+
+<div class="mf-fond" aria-hidden="true">
+  <video id="mf-fond-film" muted loop playsinline preload="none"></video>
+</div>
+
+<style>
+  .mf-fond {
+    position: fixed;
+    inset: 0;
+    /* Derrière tout. Le corps de page doit rester transparent pour que ça se
+       voie : un fond posé sur `body` recouvrirait ce calque, qui est en
+       dessous. L'encre est donc portée par `html`, en repli. */
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    background: var(--color-ink);
+  }
+  .mf-fond video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+  }
+  .mf-fond::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: color-mix(in oklab, var(--color-ink) 88%, transparent);
+  }
+  @media (min-width: 48rem) {
+    .mf-fond video { display: block; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mf-fond video { display: none !important; }
+  }
+</style>
+
+<script>
+  const film = document.getElementById("mf-fond-film") as HTMLVideoElement | null;
+  if (film) {
+    const large = window.matchMedia("(min-width: 48rem)");
+    const calme = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    const armer = () => {
+      if (film.dataset.arme || !large.matches || calme.matches) return;
+      film.dataset.arme = "1";
+      for (const [type, src] of [["video/webm", "/kw-fond.webm"], ["video/mp4", "/kw-fond.mp4"]]) {
+        const s = document.createElement("source");
+        s.type = type;
+        s.src = src;
+        film.appendChild(s);
+      }
+      film.load();
+      // Lecture refusée : il reste l'encre du calque, le site ne change pas.
+      film.play().catch(() => {});
+    };
+
+    armer();
+    large.addEventListener("change", armer);
+  }
+</script>
