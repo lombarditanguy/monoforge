@@ -1,5 +1,6 @@
 import { sql } from "./db.js";
 import { catalogItems as staticItems, itemsForFamily as staticItemsForFamily } from "../data/catalog.js";
+import { PHOTOS_DETOUREES } from "../data/detoures.js";
 
 const PLACEHOLDER_IMAGE = "/catalogue/placeholder.webp";
 
@@ -43,7 +44,18 @@ export async function listItemsForFamily(familySlug) {
   const extra = await loadExtraItems(familySlug);
   const combined = [...base, ...extra];
   const overrides = await loadPhotoOverrides(combined.map((i) => i.code));
-  return combined.map((item) => applyPhotoOverride(item, overrides));
+  const items = combined.map((item) => applyPhotoOverride(item, overrides));
+
+  // Les jantes détourées passent devant. Une grille qui alterne des découpes
+  // sur fond transparent et des photos sur fond blanc paraît plus désordonnée
+  // qu'une grille entièrement sur fond blanc : mieux vaut grouper. Le tri est
+  // stable, donc l'ordre du catalogue est conservé à l'intérieur de chaque
+  // groupe. Il porte sur l'image finale, après les remplacements de l'admin —
+  // une photo réuploadée sort donc du lot toute seule.
+  return items
+    .map((item, rang) => ({ item, rang, detoure: PHOTOS_DETOUREES.has(item.image) }))
+    .sort((a, b) => Number(b.detoure) - Number(a.detoure) || a.rang - b.rang)
+    .map((x) => x.item);
 }
 
 export async function getCatalogItem(familySlug, slug) {
