@@ -76,51 +76,67 @@ body {
   border: 0;
 }
 
-.chip {
-  display: inline-flex;
-  align-items: center;
-  gap: .4rem;
-  border: 1px solid var(--color-line);
-  background: color-mix(in oklab, var(--color-surface) 80%, transparent);
-  padding: .35rem .75rem;
-  border-radius: 999px;
-  font-size: .75rem;
-  letter-spacing: .04em;
-  text-transform: uppercase;
-  color: var(--color-mist);
-}
+/* Boutons et pastilles dans la couche « components ».
+ *
+ * Sans elle, ces règles sont hors couche, et une règle hors couche l'emporte
+ * sur toute règle en couche quel que soit l'ordre du fichier — donc .btn
+ * battait .hidden de Tailwind. Un bouton masqué depuis le JS restait affiché :
+ * sur la fiche produit, « Continuer avec ma plaque » s'affichait en permanence
+ * sous « Commander et payer », alors qu'il ne doit apparaître que si le client
+ * choisit « Comme mes roues d'origine ». Les deux boutons se contredisaient.
+ *
+ * Le motif ne se voit pas au premier coup d'œil : dans le fichier, .hidden est
+ * importé en haut et .btn plus bas, ce qui laisse croire que .btn gagne parce
+ * qu'il vient après. Il gagnait pour une tout autre raison, et il l'aurait
+ * emporté même placé en premier.
+ */
+@layer components {
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    border: 1px solid var(--color-line);
+    background: color-mix(in oklab, var(--color-surface) 80%, transparent);
+    padding: .35rem .75rem;
+    border-radius: 999px;
+    font-size: .75rem;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--color-mist);
+  }
 
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: .5rem;
-  padding: .85rem 1.6rem;
-  font-weight: 600;
-  font-size: .95rem;
-  letter-spacing: .01em;
-  border-radius: .25rem;
-  transition: transform .18s ease, background-color .18s ease, border-color .18s ease, color .18s ease;
-  white-space: nowrap;
-}
-.btn:active { transform: translateY(1px); }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    padding: .85rem 1.6rem;
+    font-weight: 600;
+    font-size: .95rem;
+    letter-spacing: .01em;
+    border-radius: .25rem;
+    transition: transform .18s ease, background-color .18s ease, border-color .18s ease, color .18s ease;
+    white-space: nowrap;
+  }
+  .btn:active { transform: translateY(1px); }
 
-.btn-forge {
-  background: var(--color-forge-500);
-  color: #0a0a0b;
-}
-.btn-forge:hover { background: var(--color-forge-400); }
+  .btn-forge {
+    background: var(--color-forge-500);
+    color: #0a0a0b;
+  }
+  .btn-forge:hover { background: var(--color-forge-400); }
 
-.btn-outline {
-  border: 1px solid var(--color-line);
-  color: var(--color-paper);
-}
-.btn-outline:hover { border-color: var(--color-forge-500); color: var(--color-forge-400); }
+  .btn-outline {
+    border: 1px solid var(--color-line);
+    color: var(--color-paper);
+  }
+  .btn-outline:hover { border-color: var(--color-forge-500); color: var(--color-forge-400); }
 
-.btn-ghost {
-  color: var(--color-mist);
+  .btn-ghost {
+    color: var(--color-mist);
+  }
+  .btn-ghost:hover { color: var(--color-paper); }
 }
-.btn-ghost:hover { color: var(--color-paper); }
 
 .section-label {
   font-size: .8rem;
