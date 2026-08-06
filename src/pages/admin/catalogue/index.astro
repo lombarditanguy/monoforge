@@ -3,18 +3,34 @@ export const prerender = false;
 import AdminLayout from "../../../layouts/AdminLayout.astro";
 import { FAMILIES } from "../../../data/catalog.js";
 import { listAllItemsForAdmin, isStaticItem } from "../../../lib/catalogDb.js";
+import { sql } from "../../../lib/db.js";
 
 let items = [];
+let rangs = new Map();
 let dbError = null;
 try {
   items = await listAllItemsForAdmin();
+  const rows = await sql`select code, position from home_featured`;
+  rangs = new Map(rows.map((r) => [r.code, Number(r.position)]));
 } catch (err) {
   dbError = err.message;
 }
 
+// Les jantes qui ont un rang remontent en tête de leur famille, ici comme sur
+// le site : la liste d'admin doit montrer l'ordre réel, sinon on règle à
+// l'aveugle.
 const itemsByFamily = FAMILIES.map((family) => ({
   family,
-  items: items.filter((i) => i.family === family.slug),
+  items: items
+    .filter((i) => i.family === family.slug)
+    .map((item, ordre) => ({ item, ordre, rang: rangs.get(item.code) }))
+    .sort((a, b) => {
+      if (a.rang !== undefined && b.rang !== undefined) return a.rang - b.rang;
+      if (a.rang !== undefined) return -1;
+      if (b.rang !== undefined) return 1;
+      return a.ordre - b.ordre;
+    })
+    .map((x) => ({ ...x.item, rang: x.rang })),
 }));
 ---
 
@@ -33,6 +49,8 @@ const itemsByFamily = FAMILIES.map((family) => ({
       <div class="card" style="display:flex;gap:.75rem;flex-wrap:wrap">
         <a class="btn" href="/admin/catalogue/nouveau">+ Ajouter une jante</a>
         <input id="mf-search" placeholder="Filtrer par référence ou nom fournisseur (ex: DZ-014, chrome)" style="margin:0;max-width:24rem" />
+        <button type="button" class="btn" id="mf-save-rangs">Enregistrer l'ordre</button>
+        <span class="muted" id="mf-rangs-etat" style="align-self:center"></span>
       </div>
 
       {itemsByFamily.map(({ family, items: familyItems }) => (
@@ -45,6 +63,7 @@ const itemsByFamily = FAMILIES.map((family) => ({
                 <th>Référence</th>
                 <th>Nom fournisseur</th>
                 <th>Origine</th>
+                <th style="width:7rem">Rang accueil</th>
                 <th style="width:10rem"></th>
               </tr>
             </thead>
@@ -55,6 +74,19 @@ const itemsByFamily = FAMILIES.map((family) => ({
                   <td>{item.code}</td>
                   <td class="muted" style="max-width:22rem">{item.supplierName || "—"}</td>
                   <td class="muted">{isStaticItem(item.code) ? "Catalogue fournisseur" : "Ajoutée par l'admin"}</td>
+                  <td>
+                    <input
+                      class="mf-rang"
+                      type="number"
+                      min="1"
+                      step="1"
+                      inputmode="numeric"
+                      placeholder="—"
+                      data-code={item.code}
+                      value={item.rang ?? ""}
+                      style="margin:0;padding:.35rem .5rem;text-align:center"
+                    />
+                  </td>
                   <td><a class="btn btn-outline" href={`/admin/catalogue/${item.code}`}>Gérer les photos</a></td>
                 </tr>
               ))}
@@ -73,6 +105,35 @@ const itemsByFamily = FAMILIES.map((family) => ({
       for (const row of rows) {
         const match = !q || (row.dataset.code || "").includes(q) || (row.dataset.name || "").includes(q);
         row.style.display = match ? "" : "none";
+      }
+    });
+
+    // Ordre d'affichage en tête de famille. Un simple numéro par ligne :
+    // échanger deux jantes revient à échanger deux chiffres, et une case vide
+    // veut dire « laisse-la où le catalogue la met ».
+    const etat = document.getElementById("mf-rangs-etat");
+    const bouton = document.getElementById("mf-save-rangs") as HTMLButtonElement | null;
+    bouton?.addEventListener("click", async () => {
+      const rangs = Array.from(document.querySelectorAll<HTMLInputElement>(".mf-rang"))
+        .map((i) => ({ code: i.dataset.code, position: i.value.trim() }))
+        .filter((r) => r.position !== "")
+        .map((r) => ({ code: r.code, position: Number(r.position) }));
+
+      bouton.disabled = true;
+      if (etat) etat.textContent = "Enregistrement…";
+      try {
+        const res = await fetch("/api/admin/ordre-accueil", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ rangs }),
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || "Échec de l'enregistrement.");
+        if (etat) etat.textContent = `Ordre enregistré — ${json.count} jante${json.count > 1 ? "s" : ""} en tête. Recharge pour voir le nouvel ordre.`;
+      } catch (err) {
+        if (etat) etat.textContent = err instanceof Error ? err.message : "Échec.";
+      } finally {
+        bouton.disabled = false;
       }
     });
   </script>

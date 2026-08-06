@@ -209,9 +209,9 @@ create table if not exists item_photos (
   updated_at timestamptz not null default now()
 );
 
--- Jantes mises en avant sur la page d'accueil. Tant que la table est vide, le
--- site retombe sur la sélection issue de l'audit de marché : la vitrine n'est
--- donc jamais vide, même sur une base fraîchement initialisée.
+-- Ordre d'affichage en tête de famille, réglé dans /admin/catalogue. Une jante
+-- listée ici passe devant les autres de sa famille, partout où le catalogue est
+-- affiché — page d'accueil comprise. Table vide = ordre naturel du catalogue.
 create table if not exists home_featured (
   code text primary key,
   position integer not null default 0,

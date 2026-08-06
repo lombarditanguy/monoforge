@@ -1,6 +1,5 @@
 import { sql } from "./db.js";
 import { catalogItems as staticItems, itemsForFamily as staticItemsForFamily } from "../data/catalog.js";
-import { PHOTOS_DETOUREES } from "../data/detoures.js";
 
 const PLACEHOLDER_IMAGE = "/catalogue/placeholder.webp";
 
@@ -46,16 +45,35 @@ export async function listItemsForFamily(familySlug) {
   const overrides = await loadPhotoOverrides(combined.map((i) => i.code));
   const items = combined.map((item) => applyPhotoOverride(item, overrides));
 
-  // Les jantes détourées passent devant. Une grille qui alterne des découpes
-  // sur fond transparent et des photos sur fond blanc paraît plus désordonnée
-  // qu'une grille entièrement sur fond blanc : mieux vaut grouper. Le tri est
-  // stable, donc l'ordre du catalogue est conservé à l'intérieur de chaque
-  // groupe. Il porte sur l'image finale, après les remplacements de l'admin —
-  // une photo réuploadée sort donc du lot toute seule.
+  // Les jantes mises en tête passent devant, dans l'ordre choisi depuis
+  // /admin/catalogue. Un premier essai classait automatiquement les photos
+  // détourées en tête ; c'était pratique mais faux de principe — l'ordre de ce
+  // qu'on montre en premier est une décision commerciale, pas une propriété du
+  // fichier. Et il avait un défaut concret : remplacer une photo faisait sortir
+  // la jante de la tête, alors que c'est justement le moment où l'on veut la
+  // voir. Le tri est stable, donc l'ordre du catalogue est conservé partout où
+  // aucun rang n'est fixé.
+  const rangs = await loadOrdreAccueil();
   return items
-    .map((item, rang) => ({ item, rang, detoure: PHOTOS_DETOUREES.has(item.image) }))
-    .sort((a, b) => Number(b.detoure) - Number(a.detoure) || a.rang - b.rang)
+    .map((item, ordre) => ({ item, ordre, rang: rangs.get(item.code) }))
+    .sort((a, b) => {
+      if (a.rang !== undefined && b.rang !== undefined) return a.rang - b.rang;
+      if (a.rang !== undefined) return -1;
+      if (b.rang !== undefined) return 1;
+      return a.ordre - b.ordre;
+    })
     .map((x) => x.item);
+}
+
+// Rang d'affichage en tête de famille, réglé dans /admin/catalogue. Une base
+// injoignable ou une table vide rend simplement l'ordre du catalogue.
+async function loadOrdreAccueil() {
+  try {
+    const rows = await sql`select code, position from home_featured`;
+    return new Map(rows.map((r) => [r.code, Number(r.position)]));
+  } catch {
+    return new Map();
+  }
 }
 
 export async function getCatalogItem(familySlug, slug) {
