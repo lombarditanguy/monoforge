@@ -1,7 +1,7 @@
 ---
 // Écran d'accueil.
 //
-// Trois couches empilées de haut en bas : l'accroche, la jante, le catalogue.
+// Trois couches empilées de haut en bas : l'accroche, la photo, le catalogue.
 // L'accroche est posée par-dessus le haut de l'image et le catalogue remonte
 // par-dessus son bas — les chevauchements sont voulus. Une jante isolée dans
 // son propre bandeau laissait un trou entre elle et le reste : on avait
@@ -9,33 +9,36 @@
 // atteindre le site. En serrant les trois couches, le catalogue entre dans le
 // premier écran.
 //
-// La jante reste entière malgré le bandeau raccourci : `contain` plutôt que
-// `cover`. Le fond du plan est presque noir, donc l'espace laissé sur les
-// côtés se confond avec celui de la page — on ne voit pas de bandes.
+// Une photo, pas une vidéo. La jante qui tournait sur elle-même se lisait
+// comme un fond d'écran : elle occupait toute la largeur derrière le texte,
+// elle tournait sur place, donc rien ne se passait quand on faisait défiler la
+// page. Un plan fixe et cadré serré fait davantage : la jante remplit le
+// bandeau, l'aile noire de la voiture porte l'accroche, et l'image se comporte
+// comme une affiche plutôt que comme une toile de fond.
 //
-// Pas de vidéo sur téléphone. Un 16/9 dans un écran tenu en portrait n'en
-// laisse voir qu'environ un tiers de la largeur, à un grossissement où la
-// compression devient visible. La source n'est posée qu'une fois la largeur
-// vérifiée : un visiteur au téléphone ne télécharge pas les deux mégaoctets.
+// `cover`, pas `contain` : l'image est cadrée pour ce bandeau, pas posée
+// dedans. Elle vient d'une photo verticale recadrée en 1600×560 — un peu
+// agrandie, mais c'est une prise de vue à faible profondeur de champ, où le
+// flou du fond couvre l'agrandissement. Un rendu de synthèse ne l'aurait pas
+// supporté.
 ---
 
 <section class="mf-affiche">
   <div class="mf-affiche-media">
-    <img class="mf-affiche-photo" src="/kw-hero-mobile.webp" alt="Jante forgée KESSLER WHEELS" width="1200" height="1200" fetchpriority="high" />
-    <video
-      id="mf-affiche-film"
-      class="mf-affiche-film"
-      muted
-      loop
-      playsinline
-      preload="none"
-      poster="/kw-hero-poster.webp"
-      aria-hidden="true"
-    ></video>
+    <img
+      class="mf-affiche-photo"
+      src="/kw-hero.webp"
+      srcset="/kw-hero-mobile.webp 900w, /kw-hero.webp 1600w"
+      sizes="100vw"
+      alt="Jante forgée montée sur une berline, vue au ras du sol"
+      width="1600"
+      height="560"
+      fetchpriority="high"
+    />
   </div>
 
   <div class="mf-affiche-tete container-mf">
-    <h1 class="font-display text-4xl leading-[.96] font-bold tracking-[-.03em] text-balance text-(--color-paper) sm:text-5xl lg:text-6xl">
+    <h1 class="mf-affiche-titre font-display text-4xl leading-[.96] font-bold tracking-[-.03em] text-balance text-(--color-paper) sm:text-5xl lg:text-6xl">
       Forgée pour une seule voiture&nbsp;: <span class="text-(--color-forge-400)">la vôtre.</span>
     </h1>
     <p class="mf-affiche-specs">
@@ -56,58 +59,61 @@
   }
   .mf-affiche-media { position: absolute; inset: 0; overflow: hidden; }
 
-  /* Fondu latéral. Il est posé par-dessus le média, en dégradé d'encre, plutôt
-     qu'en masque sur l'image elle-même : dimensionner l'image à son propre
-     format pour pouvoir la masquer la faisait déborder de la section et couper
-     la jante. Ici rien ne change de taille, seule la couture des flancs
-     disparaît. */
-  .mf-affiche::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    pointer-events: none;
-    background: linear-gradient(
-      to right,
-      var(--color-ink) 0%,
-      color-mix(in oklab, var(--color-ink) 60%, transparent) 12%,
-      transparent 26%,
-      transparent 74%,
-      color-mix(in oklab, var(--color-ink) 60%, transparent) 88%,
-      var(--color-ink) 100%
-    );
-  }
-  .mf-affiche-photo,
-  .mf-affiche-film {
+  .mf-affiche-photo {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-    /* `contain` : la jante entière quelle que soit la hauteur du bandeau. */
-    object-fit: contain;
-    object-position: 50% 50%;
+    object-fit: cover;
+    /* La jante est à droite du cadre et l'aile noire à gauche : en gardant ce
+       point d'ancrage, l'accroche tombe toujours sur le noir, quelle que soit
+       la largeur de l'écran. */
+    object-position: 62% 50%;
   }
-  .mf-affiche-film { display: none; }
 
-  /* Voile haut, pour que l'accroche et le menu tiennent sur la partie polie de
-     la jante ; voile bas, pour que le catalogue émerge sans couture. */
+  /* Voile haut, pour que l'accroche et le menu tiennent sur la carrosserie ;
+     voile bas, pour que le catalogue émerge sans couture. Le voile de gauche
+     remplace le fondu latéral symétrique de la version vidéo : plus rien ne
+     dépasse sur les côtés puisque la photo remplit le cadre, il ne reste qu'à
+     asseoir le texte. */
   .mf-affiche-media::before,
   .mf-affiche-media::after {
     content: "";
     position: absolute;
-    left: 0;
-    right: 0;
+    inset: 0;
     pointer-events: none;
+    /* Indispensable. Sans lui, `::before` se peint avant l'image — les
+       pseudo-éléments et l'image sont tous positionnés et sans rang, donc
+       c'est l'ordre du document qui tranche, et ::before vient en premier.
+       Le voile passait donc derrière la photo et ne masquait rien. Le défaut
+       ne s'était jamais vu tant que l'image était sombre de part en part. */
+    z-index: 2;
   }
+  /* Dosage : juste ce qu'il faut pour asseoir le menu en haut et souder le
+     catalogue en bas, et rien de plus. Le premier réglage était trois fois
+     trop appuyé — il avait été calibré à l'œil pendant que le voile passait
+     derrière la photo et ne faisait donc rien. Une fois remis devant, il
+     éteignait la jante et rendait exactement le fond d'écran terne qu'on
+     cherchait à quitter. Le centre droit du cadre ne reçoit aucun voile. */
   .mf-affiche-media::before {
-    top: 0;
-    height: 62%;
-    background: linear-gradient(to bottom, var(--color-ink) 2%, color-mix(in oklab, var(--color-ink) 62%, transparent) 38%, transparent 100%);
+    background:
+      linear-gradient(to bottom, color-mix(in oklab, var(--color-ink) 82%, transparent) 0%, color-mix(in oklab, var(--color-ink) 30%, transparent) 15%, transparent 34%),
+      linear-gradient(to top, var(--color-ink) 0%, var(--color-ink) 7%, color-mix(in oklab, var(--color-ink) 55%, transparent) 18%, transparent 38%);
   }
+  /* Voile de gauche. Il est plus appuyé que celui du haut parce que c'est lui
+     qui porte le texte : l'accroche est bornée à la moitié gauche du cadre, sur
+     l'aile noire de la voiture, et la jante garde la droite pour elle. Une
+     accroche étalée sur toute la largeur traversait les rayons chromés et s'y
+     perdait — il aurait fallu voiler la photo entière pour la sauver, c'est-à-
+     dire revenir au fond d'écran qu'on voulait quitter. */
   .mf-affiche-media::after {
-    bottom: 0;
-    height: 42%;
-    background: linear-gradient(to top, var(--color-ink) 6%, transparent 100%);
+    background: linear-gradient(
+      to right,
+      color-mix(in oklab, var(--color-ink) 94%, transparent) 0%,
+      color-mix(in oklab, var(--color-ink) 72%, transparent) 18%,
+      color-mix(in oklab, var(--color-ink) 22%, transparent) 36%,
+      transparent 50%
+    );
   }
 
   .mf-affiche-tete {
@@ -115,7 +121,11 @@
     z-index: 3;
     padding-top: clamp(0.75rem, 2.5vw, 2rem);
   }
+  .mf-affiche-titre { max-width: 34rem; }
+  /* Les caractéristiques passent à la ligne plutôt que de filer vers les
+     rayons : sur une seule ligne, la dernière finissait sur le chrome. */
   .mf-affiche-specs {
+    max-width: 25rem;
     display: flex;
     flex-wrap: wrap;
     gap: 0.3rem 1.6rem;
@@ -127,48 +137,21 @@
     color: var(--color-mist);
   }
 
-  /* La vidéo se pose simplement par-dessus la photo : même cadre, même
-     cadrage. Si la lecture échoue, l'affiche prend le relais et rien ne bouge. */
-  @media (min-width: 48rem) {
-    .mf-affiche-film { display: block; z-index: 1; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .mf-affiche-film { display: none !important; }
-  }
-  /* Sur téléphone la photo est carrée : `cover` la remplit sans perte notable,
-     là où `contain` laisserait deux grosses bandes vides. */
+  /* Sur téléphone, la version portrait de la photo : recadrée pour l'écran
+     tenu debout, la jante reste entière au lieu d'être coupée par les bords
+     d'un cadre trop large. */
   @media (max-width: 47.99rem) {
-    .mf-affiche-photo {
-      width: 100%;
-      height: 100%;
-      aspect-ratio: auto;
-      object-fit: cover;
-      object-position: 50% 42%;
+    .mf-affiche-photo { object-position: 50% 46%; }
+    /* Le texte occupe toute la largeur ici, donc le voile ne peut plus se
+       contenter du flanc gauche : il descend jusque sous les caractéristiques,
+       qui autrement finissaient sur le ciel. */
+    .mf-affiche-media::before {
+      background:
+        linear-gradient(to bottom, color-mix(in oklab, var(--color-ink) 88%, transparent) 0%, color-mix(in oklab, var(--color-ink) 62%, transparent) 26%, transparent 50%),
+        linear-gradient(to top, var(--color-ink) 0%, var(--color-ink) 7%, color-mix(in oklab, var(--color-ink) 55%, transparent) 18%, transparent 38%);
+    }
+    .mf-affiche-media::after {
+      background: linear-gradient(to right, color-mix(in oklab, var(--color-ink) 55%, transparent) 0%, transparent 72%);
     }
   }
 </style>
-
-<script>
-  const film = document.getElementById("mf-affiche-film") as HTMLVideoElement | null;
-  if (film) {
-    const large = window.matchMedia("(min-width: 48rem)");
-    const calme = window.matchMedia("(prefers-reduced-motion: reduce)");
-
-    const armer = () => {
-      if (film.dataset.arme || !large.matches || calme.matches) return;
-      film.dataset.arme = "1";
-      for (const [type, src] of [["video/webm", "/kw-hero.webm"], ["video/mp4", "/kw-hero.mp4"]]) {
-        const s = document.createElement("source");
-        s.type = type;
-        s.src = src;
-        film.appendChild(s);
-      }
-      film.load();
-      // Rien à basculer si la lecture est refusée : la photo est déjà dessous.
-      film.play().catch(() => {});
-    };
-
-    armer();
-    large.addEventListener("change", armer);
-  }
-</script>
