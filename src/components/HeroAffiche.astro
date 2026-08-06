@@ -1,0 +1,147 @@
+---
+// Écran d'accueil.
+//
+// Le bandeau prend exactement le format de la vidéo (16/9). C'est ce qui règle
+// le recadrage : tant que le cadre était plus haut que large, `cover` rognait
+// les bords et on ne voyait qu'une partie de la jante. À format égal, il n'y a
+// plus rien à couper — la jante est entière du début à la fin du plan.
+//
+// Et pas de vidéo sur téléphone. Un 16/9 dans un écran tenu en portrait n'en
+// laisse voir qu'environ un tiers de la largeur, à un grossissement où la
+// compression devient visible. Une photo carrée s'y recadre sans rien perdre.
+// La source n'est posée qu'une fois la largeur vérifiée : un visiteur au
+// téléphone ne télécharge donc pas les deux mégaoctets de la vidéo.
+---
+
+<section class="mf-affiche">
+  <img class="mf-affiche-photo" src="/kw-hero-mobile.webp" alt="Jante forgée KESSLER WHEELS" width="1200" height="1200" fetchpriority="high" />
+  <video
+    id="mf-affiche-film"
+    class="mf-affiche-film"
+    muted
+    loop
+    playsinline
+    preload="none"
+    poster="/kw-hero-poster.webp"
+    aria-hidden="true"
+  ></video>
+
+  <div class="mf-affiche-texte container-mf">
+    <h1 class="font-display text-4xl leading-[.94] font-bold tracking-[-.035em] text-balance text-(--color-paper) sm:text-6xl lg:text-7xl">
+      Forgée pour une seule voiture&nbsp;: <span class="text-(--color-forge-400)">la vôtre.</span>
+    </h1>
+    <p class="mf-affiche-specs">
+      <span>15″ – 26″</span><span>Tout entraxe</span><span>Déport calculé</span><span>Aluminium 6061-T6</span>
+    </p>
+  </div>
+</section>
+
+<style>
+  .mf-affiche {
+    position: relative;
+    width: 100%;
+    /* Le format de la vidéo, à l'unité près : c'est ce qui garantit qu'aucun
+       bord n'est coupé. Surtout, aucune borne de hauteur ici — `min-height` ou
+       `max-height` combinés à `aspect-ratio` font grandir la LARGEUR pour tenir
+       le ratio, et la section débordait alors de l'écran. On borne la largeur,
+       jamais la hauteur. */
+    max-width: 96rem;
+    margin-inline: auto;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--color-ink);
+  }
+  /* Sur téléphone il n'y a pas de vidéo, donc plus de ratio à respecter : une
+     bande verticale met bien mieux en valeur une photo carrée, et laisse la
+     place au titre. */
+  @media (max-width: 47.99rem) {
+    .mf-affiche {
+      aspect-ratio: auto;
+      height: min(76vh, 34rem);
+    }
+  }
+  .mf-affiche-photo,
+  .mf-affiche-film {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 48%;
+  }
+  .mf-affiche-film { display: none; }
+  /* Voile bas pour le titre, voile haut pour l'en-tête du site : sans lui, le
+     menu tombe sur la partie polie de la jante et devient illisible. */
+  .mf-affiche::after,
+  .mf-affiche::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .mf-affiche::after {
+    bottom: 0;
+    top: 0;
+    background: linear-gradient(to top, var(--color-ink) 4%, color-mix(in oklab, var(--color-ink) 45%, transparent) 34%, transparent 62%);
+  }
+  .mf-affiche::before {
+    top: 0;
+    height: 9rem;
+    background: linear-gradient(to bottom, color-mix(in oklab, var(--color-ink) 80%, transparent), transparent);
+  }
+  .mf-affiche-texte {
+    position: absolute;
+    inset: auto 0 0 0;
+    z-index: 3;
+    padding-bottom: clamp(1.5rem, 4vw, 3rem);
+  }
+  .mf-affiche-specs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1.75rem;
+    margin-top: 1.1rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-mist);
+  }
+  /* La vidéo est simplement posée par-dessus la photo, sans qu'on ait à masquer
+     celle-ci : même cadre, même recadrage. Si la lecture échoue, l'affiche de
+     la vidéo prend le relais — la page ne bouge pas d'un pixel. */
+  @media (min-width: 48rem) {
+    .mf-affiche-film { display: block; z-index: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mf-affiche-film { display: none !important; }
+  }
+</style>
+
+<script>
+  const film = document.getElementById("mf-affiche-film") as HTMLVideoElement | null;
+  if (film) {
+    const large = window.matchMedia("(min-width: 48rem)");
+    const calme = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    const armer = () => {
+      if (film.dataset.arme || !large.matches || calme.matches) return;
+      film.dataset.arme = "1";
+      for (const [type, src] of [["video/webm", "/kw-hero.webm"], ["video/mp4", "/kw-hero.mp4"]]) {
+        const s = document.createElement("source");
+        s.type = type;
+        s.src = src;
+        film.appendChild(s);
+      }
+      film.load();
+      // Une lecture refusée — économiseur de données, réglage du navigateur —
+      // ne doit pas laisser un cadre noir : la photo reste en place.
+      // Rien à basculer si la lecture échoue : la photo est déjà dessous.
+      film.play().catch(() => {});
+    };
+
+    armer();
+    large.addEventListener("change", armer);
+  }
+</script>

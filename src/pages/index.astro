@@ -1,18 +1,11 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import FamilyCard from "../components/FamilyCard.astro";
-import WheelPhotoCard from "../components/WheelPhotoCard.astro";
+import HeroAffiche from "../components/HeroAffiche.astro";
+import CatalogueAccueil from "../components/CatalogueAccueil.astro";
 import VehicleSelector from "../components/VehicleSelector.astro";
 import CTASection from "../components/CTASection.astro";
 import FaqList from "../components/FaqList.astro";
-import { FAMILIES } from "../data/catalog.js";
-import { countAllItems } from "../lib/catalogDb.js";
-import { selectionVitrine } from "../lib/featured.js";
 import { faqLd } from "../utils/seo.js";
-import { SITE } from "../data/site.js";
-
-const totalItems = await countAllItems();
-const misEnAvant = await selectionVitrine();
 
 const homeFaqs = [
   {
@@ -35,90 +28,20 @@ const homeFaqs = [
   description="KESSLER WHEELS conçoit des jantes forgées 100% sur mesure : toutes tailles, tous déports, et dessin de bâtons personnalisable à la demande. Étude technique gratuite."
   jsonLd={faqLd(homeFaqs)}
 >
-  <!-- HERO -->
-  <section class="relative bg-(--color-ink)">
-    <div class="grid">
-      <div class="sticky top-0 col-start-1 row-start-1 h-svh w-full overflow-hidden bg-(--color-ink)">
-        <video
-          class="h-full w-full object-contain opacity-60 md:object-cover"
-          autoplay
-          muted
-          loop
-          playsinline
-          preload="auto"
-          aria-hidden="true"
-        >
-          <source src="/hero-forge.webm" type="video/webm" />
-          <source src="/hero-forge.mp4" type="video/mp4" />
-        </video>
-        <div class="absolute inset-0 bg-gradient-to-r from-(--color-ink) via-(--color-ink)/70 to-transparent"></div>
-        <div class="absolute inset-0 bg-gradient-to-t from-(--color-ink) via-transparent to-transparent"></div>
-      </div>
+  <!-- ACCUEIL — la jante entière, sans recadrage. -->
+  <HeroAffiche />
 
-      <div class="container-mf relative col-start-1 row-start-1 flex min-h-svh items-center pt-24 pb-20 md:pt-32 md:pb-28">
-        <div class="max-w-2xl">
-          <p class="chip">Fabrication à la demande — aluminium forgé</p>
-          <h1 class="mt-6 text-balance font-display text-4xl font-bold leading-[1.05] text-(--color-paper) sm:text-5xl lg:text-6xl">
-            Des jantes forgées <span class="text-(--color-forge-400)">à votre dessin</span>, pas au dessin du catalogue.
-          </h1>
-          <p class="mt-6 max-w-lg text-balance text-lg leading-relaxed text-(--color-mist)">
-            Toute taille. Toute largeur. Et, à la différence de tous les autres fabricants sur mesure, la forme même des bâtons peut être redessinée pour votre projet. C'est notre seule règle : zéro compromis sur votre exigence.
-          </p>
-          <div class="mt-9 flex flex-col gap-4 sm:flex-row">
-            <a href="/configurateur" class="btn btn-forge">Démarrer une étude gratuite</a>
-            <a href="/catalogue" class="btn btn-outline">Explorer le catalogue</a>
-          </div>
-          <!-- Sur mobile : liste étiquette/valeur alignée. Trois colonnes de
-               texte display n'y tiennent pas — les valeurs se coupaient en
-               deux lignes et débordaient les unes sur les autres. -->
-          <dl class="mt-12 grid grid-cols-1 gap-3 border-t border-(--color-line) pt-6 sm:mt-14 sm:grid-cols-3 sm:gap-6 sm:pt-8">
-            <div class="flex items-baseline justify-between gap-4 sm:block">
-              <dt class="text-xs uppercase tracking-widest text-(--color-fog)">Tailles</dt>
-              <dd class="font-display text-xl font-bold whitespace-nowrap text-(--color-paper) sm:mt-1 sm:text-2xl">15″ – 26″</dd>
-            </div>
-            <div class="flex items-baseline justify-between gap-4 sm:block">
-              <dt class="text-xs uppercase tracking-widest text-(--color-fog)">Dessin</dt>
-              <dd class="font-display text-xl font-bold whitespace-nowrap text-(--color-paper) sm:mt-1 sm:text-2xl sm:whitespace-normal">100% modifiable</dd>
-            </div>
-            <div class="flex items-baseline justify-between gap-4 sm:block">
-              <dt class="text-xs uppercase tracking-widest text-(--color-fog)">Alliage</dt>
-              <dd class="font-display text-xl font-bold whitespace-nowrap text-(--color-paper) sm:mt-1 sm:text-2xl">6061-T6</dd>
-            </div>
-          </dl>
-        </div>
-      </div>
-    </div>
-  </section>
+  <!-- LE CATALOGUE, TOUT DE SUITE.
+       Ouvert sur la famille la plus fournie, sans que le visiteur ait un seul
+       choix à faire. Les puces disent la gamme en quatre mots et quatre
+       nombres, et la sortie « créez le vôtre » est posée à côté d'elles :
+       à l'arrivée on comprend qu'il y a un catalogue à parcourir ET qu'on peut
+       en sortir. Tout le texte vient après. -->
+  <CatalogueAccueil />
 
   <div class="hairline"></div>
 
-  <!-- VEHICLE SELECTOR -->
   <VehicleSelector />
-
-  <div class="hairline"></div>
-
-  <!-- BEST SELLERS -->
-  {misEnAvant.length > 0 && (
-  <section class="container-mf py-20">
-    <div class="flex flex-wrap items-end justify-between gap-6">
-      <div class="max-w-xl">
-        <p class="section-label">Les plus demandés</p>
-        <h2 class="mt-4 text-balance font-display text-3xl font-bold text-(--color-paper) md:text-4xl">
-          Des dessins qui marchent, et ce qu'ils coûtent.
-        </h2>
-        <p class="mt-4 text-sm leading-relaxed text-(--color-mist)">
-          Un dessin par tendance de fond du marché. Les prix sont donnés pour la plus petite taille, jeu de quatre non compris — le prix exact dépend du diamètre, de la largeur et de la finition.
-        </p>
-      </div>
-      <a href="/catalogue" class="btn btn-outline shrink-0">Les {totalItems} références</a>
-    </div>
-    <div class="mt-12 grid grid-cols-2 gap-5 lg:grid-cols-3">
-      {misEnAvant.map((b) => (
-        <WheelPhotoCard item={b.item} startingPrice={b.prix} tendance={b.tendance} argument={b.argument} />
-      ))}
-    </div>
-  </section>
-  )}
 
   <div class="hairline"></div>
 
@@ -156,6 +79,7 @@ const homeFaqs = [
     </div>
   </section>
 
+
   <!-- WHO IT'S FOR -->
   <section class="container-mf py-24">
     <div class="grid grid-cols-1 gap-14 lg:grid-cols-[minmax(0,22rem)_1fr]">
@@ -188,6 +112,7 @@ const homeFaqs = [
       </div>
     </div>
   </section>
+
 
   <div class="hairline"></div>
 
@@ -235,21 +160,6 @@ const homeFaqs = [
     </div>
   </section>
 
-  <!-- CATALOG PREVIEW -->
-  <section class="container-mf py-24">
-    <div class="flex flex-wrap items-end justify-between gap-6">
-      <div class="max-w-xl">
-        <p class="section-label">{totalItems} références en photo</p>
-        <h2 class="mt-4 text-balance font-display text-3xl font-bold text-(--color-paper) md:text-4xl">
-          Un aperçu de ce que notre atelier sait forger — pas un stock.
-        </h2>
-      </div>
-      <a href="/catalogue" class="btn btn-outline shrink-0">Tout le catalogue</a>
-    </div>
-    <div class="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-      {FAMILIES.map((family) => <FamilyCard family={family} />)}
-    </div>
-  </section>
 
   <div class="hairline"></div>
 
@@ -275,6 +185,7 @@ const homeFaqs = [
     </ol>
   </section>
 
+
   <!-- FAQ TEASER -->
   <section class="container-mf py-24">
     <div class="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,20rem)_1fr]">
@@ -288,6 +199,7 @@ const homeFaqs = [
       <FaqList items={homeFaqs} />
     </div>
   </section>
+
 
   <CTASection
     title="Un projet en tête ? Parlons dessin, taille et délais."

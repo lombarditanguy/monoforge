@@ -1,0 +1,171 @@
+---
+import WheelPhotoCard from "./WheelPhotoCard.astro";
+import { FAMILIES } from "../data/catalog.js";
+import { listItemsForFamily } from "../lib/catalogDb.js";
+import { startingPrices } from "../lib/pricing.js";
+
+// Le catalogue, ouvert d'emblée sur Monobloc.
+//
+// Aucun choix à faire pour voir des jantes : le visiteur arrive, il en a sous
+// les yeux. Les quatre familles sont rendues côté serveur, on n'en montre
+// qu'une à la fois, et changer de famille ne recharge rien.
+//
+// APERCU limite ce que la page d'accueil porte. Les 457 références au complet
+// représenteraient autant de vignettes à charger pour un visiteur qui n'a rien
+// demandé ; le lien du bas mène au catalogue entier.
+const APERCU = 12;
+
+const familles = await Promise.all(
+  FAMILIES.map(async (famille) => {
+    const tous = await listItemsForFamily(famille.slug);
+    const items = tous.slice(0, APERCU);
+    const prix = await startingPrices(items);
+    return {
+      ...famille,
+      total: tous.length,
+      items: items.map((i) => ({ ...i, startingPrice: prix.get(i.code) || 0 })),
+    };
+  })
+);
+// Monobloc d'abord — c'est la famille ouverte par défaut, et de loin la plus
+// fournie. L'ordre des puces suit celui-là.
+const ordonnees = [...familles].sort((a, b) => b.total - a.total);
+const defaut = ordonnees[0]?.slug;
+---
+
+<section class="container-mf pt-10 pb-16 md:pt-14" id="catalogue" aria-label="Catalogue">
+  <div class="mf-cat-tete">
+    <div class="mf-cat-filtres" role="group" aria-label="Famille de jantes">
+      {ordonnees.map((f) => (
+        <button
+          type="button"
+          class="mf-cat-puce"
+          data-famille={f.slug}
+          aria-pressed={f.slug === defaut ? "true" : "false"}
+        >
+          {f.short}<span class="mf-cat-nb">{f.total}</span>
+        </button>
+      ))}
+    </div>
+
+    <!-- Le sur-mesure n'est pas une cinquième famille, et ne doit pas en avoir
+         l'air : séparé par un filet, formulé comme une question, avec une
+         flèche. C'est la sortie pour qui ne trouve pas son bonheur ici. -->
+    <a href="/configurateur" class="mf-cat-surmesure">
+      Aucun ne vous convient&nbsp;? <strong>Créez le vôtre</strong>
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+        <path d="M1 7H13M13 7L8 2M13 7L8 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </a>
+  </div>
+
+  {ordonnees.map((f) => (
+    <div class="mf-cat-panneau" data-panneau={f.slug} hidden={f.slug !== defaut}>
+      <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+        {f.items.map((item) => <WheelPhotoCard item={item} startingPrice={item.startingPrice} />)}
+      </div>
+      <a href={`/catalogue/${f.slug}`} class="mf-cat-suite">
+        Voir les {f.total} références {f.short.toLowerCase()}
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <path d="M1 7H13M13 7L8 2M13 7L8 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </a>
+    </div>
+  ))}
+</section>
+
+<style>
+  /* L'en-tête du site est collant : sans cette marge, arriver sur #catalogue
+     place les puces de famille juste dessous, hors de vue. */
+  #catalogue { scroll-margin-top: 5.5rem; }
+
+  .mf-cat-tete {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+  .mf-cat-filtres { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .mf-cat-puce {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    font: inherit;
+    font-size: 0.86rem;
+    font-weight: 600;
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+    background: var(--color-surface-2);
+    color: var(--color-mist);
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+  }
+  .mf-cat-puce:hover { border-color: color-mix(in oklab, var(--color-forge-500) 55%, transparent); color: var(--color-paper); }
+  .mf-cat-puce[aria-pressed="true"] {
+    border-color: var(--color-forge-500);
+    background: color-mix(in oklab, var(--color-forge-500) 12%, transparent);
+    color: var(--color-paper);
+  }
+  .mf-cat-nb {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.72rem;
+    color: var(--color-fog);
+    font-variant-numeric: tabular-nums;
+  }
+  .mf-cat-puce[aria-pressed="true"] .mf-cat-nb { color: var(--color-forge-400); }
+
+  .mf-cat-surmesure {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;
+    padding-left: 1.25rem;
+    border-left: 1px solid var(--color-line);
+    font-size: 0.86rem;
+    color: var(--color-mist);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .mf-cat-surmesure strong { color: var(--color-forge-400); font-weight: 600; }
+  .mf-cat-surmesure:hover strong { text-decoration: underline; }
+
+  /* `hidden` est un attribut : n'importe quel sélecteur de classe qui pose un
+     display le bat. On le rétablit explicitement plutôt que d'espérer. */
+  .mf-cat-panneau[hidden] { display: none; }
+
+  .mf-cat-suite {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 1.5rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--color-forge-400);
+    text-decoration: none;
+  }
+  .mf-cat-suite:hover { text-decoration: underline; }
+
+  @media (max-width: 34rem) {
+    .mf-cat-surmesure {
+      margin-left: 0;
+      padding-left: 0;
+      border-left: 0;
+      white-space: normal;
+    }
+  }
+</style>
+
+<script>
+  const puces = Array.from(document.querySelectorAll<HTMLButtonElement>(".mf-cat-puce"));
+  const panneaux = Array.from(document.querySelectorAll<HTMLElement>("[data-panneau]"));
+
+  for (const puce of puces) {
+    puce.addEventListener("click", () => {
+      const cible = puce.dataset.famille;
+      for (const p of panneaux) p.hidden = p.dataset.panneau !== cible;
+      for (const q of puces) q.setAttribute("aria-pressed", String(q.dataset.famille === cible));
+    });
+  }
+</script>
