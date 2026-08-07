@@ -1,7 +1,7 @@
 ---
 import WheelPhotoCard from "./WheelPhotoCard.astro";
 import { FAMILIES } from "../data/catalog.js";
-import { listItemsForFamily } from "../lib/catalogDb.js";
+import { listItemsForFamily, famillesVisibles } from "../lib/catalogDb.js";
 import { startingPrices } from "../lib/pricing.js";
 
 // Le catalogue, ouvert d'emblée sur Monobloc.
@@ -15,8 +15,11 @@ import { startingPrices } from "../lib/pricing.js";
 // demandé ; le lien du bas mène au catalogue entier.
 const APERCU = 12;
 
+// Une famille entièrement retirée depuis l'admin ne doit plus avoir de puce :
+// un onglet qui annonce zéro référence et n'ouvre rien ressemble à une panne.
+const visibles = await famillesVisibles();
 const familles = await Promise.all(
-  FAMILIES.map(async (famille) => {
+  visibles.map(async (famille) => {
     const tous = await listItemsForFamily(famille.slug);
     const items = tous.slice(0, APERCU);
     const prix = await startingPrices(items);

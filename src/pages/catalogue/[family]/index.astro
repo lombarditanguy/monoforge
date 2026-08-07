@@ -13,6 +13,9 @@ const { family: familySlug } = Astro.params;
 const family = FAMILIES.find((f) => f.slug === familySlug);
 if (!family) return Astro.redirect("/catalogue", 302);
 const items = await listItemsForFamily(family.slug);
+// Famille entièrement retirée depuis l'admin : sa page n'a plus d'objet, et la
+// laisser ouverte sur une grille vide laisserait croire à une panne.
+if (items.length === 0) return Astro.redirect("/catalogue", 302);
 
 const prix = await startingPrices(items);
 const itemsWithPrice = items.map((i) => ({ ...i, startingPrice: prix.get(i.code) || 0 }));

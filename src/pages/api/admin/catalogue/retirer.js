@@ -4,8 +4,11 @@ import {
   isStaticItem,
   retirerItem,
   remettreItem,
+  retirerFamille,
+  remettreFamille,
   supprimerExtraItem,
 } from "../../../../lib/catalogDb.js";
+import { FAMILIES } from "../../../../data/catalog.js";
 
 export const prerender = false;
 
@@ -29,6 +32,19 @@ export async function POST({ request }) {
   const body = await request.json().catch(() => null);
   const code = String(body?.code || "").trim().toUpperCase();
   const action = String(body?.action || "");
+
+  // Famille entière : on traite avant le contrôle de référence, il n'y en a pas.
+  if (action === "retirer-famille" || action === "remettre-famille") {
+    const famille = String(body?.famille || "").trim();
+    if (!FAMILIES.some((f) => f.slug === famille)) {
+      return json({ error: `Famille inconnue : ${famille}.` }, 400);
+    }
+    const n = action === "retirer-famille"
+      ? await retirerFamille(famille)
+      : await remettreFamille(famille);
+    return json({ ok: true, famille, count: n });
+  }
+
   if (!code) return json({ error: "Référence manquante." }, 400);
   if (!(await codeExists(code))) return json({ error: `Référence inconnue : ${code}.` }, 400);
 

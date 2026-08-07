@@ -14,14 +14,42 @@ try {
   dbError = err.message;
 }
 
-const itemsByFamily = FAMILIES.map((family) => ({
-  family,
-  items: items.filter((i) => i.family === family.slug),
-}));
+const itemsByFamily = FAMILIES.map((family) => {
+  const liste = items.filter((i) => i.family === family.slug);
+  return {
+    family,
+    items: liste,
+    enLigne: liste.filter((i) => !i.retire).length,
+    retirees: liste.filter((i) => i.retire).length,
+  };
+});
+const totalEnLigne = items.filter((i) => !i.retire).length;
+const totalRetirees = items.length - totalEnLigne;
 ---
 
 <AdminLayout title="Catalogue">
   <h1>Catalogue</h1>
+  {!dbError && (
+    <div class="card" style="display:flex;gap:2.5rem;flex-wrap:wrap;align-items:baseline">
+      <div>
+        <p class="muted" style="margin:0 0 .2rem;font-size:.8rem">Visibles sur le site</p>
+        <p style="margin:0;font-size:2rem;font-weight:700">{totalEnLigne}</p>
+      </div>
+      <div>
+        <p class="muted" style="margin:0 0 .2rem;font-size:.8rem">Retirées</p>
+        <p style="margin:0;font-size:2rem;font-weight:700;color:#ff7a45">{totalRetirees}</p>
+      </div>
+      <div>
+        <p class="muted" style="margin:0 0 .2rem;font-size:.8rem">Au catalogue</p>
+        <p style="margin:0;font-size:2rem;font-weight:700;color:#a9a9b2">{items.length}</p>
+      </div>
+      <p class="muted" style="margin:0;max-width:26rem;font-size:.8rem;align-self:center">
+        Une famille dont toutes les jantes sont retirées disparaît entièrement du site : sa puce sur l'accueil,
+        sa carte au catalogue et sa page.
+      </p>
+    </div>
+  )}
+
   <p class="muted" style="margin-top:-.5rem">
     {items.length} références au total. Le catalogue fournisseur (jantes déjà présentes) n'est pas listé pour
     suppression ici — seules ses photos sont modifiables. Les jantes que tu ajoutes toi-même peuvent être gérées
@@ -39,9 +67,20 @@ const itemsByFamily = FAMILIES.map((family) => ({
         <span class="muted" id="mf-rangs-etat" style="align-self:center"></span>
       </div>
 
-      {itemsByFamily.map(({ family, items: familyItems }) => (
+      {itemsByFamily.map(({ family, items: familyItems, enLigne, retirees }) => (
         <div class="card">
-          <h2 style="margin-top:0">{family.label} <span class="muted">({familyItems.length} références)</span></h2>
+          <div style="display:flex;gap:1rem;align-items:baseline;flex-wrap:wrap">
+            <h2 style="margin:0">{family.label}</h2>
+            <span class="muted">
+              {enLigne} en ligne{retirees > 0 ? ` · ${retirees} retirée${retirees > 1 ? "s" : ""}` : ""}
+            </span>
+            <span style="flex:1"></span>
+            <button type="button" class="btn btn-outline mf-famille" data-famille={family.slug} data-label={family.short}
+              data-tout-retire={enLigne === 0 ? "1" : "0"} style="white-space:nowrap">
+              {enLigne === 0 ? "Remettre toute la famille" : "Retirer toute la famille"}
+            </button>
+          </div>
+          <p class="mf-famille-etat muted" style="font-size:.8rem;margin:.4rem 0 0"></p>
           <table>
             <thead>
               <tr>
@@ -192,6 +231,32 @@ const itemsByFamily = FAMILIES.map((family) => ({
       l.querySelector(".mf-supprimer")?.addEventListener("click", () => {
         agir(l, "supprimer",
           `Supprimer définitivement ${l.dataset.ref} ?\n\nSes photos, son prix et son rang d'accueil seront effacés. Cette action est irréversible. Les commandes déjà passées ne sont pas touchées.`);
+      });
+    });
+
+    document.querySelectorAll(".mf-famille").forEach((el) => {
+      const bouton = el as HTMLButtonElement;
+      bouton.addEventListener("click", async () => {
+        const famille = bouton.dataset.famille;
+        const label = bouton.dataset.label;
+        const tout = bouton.dataset.toutRetire === "1";
+        const local = bouton.closest(".card")?.querySelector(".mf-famille-etat");
+        if (!tout && !confirm(`Retirer toute la famille ${label} du site ?\n\nAucune de ses jantes n'apparaîtra plus, et la famille elle-même disparaîtra de l'accueil et du catalogue. Rien n'est perdu : « Remettre toute la famille » annule le retrait.`)) return;
+        bouton.disabled = true;
+        if (local) local.textContent = "…";
+        try {
+          const res = await fetch("/api/admin/catalogue/retirer", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: tout ? "remettre-famille" : "retirer-famille", famille }),
+          });
+          const json = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(json.error || `Le serveur a répondu ${res.status}.`);
+          window.location.reload();
+        } catch (err) {
+          bouton.disabled = false;
+          if (local) local.textContent = err instanceof Error ? err.message : "Échec.";
+        }
       });
     });
 

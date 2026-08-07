@@ -134,6 +134,53 @@ export async function remettreItem(code) {
 }
 
 /**
+ * Retire ou remet une famille entière.
+ *
+ * Une famille se retire d'un bloc quand on décide de ne plus la vendre : la
+ * faire ligne par ligne sur seize références, ou cent vingt-sept, n'a pas de
+ * sens. Le retrait reste ce qu'il est ailleurs — réversible, sans rien perdre.
+ */
+export async function retirerFamille(familySlug) {
+  const codes = (await listAllItemsForAdmin())
+    .filter((i) => i.family === familySlug)
+    .map((i) => i.code);
+  if (codes.length === 0) return 0;
+  await assurerTableMasquage();
+  await sql`
+    insert into catalog_hidden (code, hidden_at)
+    select unnest(${codes}::text[]), now()
+    on conflict (code) do nothing
+  `;
+  return codes.length;
+}
+
+export async function remettreFamille(familySlug) {
+  const codes = (await listAllItemsForAdmin())
+    .filter((i) => i.family === familySlug)
+    .map((i) => i.code);
+  if (codes.length === 0) return 0;
+  await sql`delete from catalog_hidden where code = any(${codes})`;
+  return codes.length;
+}
+
+/**
+ * Familles qui ont encore au moins une jante en ligne.
+ *
+ * Une famille entièrement retirée ne doit pas rester affichée avec un compteur
+ * à zéro : ni sa puce sur l'accueil, ni sa carte au catalogue, ni sa page. La
+ * retirer sur seize références et la voir subsister vide donnerait le sentiment
+ * que le retrait n'a pas marché.
+ */
+export async function famillesVisibles() {
+  const retires = await codesRetires();
+  const extra = await loadExtraItems(null);
+  const vivantes = new Set(
+    [...staticItems, ...extra].filter((i) => !retires.has(i.code)).map((i) => i.family)
+  );
+  return FAMILIES.filter((f) => vivantes.has(f.slug));
+}
+
+/**
  * Suppression franche, réservée aux jantes ajoutées depuis l'admin : ce sont
  * les seules qui n'existent qu'en base. On emporte ce qui s'y rattache, sinon
  * une référence recréée plus tard sous le même code hériterait des photos et du

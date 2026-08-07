@@ -9,11 +9,12 @@ import Layout from "../../layouts/Layout.astro";
 import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import FamilyCard from "../../components/FamilyCard.astro";
 import CTASection from "../../components/CTASection.astro";
-import { FAMILIES } from "../../data/catalog.js";
-import { countAllItems } from "../../lib/catalogDb.js";
+import { countAllItems, famillesVisibles } from "../../lib/catalogDb.js";
 import { breadcrumbLd } from "../../utils/seo.js";
 
 const totalItems = await countAllItems();
+// Même règle qu'à l'accueil : une famille sans aucune jante en ligne disparaît.
+const familles = await famillesVisibles();
 
 Astro.response.headers.set("Cache-Control", "public, max-age=0, s-maxage=60");
 ---
@@ -31,13 +32,13 @@ Astro.response.headers.set("Cache-Control", "public, max-age=0, s-maxage=60");
       Le catalogue KESSLER WHEELS
     </h1>
     <p class="mt-5 max-w-2xl text-balance text-lg leading-relaxed text-(--color-mist)">
-      Ces <strong class="text-(--color-paper)">{totalItems} références</strong>, organisées en {FAMILIES.length} familles, sont un aperçu de ce que notre atelier partenaire sait forger — <strong class="text-(--color-paper)">pas un stock</strong>. Chaque jante est fabriquée à la commande, dans la taille et le déport définis pour votre véhicule, et le dessin lui-même peut être adapté sur demande.
+      Ces <strong class="text-(--color-paper)">{totalItems} références</strong>, organisées en {familles.length} familles, sont un aperçu de ce que notre atelier partenaire sait forger — <strong class="text-(--color-paper)">pas un stock</strong>. Chaque jante est fabriquée à la commande, dans la taille et le déport définis pour votre véhicule, et le dessin lui-même peut être adapté sur demande.
     </p>
   </section>
 
   <section class="container-mf pb-10">
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-      {FAMILIES.map((family) => <FamilyCard family={family} />)}
+      {familles.map((family) => <FamilyCard family={family} />)}
     </div>
   </section>
 
