@@ -1,0 +1,7887 @@
+{
+"DZ-001": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-002": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"finition brossée",
+"finition polie"
+],
+"batons": 7
+},
+"DZ-003": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-004": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"finition brossée",
+"finition polie"
+],
+"batons": 5
+},
+"DZ-005": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-006": {
+"diametres": [
+15,
+16,
+17,
+18
+],
+"entraxes": [],
+"vehicules": [
+"BMW"
+],
+"traits": [
+"profil très concave",
+"finition mate",
+"dish profond"
+],
+"batons": 7
+},
+"DZ-007": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-008": {
+"diametres": [
+18,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-009": {
+"diametres": [],
+"entraxes": [
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Mercedes-AMG",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 7
+},
+"DZ-011": {
+"diametres": [
+17,
+20
+],
+"entraxes": [],
+"vehicules": [
+"Audi",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-012": {
+"diametres": [],
+"entraxes": [
+"5x114.3",
+"5x120",
+"5x130"
+],
+"vehicules": [
+"BMW"
+],
+"traits": [
+"profil concave",
+"finition brossée",
+"finition polie"
+],
+"batons": 4
+},
+"DZ-013": {
+"diametres": [],
+"entraxes": [],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-014": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-015": {
+"diametres": [],
+"entraxes": [
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave",
+"finition mate"
+],
+"batons": 12
+},
+"DZ-016": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x100",
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW"
+],
+"traits": [],
+"batons": 5
+},
+"DZ-017": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-019": {
+"diametres": [
+18,
+19,
+20
+],
+"entraxes": [],
+"vehicules": [
+"BMW"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-020": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Porsche"
+],
+"traits": [
+"profil très concave",
+"finition brillante"
+],
+"batons": 5
+},
+"DZ-021": {
+"diametres": [],
+"entraxes": [
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-022": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW"
+],
+"traits": [
+"profil concave",
+"finition polie"
+],
+"batons": null
+},
+"DZ-023": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"finition polie"
+],
+"batons": 5
+},
+"DZ-024": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-025": {
+"diametres": [
+19
+],
+"entraxes": [],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz",
+"Tesla"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-026": {
+"diametres": [
+19
+],
+"entraxes": [],
+"vehicules": [
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-027": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-028": {
+"diametres": [
+18,
+19,
+20
+],
+"entraxes": [
+"5x112",
+"5x114.3"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-029": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": 8
+},
+"DZ-030": {
+"diametres": [
+17,
+18,
+19,
+20,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"ceinture type beadlock",
+"dish profond"
+],
+"batons": 5
+},
+"DZ-032": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"BMW"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-033": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave",
+"finition polie"
+],
+"batons": 7
+},
+"DZ-034": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x114.3"
+],
+"vehicules": [
+"Audi",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-035": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120",
+"5x130",
+"6x139.7"
+],
+"vehicules": [
+"Porsche"
+],
+"traits": [
+"profil très concave",
+"dish profond"
+],
+"batons": 26
+},
+"DZ-036": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x120"
+],
+"vehicules": [],
+"traits": [],
+"batons": null
+},
+"DZ-037": {
+"diametres": [
+17,
+18,
+19
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 8
+},
+"DZ-038": {
+"diametres": [
+17
+],
+"entraxes": [
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-039": {
+"diametres": [
+18
+],
+"entraxes": [
+"5x114"
+],
+"vehicules": [],
+"traits": [
+"finition mate"
+],
+"batons": 4
+},
+"DZ-040": {
+"diametres": [
+17,
+23
+],
+"entraxes": [
+"5x112",
+"5x114.3"
+],
+"vehicules": [
+"Mercedes-Benz",
+"Porsche"
+],
+"traits": [
+"profil très concave",
+"finition polie"
+],
+"batons": null
+},
+"DZ-041": {
+"diametres": [
+18,
+19,
+20
+],
+"entraxes": [
+"5x112",
+"5x114.3"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"finition polie"
+],
+"batons": 5
+},
+"DZ-042": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-043": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"dish profond"
+],
+"batons": 5
+},
+"DZ-044": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x120",
+"5x130",
+"6x139.7"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-045": {
+"diametres": [
+15
+],
+"entraxes": [],
+"vehicules": [
+"BMW"
+],
+"traits": [],
+"batons": null
+},
+"DZ-046": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave",
+"finition polie"
+],
+"batons": null
+},
+"DZ-047": {
+"diametres": [
+18,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-048": {
+"diametres": [
+18,
+22
+],
+"entraxes": [
+"5x114.3",
+"5x120",
+"5x130"
+],
+"vehicules": [
+"BMW"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-049": {
+"diametres": [
+17,
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-050": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"finition brossée"
+],
+"batons": null
+},
+"DZ-051": {
+"diametres": [
+18,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-052": {
+"diametres": [
+18,
+19,
+20
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"finition brossée"
+],
+"batons": 4
+},
+"DZ-053": {
+"diametres": [
+19
+],
+"entraxes": [],
+"vehicules": [
+"Land Rover"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-054": {
+"diametres": [
+19,
+20,
+23
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"finition brossée",
+"finition polie"
+],
+"batons": 7
+},
+"DZ-055": {
+"diametres": [
+17,
+18,
+19,
+20,
+22,
+24
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120",
+"6x139.7"
+],
+"vehicules": [],
+"traits": [
+"ceinture type beadlock",
+"dish profond"
+],
+"batons": null
+},
+"DZ-056": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114",
+"5x120"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"finition brossée"
+],
+"batons": null
+},
+"DZ-057": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": 11
+},
+"DZ-058": {
+"diametres": [
+20,
+21,
+22,
+23,
+24,
+26
+],
+"entraxes": [],
+"vehicules": [
+"Audi",
+"BMW"
+],
+"traits": [],
+"batons": 7
+},
+"DZ-059": {
+"diametres": [],
+"entraxes": [],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"finition mate"
+],
+"batons": null
+},
+"DZ-060": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 11
+},
+"DZ-061": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave",
+"finition polie"
+],
+"batons": 5
+},
+"DZ-062": {
+"diametres": [
+18
+],
+"entraxes": [
+"5x108",
+"5x114.3",
+"5x120",
+"5x130"
+],
+"vehicules": [
+"Audi",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave",
+"finition brossée"
+],
+"batons": null
+},
+"DZ-064": {
+"diametres": [
+17,
+24
+],
+"entraxes": [],
+"vehicules": [],
+"traits": [],
+"batons": 16
+},
+"DZ-065": {
+"diametres": [
+19,
+20,
+21
+],
+"entraxes": [
+"5x100",
+"4x100",
+"6x114.3",
+"5x130"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Porsche"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 4
+},
+"DZ-066": {
+"diametres": [
+17
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-068": {
+"diametres": [
+19,
+20,
+21,
+22,
+23,
+24
+],
+"entraxes": [
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": 7
+},
+"DZ-069": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x130"
+],
+"vehicules": [
+"Audi"
+],
+"traits": [
+"profil concave"
+],
+"batons": 5
+},
+"DZ-070": {
+"diametres": [
+18,
+23
+],
+"entraxes": [],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": 6
+},
+"DZ-071": {
+"diametres": [
+18,
+19,
+20
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave",
+"finition polie",
+"teinte bronze"
+],
+"batons": 6
+},
+"DZ-073": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": 8
+},
+"DZ-074": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-075": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 7
+},
+"DZ-076": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x108",
+"5x114.3",
+"5x130"
+],
+"vehicules": [
+"Mercedes-Benz",
+"Tesla"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 6
+},
+"DZ-077": {
+"diametres": [
+20,
+21
+],
+"entraxes": [],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-078": {
+"diametres": [
+19
+],
+"entraxes": [],
+"vehicules": [
+"Audi",
+"BMW"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 6
+},
+"DZ-079": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-080": {
+"diametres": [
+17,
+18,
+19
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"profil concave"
+],
+"batons": null
+},
+"DZ-081": {
+"diametres": [
+17,
+20
+],
+"entraxes": [],
+"vehicules": [
+"Audi",
+"BMW"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-082": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [],
+"batons": null
+},
+"DZ-083": {
+"diametres": [
+18,
+19,
+20
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave",
+"finition polie"
+],
+"batons": 13
+},
+"DZ-084": {
+"diametres": [
+17,
+18,
+19,
+20
+],
+"entraxes": [],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"finition brossée"
+],
+"batons": null
+},
+"DZ-085": {
+"diametres": [],
+"entraxes": [
+"6x114.3",
+"6x135",
+"6x139.7"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-086": {
+"diametres": [
+18,
+19,
+20,
+22,
+24,
+26
+],
+"entraxes": [
+"5x112",
+"5x120",
+"5x130"
+],
+"vehicules": [
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 11
+},
+"DZ-087": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-088": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-089": {
+"diametres": [
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [],
+"batons": null
+},
+"DZ-090": {
+"diametres": [
+18
+],
+"entraxes": [
+"5x108",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"BMW"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-091": {
+"diametres": [
+19,
+20,
+21,
+22,
+23,
+24
+],
+"entraxes": [],
+"vehicules": [],
+"traits": [],
+"batons": 12
+},
+"DZ-092": {
+"diametres": [],
+"entraxes": [],
+"vehicules": [],
+"traits": [],
+"batons": 6
+},
+"DZ-093": {
+"diametres": [
+17
+],
+"entraxes": [
+"5x120",
+"5x130"
+],
+"vehicules": [
+"Audi",
+"BMW"
+],
+"traits": [
+"finition brillante",
+"dish profond"
+],
+"batons": null
+},
+"DZ-094": {
+"diametres": [
+18,
+19,
+20,
+21,
+22,
+23,
+24
+],
+"entraxes": [],
+"vehicules": [
+"BMW"
+],
+"traits": [
+"profil concave",
+"finition brossée"
+],
+"batons": 4
+},
+"DZ-095": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-096": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": 4
+},
+"DZ-097": {
+"diametres": [
+18
+],
+"entraxes": [
+"5x114"
+],
+"vehicules": [],
+"traits": [
+"finition mate"
+],
+"batons": 9
+},
+"DZ-098": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": 12
+},
+"DZ-099": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [],
+"batons": null
+},
+"DZ-100": {
+"diametres": [
+17
+],
+"entraxes": [
+"5x120",
+"5x130"
+],
+"vehicules": [
+"Audi",
+"BMW"
+],
+"traits": [
+"finition brillante",
+"dish profond"
+],
+"batons": 4
+},
+"DZ-101": {
+"diametres": [
+18,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-102": {
+"diametres": [
+18,
+22
+],
+"entraxes": [
+"4x100",
+"4x108",
+"4x114.3"
+],
+"vehicules": [
+"Ford"
+],
+"traits": [],
+"batons": null
+},
+"DZ-103": {
+"diametres": [
+18,
+19,
+20
+],
+"entraxes": [
+"6x120",
+"6x135",
+"6x139.7"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-AMG"
+],
+"traits": [
+"profil très concave",
+"dish profond"
+],
+"batons": null
+},
+"DZ-104": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"teinte bronze"
+],
+"batons": 12
+},
+"DZ-105": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-106": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x120",
+"5x130"
+],
+"vehicules": [
+"BMW",
+"Mercedes-Benz",
+"Tesla"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 6
+},
+"DZ-107": {
+"diametres": [],
+"entraxes": [],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave",
+"finition brossée"
+],
+"batons": null
+},
+"DZ-108": {
+"diametres": [
+17,
+18,
+19,
+20,
+21
+],
+"entraxes": [],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": 8
+},
+"DZ-109": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": 4
+},
+"DZ-110": {
+"diametres": [
+18,
+19,
+20,
+21,
+22,
+23
+],
+"entraxes": [],
+"vehicules": [],
+"traits": [
+"profil concave"
+],
+"batons": 4
+},
+"DZ-111": {
+"diametres": [
+18,
+19,
+20,
+21,
+22,
+23
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-AMG"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-112": {
+"diametres": [],
+"entraxes": [
+"5x127",
+"6x139.7",
+"8x139.7"
+],
+"vehicules": [
+"Ford"
+],
+"traits": [],
+"batons": 4
+},
+"DZ-113": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x100",
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW"
+],
+"traits": [],
+"batons": null
+},
+"DZ-114": {
+"diametres": [
+19,
+20,
+21
+],
+"entraxes": [],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-115": {
+"diametres": [
+17,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave",
+"finition polie"
+],
+"batons": null
+},
+"DZ-116": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"finition polie"
+],
+"batons": 9
+},
+"DZ-117": {
+"diametres": [],
+"entraxes": [
+"5x114.3"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-118": {
+"diametres": [
+17,
+23
+],
+"entraxes": [],
+"vehicules": [
+"BMW"
+],
+"traits": [
+"profil très concave",
+"finition mate"
+],
+"batons": null
+},
+"DZ-119": {
+"diametres": [
+17,
+18,
+19,
+20
+],
+"entraxes": [
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 7
+},
+"DZ-120": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"finition mate"
+],
+"batons": null
+},
+"DZ-121": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"finition brillante"
+],
+"batons": null
+},
+"DZ-122": {
+"diametres": [
+17,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3"
+],
+"vehicules": [
+"Audi"
+],
+"traits": [
+"profil très concave",
+"finition brossée",
+"finition polie"
+],
+"batons": 6
+},
+"DZ-123": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-124": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-125": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22,
+23,
+24
+],
+"entraxes": [
+"5x112",
+"5x114.3"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Lexus",
+"Mercedes-Benz"
+],
+"traits": [],
+"batons": 5
+},
+"DZ-126": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz",
+"Porsche",
+"Tesla"
+],
+"traits": [],
+"batons": 5
+},
+"DZ-127": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-128": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 7
+},
+"DZ-129": {
+"diametres": [
+19,
+20,
+21
+],
+"entraxes": [],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 6
+},
+"DZ-131": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil concave"
+],
+"batons": null
+},
+"DZ-132": {
+"diametres": [
+19
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [
+"BMW"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 4
+},
+"DZ-133": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-134": {
+"diametres": [
+18
+],
+"entraxes": [
+"5x114"
+],
+"vehicules": [],
+"traits": [
+"finition polie"
+],
+"batons": null
+},
+"DZ-135": {
+"diametres": [],
+"entraxes": [
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [],
+"batons": 7
+},
+"DZ-136": {
+"diametres": [
+17,
+18,
+19,
+20
+],
+"entraxes": [
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-137": {
+"diametres": [
+17
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [
+"Porsche"
+],
+"traits": [
+"profil très concave",
+"dish profond"
+],
+"batons": 26
+},
+"DZ-138": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22,
+23
+],
+"entraxes": [
+"5x114.3"
+],
+"vehicules": [],
+"traits": [
+"profil concave",
+"finition polie"
+],
+"batons": 12
+},
+"DZ-140": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-AMG",
+"Mercedes-Benz",
+"Porsche"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 7
+},
+"DZ-141": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": 7
+},
+"DZ-142": {
+"diametres": [
+19,
+20
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [
+"Mercedes-AMG",
+"Mercedes-Benz"
+],
+"traits": [
+"profil concave",
+"finition mate"
+],
+"batons": null
+},
+"DZ-143": {
+"diametres": [
+18
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi"
+],
+"traits": [
+"profil très concave",
+"finition mate"
+],
+"batons": null
+},
+"DZ-144": {
+"diametres": [
+17
+],
+"entraxes": [
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": 6
+},
+"DZ-145": {
+"diametres": [
+17
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-146": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x127",
+"5x139.7"
+],
+"vehicules": [],
+"traits": [],
+"batons": 10
+},
+"DZ-147": {
+"diametres": [
+18
+],
+"entraxes": [
+"5x114"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"teinte bronze"
+],
+"batons": 7
+},
+"DZ-148": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"finition brossée"
+],
+"batons": 5
+},
+"DZ-149": {
+"diametres": [],
+"entraxes": [],
+"vehicules": [
+"Mercedes-AMG",
+"Mercedes-Benz"
+],
+"traits": [
+"dish profond"
+],
+"batons": 5
+},
+"DZ-150": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-151": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": 9
+},
+"DZ-152": {
+"diametres": [],
+"entraxes": [],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"finition brossée",
+"finition polie",
+"dish profond"
+],
+"batons": null
+},
+"DZ-154": {
+"diametres": [
+17,
+18,
+19,
+20
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"profil concave"
+],
+"batons": 5
+},
+"DZ-156": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 4
+},
+"DZ-157": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-158": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-159": {
+"diametres": [
+18,
+19
+],
+"entraxes": [],
+"vehicules": [],
+"traits": [
+"finition brillante",
+"dish profond"
+],
+"batons": 5
+},
+"DZ-160": {
+"diametres": [
+18,
+19,
+20
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave",
+"finition brossée"
+],
+"batons": 4
+},
+"DZ-161": {
+"diametres": [
+18,
+19,
+20
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 4
+},
+"DZ-162": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [],
+"vehicules": [],
+"traits": [
+"finition polie"
+],
+"batons": 8
+},
+"DZ-163": {
+"diametres": [
+18,
+20
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"BMW",
+"Mercedes-AMG"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 7
+},
+"DZ-164": {
+"diametres": [
+18,
+19,
+20,
+22,
+24,
+26
+],
+"entraxes": [
+"5x114.3",
+"5x120",
+"5x130"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"finition brillante"
+],
+"batons": null
+},
+"DZ-165": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 15
+},
+"DZ-166": {
+"diametres": [
+17
+],
+"entraxes": [
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW"
+],
+"traits": [],
+"batons": 6
+},
+"DZ-168": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [],
+"vehicules": [
+"BMW",
+"Land Rover",
+"Mercedes-Benz"
+],
+"traits": [],
+"batons": 23
+},
+"DZ-169": {
+"diametres": [
+18
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [],
+"batons": 5
+},
+"DZ-170": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-171": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-172": {
+"diametres": [
+18
+],
+"entraxes": [
+"5x108",
+"5x112",
+"5x114.3",
+"5x130"
+],
+"vehicules": [
+"Mercedes-Benz",
+"Toyota"
+],
+"traits": [
+"profil concave"
+],
+"batons": null
+},
+"DZ-173": {
+"diametres": [
+20
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [
+"BMW"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 6
+},
+"DZ-174": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-175": {
+"diametres": [],
+"entraxes": [],
+"vehicules": [
+"Audi",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave",
+"finition brossée"
+],
+"batons": 21
+},
+"DZ-176": {
+"diametres": [
+19,
+20,
+21,
+22
+],
+"entraxes": [],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-177": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-178": {
+"diametres": [
+17,
+23
+],
+"entraxes": [
+"5x108",
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 9
+},
+"DZ-179": {
+"diametres": [],
+"entraxes": [],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-180": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave",
+"finition brossée"
+],
+"batons": 7
+},
+"DZ-181": {
+"diametres": [],
+"entraxes": [],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"finition brossée",
+"finition polie",
+"dish profond"
+],
+"batons": null
+},
+"DZ-182": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 4
+},
+"DZ-183": {
+"diametres": [],
+"entraxes": [
+"5x114.3"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-184": {
+"diametres": [
+18
+],
+"entraxes": [
+"5x108",
+"5x114.3",
+"5x120",
+"5x130"
+],
+"vehicules": [
+"Audi",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave",
+"finition brossée"
+],
+"batons": null
+},
+"DZ-187": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"finition polie"
+],
+"batons": null
+},
+"DZ-188": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil concave"
+],
+"batons": 5
+},
+"DZ-189": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-190": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Porsche"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-191": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [],
+"batons": null
+},
+"DZ-192": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW"
+],
+"traits": [
+"profil concave",
+"finition polie"
+],
+"batons": 5
+},
+"DZ-193": {
+"diametres": [
+18
+],
+"entraxes": [
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-194": {
+"diametres": [
+17,
+18,
+19,
+20
+],
+"entraxes": [],
+"vehicules": [],
+"traits": [],
+"batons": 5
+},
+"DZ-195": {
+"diametres": [
+17
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [
+"BMW",
+"Mercedes-Benz",
+"Porsche"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-196": {
+"diametres": [
+17,
+18,
+19,
+20,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"ceinture type beadlock"
+],
+"batons": 5
+},
+"DZ-197": {
+"diametres": [
+18,
+19,
+20,
+21,
+22,
+23,
+24
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Mercedes-AMG"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-198": {
+"diametres": [
+17
+],
+"entraxes": [
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 4
+},
+"DZ-199": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-200": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-201": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-202": {
+"diametres": [
+19,
+22
+],
+"entraxes": [],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-203": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 12
+},
+"DZ-204": {
+"diametres": [
+19
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-205": {
+"diametres": [
+19,
+20,
+21,
+22
+],
+"entraxes": [],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-206": {
+"diametres": [],
+"entraxes": [
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-207": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-208": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"finition brossée",
+"finition polie"
+],
+"batons": 10
+},
+"DZ-209": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-210": {
+"diametres": [
+19
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-211": {
+"diametres": [
+17
+],
+"entraxes": [
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [],
+"batons": 6
+},
+"DZ-212": {
+"diametres": [
+19
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz",
+"Tesla"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-213": {
+"diametres": [
+18,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x130"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-214": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [],
+"vehicules": [
+"BMW"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-216": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Mercedes-AMG"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 20
+},
+"DZ-217": {
+"diametres": [
+17,
+24
+],
+"entraxes": [
+"5x114.3",
+"5x120",
+"5x130"
+],
+"vehicules": [],
+"traits": [],
+"batons": 7
+},
+"DZ-218": {
+"diametres": [
+18,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Mercedes-Benz",
+"Porsche"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-219": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"finition brossée",
+"finition polie"
+],
+"batons": 5
+},
+"DZ-220": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"dish profond"
+],
+"batons": null
+},
+"DZ-221": {
+"diametres": [
+20,
+21,
+22,
+23,
+24
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [
+"Audi"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-222": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"Mercedes-Benz"
+],
+"traits": [
+"finition brossée",
+"finition polie"
+],
+"batons": 9
+},
+"DZ-223": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-224": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 9
+},
+"DZ-225": {
+"diametres": [
+17,
+18,
+19
+],
+"entraxes": [
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"profil concave",
+"structure carbone"
+],
+"batons": 5
+},
+"DZ-226": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-227": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22,
+23,
+24
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"BMW",
+"Mercedes-Benz",
+"Porsche",
+"Tesla"
+],
+"traits": [],
+"batons": 4
+},
+"DZ-228": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Mercedes-AMG",
+"Mercedes-Benz"
+],
+"traits": [
+"profil concave",
+"finition deux tons"
+],
+"batons": 15
+},
+"DZ-229": {
+"diametres": [],
+"entraxes": [
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-230": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": 15
+},
+"DZ-231": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"profil concave",
+"finition mate"
+],
+"batons": null
+},
+"DZ-232": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": 4
+},
+"DZ-233": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x120",
+"5x130",
+"6x139.7"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 11
+},
+"DZ-234": {
+"diametres": [
+19,
+20
+],
+"entraxes": [
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW"
+],
+"traits": [],
+"batons": 4
+},
+"DZ-235": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-236": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-237": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [],
+"batons": null
+},
+"DZ-238": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-239": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil concave"
+],
+"batons": null
+},
+"DZ-240": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [],
+"batons": 5
+},
+"DZ-241": {
+"diametres": [
+17
+],
+"entraxes": [
+"5x114.3"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz",
+"Tesla"
+],
+"traits": [],
+"batons": null
+},
+"DZ-242": {
+"diametres": [
+18,
+19,
+20,
+21,
+22,
+26
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"6x139.7"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-243": {
+"diametres": [],
+"entraxes": [
+"5x114.3",
+"5x120",
+"5x130"
+],
+"vehicules": [],
+"traits": [],
+"batons": 6
+},
+"DZ-244": {
+"diametres": [
+16,
+17,
+18,
+19
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [],
+"batons": null
+},
+"DZ-245": {
+"diametres": [
+18,
+24
+],
+"entraxes": [
+"6x139",
+"6x139.7"
+],
+"vehicules": [
+"BMW",
+"Land Rover",
+"Mercedes-Benz"
+],
+"traits": [],
+"batons": 5
+},
+"DZ-246": {
+"diametres": [
+17,
+22
+],
+"entraxes": [],
+"vehicules": [
+"BMW"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-247": {
+"diametres": [
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Porsche"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-248": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x120",
+"5x130",
+"6x139.7"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-249": {
+"diametres": [
+18
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": 20
+},
+"DZ-250": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [],
+"vehicules": [
+"Mercedes-Benz",
+"Porsche"
+],
+"traits": [
+"profil très concave",
+"finition polie"
+],
+"batons": 4
+},
+"DZ-251": {
+"diametres": [
+20,
+21
+],
+"entraxes": [],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [],
+"batons": 7
+},
+"DZ-252": {
+"diametres": [
+19,
+20,
+21
+],
+"entraxes": [],
+"vehicules": [
+"Mercedes-AMG",
+"Mercedes-Benz"
+],
+"traits": [
+"finition polie"
+],
+"batons": 25
+},
+"DZ-253": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"finition brillante"
+],
+"batons": 5
+},
+"DZ-254": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120",
+"5x127"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"finition brossée"
+],
+"batons": null
+},
+"DZ-255": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22,
+23
+],
+"entraxes": [
+"5x108",
+"5x112"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": 10
+},
+"DZ-256": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22,
+23
+],
+"entraxes": [],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"teinte bronze"
+],
+"batons": 5
+},
+"DZ-257": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave",
+"finition mate"
+],
+"batons": 10
+},
+"DZ-258": {
+"diametres": [
+18,
+19,
+20,
+21,
+22,
+23
+],
+"entraxes": [],
+"vehicules": [
+"Mercedes-AMG",
+"Mercedes-Benz"
+],
+"traits": [],
+"batons": 7
+},
+"DZ-259": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-260": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-261": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave",
+"finition brossée"
+],
+"batons": 21
+},
+"DZ-262": {
+"diametres": [
+17,
+23
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"dish profond"
+],
+"batons": null
+},
+"DZ-263": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22,
+23
+],
+"entraxes": [],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"teinte bronze"
+],
+"batons": null
+},
+"DZ-264": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22,
+23
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": 7
+},
+"DZ-265": {
+"diametres": [
+17,
+24
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120",
+"5x127",
+"5x130"
+],
+"vehicules": [],
+"traits": [],
+"batons": null
+},
+"DZ-266": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22,
+23
+],
+"entraxes": [],
+"vehicules": [],
+"traits": [],
+"batons": null
+},
+"DZ-267": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22,
+23
+],
+"entraxes": [],
+"vehicules": [],
+"traits": [
+"profil concave"
+],
+"batons": 7
+},
+"DZ-268": {
+"diametres": [],
+"entraxes": [],
+"vehicules": [
+"Porsche"
+],
+"traits": [
+"teinte bronze"
+],
+"batons": 4
+},
+"DZ-269": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-270": {
+"diametres": [
+18,
+19,
+20,
+21,
+22,
+23
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-271": {
+"diametres": [
+18,
+19,
+20,
+21,
+22,
+23
+],
+"entraxes": [
+"5x12",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [],
+"batons": null
+},
+"DZ-272": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22,
+23
+],
+"entraxes": [],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"finition mate"
+],
+"batons": null
+},
+"DZ-273": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22,
+23
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [],
+"batons": 5
+},
+"DZ-274": {
+"diametres": [
+18,
+19,
+20,
+21,
+22,
+23
+],
+"entraxes": [
+"5x12",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [],
+"batons": 5
+},
+"DZ-275": {
+"diametres": [],
+"entraxes": [],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [],
+"batons": 24
+},
+"DZ-276": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [],
+"batons": 23
+},
+"DZ-277": {
+"diametres": [],
+"entraxes": [],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZ-278": {
+"diametres": [],
+"entraxes": [],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-279": {
+"diametres": [
+17,
+23
+],
+"entraxes": [
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Nissan"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-280": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil concave"
+],
+"batons": 7
+},
+"DZ-281": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x127"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [],
+"batons": null
+},
+"DZ-282": {
+"diametres": [],
+"entraxes": [
+"5x114.3",
+"5x120",
+"5x130"
+],
+"vehicules": [
+"BMW",
+"Porsche"
+],
+"traits": [],
+"batons": null
+},
+"DZ-283": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil concave",
+"teinte bronze"
+],
+"batons": null
+},
+"DZ-284": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x127"
+],
+"vehicules": [],
+"traits": [
+"finition polie"
+],
+"batons": 9
+},
+"DZ-285": {
+"diametres": [],
+"entraxes": [],
+"vehicules": [
+"Mercedes-Benz",
+"Toyota"
+],
+"traits": [
+"profil concave",
+"dish profond"
+],
+"batons": 7
+},
+"DZ-286": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"finition polie"
+],
+"batons": 5
+},
+"DZ-287": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22,
+23
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [],
+"batons": 20
+},
+"DZ-288": {
+"diametres": [],
+"entraxes": [],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave",
+"finition polie",
+"dish profond"
+],
+"batons": 11
+},
+"DZ-289": {
+"diametres": [],
+"entraxes": [],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"dish profond"
+],
+"batons": 8
+},
+"DZ-290": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"finition polie"
+],
+"batons": 8
+},
+"DZ-291": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil concave",
+"teinte bronze"
+],
+"batons": 9
+},
+"DZ-292": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave",
+"finition brossée"
+],
+"batons": null
+},
+"DZ-293": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave",
+"dish profond"
+],
+"batons": null
+},
+"DZ-294": {
+"diametres": [],
+"entraxes": [
+"5x114.3",
+"5x120",
+"5x130"
+],
+"vehicules": [
+"BMW",
+"Lexus",
+"Porsche"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZ-295": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x115",
+"5x130"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz",
+"Porsche"
+],
+"traits": [],
+"batons": 11
+},
+"DZ-296": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22,
+23
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Ford",
+"Mercedes-Benz",
+"Nissan"
+],
+"traits": [
+"dish profond"
+],
+"batons": 5
+},
+"DZ-297": {
+"diametres": [
+17,
+18,
+20,
+22
+],
+"entraxes": [
+"6x135",
+"6x139.7",
+"8x165.1",
+"8x170"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"finition brillante"
+],
+"batons": null
+},
+"DZ-298": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"finition brossée"
+],
+"batons": 6
+},
+"DZ-299": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22,
+23
+],
+"entraxes": [
+"5x100",
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"dish profond"
+],
+"batons": null
+},
+"DZ-300": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22,
+23
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [],
+"batons": null
+},
+"DZS-001": {
+"diametres": [
+20,
+22
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [],
+"traits": [
+"dish profond"
+],
+"batons": null
+},
+"DZS-002": {
+"diametres": [
+20,
+22
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [],
+"traits": [
+"dish profond"
+],
+"batons": null
+},
+"DZS-003": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"finition brossée",
+"finition polie"
+],
+"batons": 9
+},
+"DZS-004": {
+"diametres": [
+15,
+16,
+17,
+18
+],
+"entraxes": [
+"4x100",
+"4x108",
+"4x114.3"
+],
+"vehicules": [],
+"traits": [],
+"batons": 8
+},
+"DZS-005": {
+"diametres": [
+18,
+19,
+20,
+21,
+22,
+23
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil concave",
+"dish profond"
+],
+"batons": null
+},
+"DZS-006": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [],
+"batons": 5
+},
+"DZS-007": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [],
+"batons": null
+},
+"DZS-008": {
+"diametres": [
+18,
+24
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil concave",
+"dish profond"
+],
+"batons": 17
+},
+"DZS-009": {
+"diametres": [
+20,
+22
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [],
+"traits": [
+"dish profond"
+],
+"batons": null
+},
+"DZS-010": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"dish profond"
+],
+"batons": 18
+},
+"DZS-011": {
+"diametres": [
+20,
+22
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [],
+"traits": [
+"dish profond"
+],
+"batons": null
+},
+"DZS-012": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [],
+"batons": null
+},
+"DZS-013": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [],
+"batons": null
+},
+"DZS-014": {
+"diametres": [
+16,
+26
+],
+"entraxes": [
+"5x114.3",
+"5x127",
+"5x130"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [],
+"batons": 7
+},
+"DZS-015": {
+"diametres": [
+20,
+22
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [],
+"traits": [
+"dish profond"
+],
+"batons": null
+},
+"DZS-016": {
+"diametres": [
+20,
+22
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [],
+"traits": [
+"dish profond"
+],
+"batons": null
+},
+"DZS-017": {
+"diametres": [
+18,
+20,
+22
+],
+"entraxes": [
+"5x108",
+"5x112",
+"5x114.3"
+],
+"vehicules": [
+"BMW"
+],
+"traits": [
+"rebord à gradin",
+"dish profond"
+],
+"batons": 15
+},
+"DZS-018": {
+"diametres": [
+20,
+22
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [],
+"traits": [
+"dish profond"
+],
+"batons": 16
+},
+"DZS-019": {
+"diametres": [
+17,
+26
+],
+"entraxes": [],
+"vehicules": [
+"Toyota"
+],
+"traits": [
+"teinte bronze",
+"dish profond"
+],
+"batons": 20
+},
+"DZS-020": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"finition brossée",
+"finition polie"
+],
+"batons": 5
+},
+"DZS-021": {
+"diametres": [
+20,
+22
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [],
+"traits": [
+"dish profond"
+],
+"batons": null
+},
+"DZS-022": {
+"diametres": [
+20,
+22
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [],
+"traits": [
+"dish profond"
+],
+"batons": null
+},
+"DZS-024": {
+"diametres": [
+18,
+24
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"BMW"
+],
+"traits": [
+"profil concave",
+"dish profond"
+],
+"batons": 4
+},
+"DZS-025": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22,
+23,
+24
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [],
+"batons": 14
+},
+"DZS-026": {
+"diametres": [
+18,
+19,
+20,
+21,
+22,
+23
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil concave",
+"dish profond"
+],
+"batons": null
+},
+"DZS-027": {
+"diametres": [
+20,
+22
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [],
+"traits": [
+"dish profond"
+],
+"batons": 10
+},
+"DZS-028": {
+"diametres": [
+20,
+22
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [],
+"traits": [
+"dish profond"
+],
+"batons": null
+},
+"DZS-029": {
+"diametres": [
+18,
+19,
+20,
+22,
+23,
+24
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Lexus",
+"Mercedes-Benz"
+],
+"traits": [],
+"batons": null
+},
+"DZS-030": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"dish profond"
+],
+"batons": 7
+},
+"DZS-031": {
+"diametres": [
+18,
+19,
+20,
+21,
+22,
+23
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil concave",
+"dish profond"
+],
+"batons": 13
+},
+"DZS-032": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22,
+23
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz",
+"Porsche"
+],
+"traits": [],
+"batons": 8
+},
+"DZS-033": {
+"diametres": [
+18,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZS-034": {
+"diametres": [
+19,
+20,
+21,
+22,
+24,
+26
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x130"
+],
+"vehicules": [
+"Audi",
+"BMW"
+],
+"traits": [
+"profil concave"
+],
+"batons": null
+},
+"DZS-035": {
+"diametres": [],
+"entraxes": [],
+"vehicules": [],
+"traits": [
+"ceinture type beadlock"
+],
+"batons": 5
+},
+"DZS-036": {
+"diametres": [],
+"entraxes": [
+"5x100",
+"5x112",
+"5x120"
+],
+"vehicules": [
+"Porsche"
+],
+"traits": [],
+"batons": null
+},
+"DZS-037": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [],
+"batons": 11
+},
+"DZS-038": {
+"diametres": [
+20,
+22
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [],
+"traits": [
+"dish profond"
+],
+"batons": 4
+},
+"DZS-039": {
+"diametres": [
+20,
+22
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [],
+"traits": [
+"dish profond"
+],
+"batons": 5
+},
+"DZS-040": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [],
+"batons": 5
+},
+"DZS-041": {
+"diametres": [
+20,
+22
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [],
+"traits": [
+"dish profond"
+],
+"batons": 11
+},
+"DZT-001": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"finition brossée",
+"finition polie"
+],
+"batons": 6
+},
+"DZT-002": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil concave",
+"teinte bronze",
+"dish profond"
+],
+"batons": 5
+},
+"DZT-003": {
+"diametres": [
+17,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"BMW"
+],
+"traits": [
+"profil très concave",
+"finition polie"
+],
+"batons": 5
+},
+"DZT-004": {
+"diametres": [
+18
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZT-005": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"finition polie"
+],
+"batons": null
+},
+"DZT-007": {
+"diametres": [
+17
+],
+"entraxes": [
+"5x120",
+"5x130"
+],
+"vehicules": [
+"Audi",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 9
+},
+"DZT-009": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x130"
+],
+"vehicules": [],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZT-010": {
+"diametres": [
+15,
+16,
+26
+],
+"entraxes": [
+"5x114.3",
+"5x127",
+"5x130"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [],
+"batons": null
+},
+"DZT-011": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW"
+],
+"traits": [
+"profil très concave",
+"finition polie"
+],
+"batons": null
+},
+"DZT-012": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22,
+23,
+24
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"ceinture type beadlock"
+],
+"batons": 5
+},
+"DZT-013": {
+"diametres": [
+18,
+19,
+20
+],
+"entraxes": [
+"5x112",
+"5x114.3"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave",
+"finition polie"
+],
+"batons": null
+},
+"DZT-015": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3"
+],
+"vehicules": [],
+"traits": [],
+"batons": null
+},
+"DZT-016": {
+"diametres": [],
+"entraxes": [
+"5x120",
+"5x130"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"finition brillante"
+],
+"batons": null
+},
+"DZT-017": {
+"diametres": [
+18,
+19,
+20
+],
+"entraxes": [],
+"vehicules": [
+"BMW",
+"Mercedes-Benz",
+"Porsche"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 26
+},
+"DZT-018": {
+"diametres": [
+20,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil concave",
+"finition brossée",
+"finition polie"
+],
+"batons": 4
+},
+"DZT-019": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x114.3"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"finition brossée"
+],
+"batons": 5
+},
+"DZT-021": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"finition brossée",
+"finition polie"
+],
+"batons": null
+},
+"DZT-022": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [],
+"batons": 13
+},
+"DZT-023": {
+"diametres": [
+18
+],
+"entraxes": [],
+"vehicules": [
+"Audi",
+"BMW",
+"Porsche"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZT-024": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"BMW"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZT-025": {
+"diametres": [
+18,
+20,
+24
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x130",
+"6x139.7"
+],
+"vehicules": [
+"BMW",
+"Land Rover"
+],
+"traits": [
+"profil très concave",
+"finition brossée",
+"finition polie"
+],
+"batons": null
+},
+"DZT-026": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [],
+"batons": 30
+},
+"DZT-027": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3"
+],
+"vehicules": [
+"Audi",
+"BMW"
+],
+"traits": [
+"profil très concave",
+"structure carbone"
+],
+"batons": 8
+},
+"DZT-028": {
+"diametres": [
+18
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Porsche"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 4
+},
+"DZT-029": {
+"diametres": [
+17,
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x114.3",
+"5x120",
+"5x130"
+],
+"vehicules": [
+"Audi",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 9
+},
+"DZT-030": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"finition brossée",
+"finition polie"
+],
+"batons": 5
+},
+"DZT-033": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 13
+},
+"DZT-034": {
+"diametres": [
+18,
+22
+],
+"entraxes": [],
+"vehicules": [
+"BMW",
+"Mercedes-Benz",
+"Porsche"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 8
+},
+"DZT-035": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"finition brossée",
+"finition polie"
+],
+"batons": 5
+},
+"DZT-036": {
+"diametres": [
+16,
+22
+],
+"entraxes": [],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZT-037": {
+"diametres": [
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"finition brossée",
+"finition polie"
+],
+"batons": 5
+},
+"DZT-038": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZT-039": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil concave",
+"finition brossée",
+"finition polie"
+],
+"batons": 5
+},
+"DZT-040": {
+"diametres": [
+18
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"BMW"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZT-041": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22,
+23,
+24
+],
+"entraxes": [
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW"
+],
+"traits": [
+"profil concave"
+],
+"batons": null
+},
+"DZT-042": {
+"diametres": [
+17
+],
+"entraxes": [
+"5x112",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave",
+"finition mate"
+],
+"batons": 5
+},
+"DZT-043": {
+"diametres": [
+16,
+20
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"BMW"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 9
+},
+"DZT-044": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave",
+"finition brossée",
+"finition polie"
+],
+"batons": null
+},
+"DZT-046": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x114.3"
+],
+"vehicules": [],
+"traits": [
+"finition brossée",
+"finition polie"
+],
+"batons": 12
+},
+"DZT-047": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22,
+23,
+24
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"ceinture type beadlock"
+],
+"batons": null
+},
+"DZT-048": {
+"diametres": [
+19
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZT-049": {
+"diametres": [
+18,
+19,
+20,
+21,
+22,
+23
+],
+"entraxes": [
+"5x12",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [],
+"batons": 5
+},
+"DZT-050": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"finition brossée",
+"finition polie"
+],
+"batons": null
+},
+"DZT-051": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22,
+23
+],
+"entraxes": [],
+"vehicules": [
+"Audi",
+"BMW",
+"Porsche"
+],
+"traits": [
+"profil concave"
+],
+"batons": 11
+},
+"DZT-052": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3"
+],
+"vehicules": [],
+"traits": [],
+"batons": null
+},
+"DZT-053": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"finition brossée"
+],
+"batons": 5
+},
+"DZT-054": {
+"diametres": [],
+"entraxes": [
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave",
+"finition mate"
+],
+"batons": null
+},
+"DZT-055": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 9
+},
+"DZT-056": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [],
+"batons": 9
+},
+"DZT-057": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [],
+"batons": 13
+},
+"DZT-058": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"finition brossée",
+"finition polie"
+],
+"batons": 13
+},
+"DZT-059": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"finition brossée"
+],
+"batons": null
+},
+"DZT-060": {
+"diametres": [
+18,
+22
+],
+"entraxes": [],
+"vehicules": [
+"BMW",
+"Mercedes-Benz",
+"Porsche"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZT-061": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [],
+"batons": 9
+},
+"DZT-062": {
+"diametres": [],
+"entraxes": [
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Porsche"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZT-063": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x114.3"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"finition brossée"
+],
+"batons": null
+},
+"DZT-064": {
+"diametres": [
+18,
+19,
+20,
+22,
+24,
+26
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120",
+"5x130"
+],
+"vehicules": [],
+"traits": [
+"structure carbone",
+"dish profond"
+],
+"batons": 8
+},
+"DZT-065": {
+"diametres": [],
+"entraxes": [
+"5x114.3",
+"5x120",
+"5x127"
+],
+"vehicules": [
+"Land Rover"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"DZT-066": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"finition brossée",
+"finition polie"
+],
+"batons": 14
+},
+"DZT-067": {
+"diametres": [],
+"entraxes": [],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 4
+},
+"DZT-069": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120",
+"5x130"
+],
+"vehicules": [
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZT-071": {
+"diametres": [
+19,
+22
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"finition brossée"
+],
+"batons": null
+},
+"DZT-073": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 4
+},
+"DZT-075": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [],
+"vehicules": [
+"BMW",
+"Mercedes-Benz",
+"Porsche"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZT-076": {
+"diametres": [
+19
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"finition brossée"
+],
+"batons": 5
+},
+"DZT-077": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"finition brossée",
+"finition polie"
+],
+"batons": 4
+},
+"DZT-078": {
+"diametres": [
+18,
+19,
+20
+],
+"entraxes": [],
+"vehicules": [
+"Audi",
+"BMW"
+],
+"traits": [
+"profil très concave",
+"finition brossée"
+],
+"batons": 5
+},
+"DZT-079": {
+"diametres": [
+17,
+18,
+19,
+20
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi"
+],
+"traits": [],
+"batons": 15
+},
+"DZT-080": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 11
+},
+"DZT-082": {
+"diametres": [],
+"entraxes": [],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"finition brossée",
+"finition polie",
+"teinte bronze"
+],
+"batons": 9
+},
+"DZT-083": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x114.3"
+],
+"vehicules": [
+"Audi",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave",
+"finition brossée",
+"finition polie"
+],
+"batons": 7
+},
+"DZT-084": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22,
+23,
+24
+],
+"entraxes": [
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW"
+],
+"traits": [
+"profil concave"
+],
+"batons": 5
+},
+"DZT-085": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW"
+],
+"traits": [
+"profil concave"
+],
+"batons": 5
+},
+"DZT-086": {
+"diametres": [
+18,
+22
+],
+"entraxes": [],
+"vehicules": [
+"Audi",
+"BMW",
+"Porsche"
+],
+"traits": [
+"profil très concave"
+],
+"batons": null
+},
+"DZT-087": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120",
+"5x130"
+],
+"vehicules": [],
+"traits": [
+"profil concave",
+"dish profond"
+],
+"batons": 10
+},
+"DZT-088": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"finition polie"
+],
+"batons": 22
+},
+"DZT-089": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22,
+23,
+24
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"ceinture type beadlock"
+],
+"batons": 5
+},
+"DZT-090": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"finition polie"
+],
+"batons": null
+},
+"DZT-091": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"finition brossée",
+"finition polie"
+],
+"batons": null
+},
+"DZT-092": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"finition brossée",
+"finition polie"
+],
+"batons": 5
+},
+"DZT-093": {
+"diametres": [],
+"entraxes": [
+"5x112"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz",
+"Porsche"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 4
+},
+"DZT-094": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"finition brossée",
+"finition polie"
+],
+"batons": 8
+},
+"DZT-096": {
+"diametres": [
+18,
+20,
+24
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x130",
+"6x139.7"
+],
+"vehicules": [
+"BMW"
+],
+"traits": [
+"profil très concave",
+"finition brossée",
+"finition polie"
+],
+"batons": null
+},
+"DZT-097": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x114.3"
+],
+"vehicules": [
+"Audi",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave",
+"finition brossée",
+"finition polie"
+],
+"batons": null
+},
+"DZT-098": {
+"diametres": [
+18,
+22
+],
+"entraxes": [
+"5x120",
+"5x130"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"teinte bronze"
+],
+"batons": 5
+},
+"DZT-099": {
+"diametres": [
+18,
+19,
+20,
+21,
+22,
+23
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Nissan"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 7
+},
+"DZT-100": {
+"diametres": [
+17,
+24
+],
+"entraxes": [
+"6x139.7"
+],
+"vehicules": [],
+"traits": [
+"profil concave",
+"finition brossée",
+"dish profond"
+],
+"batons": 5
+},
+"TDZ-001": {
+"diametres": [
+19
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"structure carbone"
+],
+"batons": null
+},
+"TDZ-003": {
+"diametres": [
+19,
+20,
+21,
+22,
+24,
+26
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x130"
+],
+"vehicules": [],
+"traits": [
+"finition brillante"
+],
+"batons": null
+},
+"TDZ-004": {
+"diametres": [],
+"entraxes": [
+"5x100",
+"5x108",
+"5x112"
+],
+"vehicules": [
+"Nissan",
+"Subaru",
+"Toyota"
+],
+"traits": [
+"structure carbone"
+],
+"batons": 5
+},
+"TDZ-005": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil concave",
+"finition polie",
+"structure carbone",
+"dish profond"
+],
+"batons": null
+},
+"TDZ-006": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"teinte bronze",
+"structure carbone"
+],
+"batons": 13
+},
+"TDZ-007": {
+"diametres": [
+18
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"structure carbone"
+],
+"batons": null
+},
+"TDZ-008": {
+"diametres": [],
+"entraxes": [],
+"vehicules": [
+"Audi",
+"BMW"
+],
+"traits": [
+"finition brillante",
+"structure carbone",
+"dish profond"
+],
+"batons": 5
+},
+"TDZ-009": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"profil concave",
+"structure carbone",
+"dish profond"
+],
+"batons": 6
+},
+"TDZ-010": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"structure carbone"
+],
+"batons": 7
+},
+"TDZ-011": {
+"diametres": [],
+"entraxes": [
+"5x120"
+],
+"vehicules": [
+"Mercedes-AMG",
+"Mercedes-Benz"
+],
+"traits": [
+"profil très concave"
+],
+"batons": 5
+},
+"TDZ-012": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22,
+23,
+24
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"structure carbone"
+],
+"batons": null
+},
+"TDZ-013": {
+"diametres": [
+19
+],
+"entraxes": [
+"5x112"
+],
+"vehicules": [],
+"traits": [
+"profil très concave",
+"structure carbone"
+],
+"batons": null
+},
+"TDZ-014": {
+"diametres": [],
+"entraxes": [
+"5x108",
+"5x112",
+"5x120"
+],
+"vehicules": [
+"BMW",
+"Mercedes-AMG",
+"Mercedes-Benz",
+"Porsche"
+],
+"traits": [
+"structure carbone"
+],
+"batons": 17
+},
+"TDZ-015": {
+"diametres": [
+18,
+24
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil concave",
+"structure carbone"
+],
+"batons": 5
+},
+"TDZ-016": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil concave",
+"structure carbone",
+"dish profond"
+],
+"batons": null
+},
+"TDZ-017": {
+"diametres": [
+19,
+20,
+22,
+24,
+26
+],
+"entraxes": [
+"5x114.3",
+"5x120",
+"5x130"
+],
+"vehicules": [],
+"traits": [
+"structure carbone",
+"dish profond"
+],
+"batons": 8
+},
+"TDZ-018": {
+"diametres": [
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"structure carbone",
+"dish profond"
+],
+"batons": null
+},
+"TDZ-019": {
+"diametres": [
+18,
+19,
+20,
+21,
+22,
+23
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil concave",
+"structure carbone",
+"dish profond"
+],
+"batons": 10
+},
+"TDZ-020": {
+"diametres": [
+17,
+18,
+19,
+20,
+21,
+22
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil concave",
+"structure carbone"
+],
+"batons": 5
+},
+"TDZ-021": {
+"diametres": [
+18,
+19,
+20,
+21
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [
+"Mercedes-Benz"
+],
+"traits": [
+"structure carbone"
+],
+"batons": 6
+},
+"TDZ-023": {
+"diametres": [
+18,
+19,
+20,
+21,
+22,
+23
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"finition mate",
+"finition brillante",
+"structure carbone"
+],
+"batons": 5
+},
+"TDZ-024": {
+"diametres": [
+18,
+23
+],
+"entraxes": [
+"5x100",
+"5x108",
+"5x112"
+],
+"vehicules": [
+"Nissan",
+"Subaru",
+"Toyota"
+],
+"traits": [
+"structure carbone"
+],
+"batons": 9
+},
+"TDZ-025": {
+"diametres": [
+18,
+19,
+20,
+21,
+22,
+23,
+24
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"structure carbone"
+],
+"batons": 10
+},
+"TDZ-026": {
+"diametres": [
+18,
+24
+],
+"entraxes": [
+"5x114.3",
+"5x130"
+],
+"vehicules": [],
+"traits": [
+"profil concave",
+"structure carbone",
+"dish profond"
+],
+"batons": 9
+},
+"TDZ-027": {
+"diametres": [
+18,
+24
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil concave",
+"structure carbone",
+"dish profond"
+],
+"batons": 5
+},
+"TDZ-028": {
+"diametres": [
+18,
+19,
+20,
+21,
+22,
+23,
+24
+],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"teinte bronze",
+"structure carbone"
+],
+"batons": null
+},
+"TDZ-029": {
+"diametres": [
+18,
+19,
+20,
+21,
+22,
+23
+],
+"entraxes": [
+"5x114.3",
+"5x120",
+"5x130",
+"6x139.7"
+],
+"vehicules": [
+"Audi",
+"BMW",
+"Mercedes-Benz"
+],
+"traits": [
+"structure carbone"
+],
+"batons": null
+},
+"TDZ-030": {
+"diametres": [],
+"entraxes": [
+"5x112",
+"5x114.3",
+"5x120"
+],
+"vehicules": [],
+"traits": [
+"profil concave",
+"teinte bronze",
+"structure carbone",
+"dish profond"
+],
+"batons": 5
+}
+}
