@@ -132,7 +132,10 @@ const blobConfigured = Object.keys(process.env).some((k) => k.startsWith("BLOB_"
         </form>
       </div>
 
-      <a class="btn btn-outline" href="/admin/catalogue">← Retour au catalogue</a>
+      {/* Le retour vise la ligne d'où l'on vient. Sans l'ancre, on retombait en
+          haut d'une liste de 457 références et il fallait retrouver sa place à
+          chaque aller-retour. */}
+      <a class="btn btn-outline" href={`/admin/catalogue#${item.code}`}>← Retour au catalogue</a>
     </>
   )}
 

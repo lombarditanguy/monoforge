@@ -70,6 +70,7 @@ const itemsByFamily = FAMILIES.map((family) => ({
             <tbody>
               {familyItems.map((item) => (
                 <tr
+                  id={item.code}
                   data-row
                   data-code={item.code.toLowerCase()}
                   data-name={(item.supplierName || "").toLowerCase()}
@@ -124,6 +125,15 @@ const itemsByFamily = FAMILIES.map((family) => ({
       ))}
     </>
   )}
+
+  <style>
+    /* La ligne visée arrive au tiers de l'écran plutôt que collée au bord, et
+       s'éclaire une seconde : après un aller-retour sur une liste de 457
+       lignes, il faut voir où l'on est revenu. */
+    tr[data-row] { scroll-margin-top: 33vh; }
+    tr[data-row]:target > td { background: #1f1a16; }
+    tr[data-row]:target > td:first-child { box-shadow: inset 3px 0 0 #ff5a1f; }
+  </style>
 
   <script>
     const etat = document.getElementById("mf-rangs-etat");
