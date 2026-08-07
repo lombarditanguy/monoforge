@@ -42,7 +42,8 @@ async function loadExtraItems(familySlug) {
 export async function listItemsForFamily(familySlug) {
   const base = staticItemsForFamily(familySlug);
   const extra = await loadExtraItems(familySlug);
-  const combined = [...base, ...extra];
+  const retires = await codesRetires();
+  const combined = [...base, ...extra].filter((i) => !retires.has(i.code));
   const overrides = await loadPhotoOverrides(combined.map((i) => i.code));
   const items = combined.map((item) => applyPhotoOverride(item, overrides));
 
@@ -87,6 +88,49 @@ export async function ordreAccueil() {
   return new Map(ORDRE_ACCUEIL_INITIAL.map((code, i) => [code, i + 1]));
 }
 
+/**
+ * Références retirées du site depuis /admin/catalogue.
+ *
+ * Table absente ou base injoignable : on ne masque rien. C'est le bon défaut —
+ * un incident sur cette table doit laisser le catalogue complet, pas le vider.
+ */
+export async function codesRetires() {
+  try {
+    const rows = await sql`select code from catalog_hidden`;
+    return new Set(rows.map((r) => r.code));
+  } catch {
+    return new Set();
+  }
+}
+
+export async function retirerItem(code) {
+  await sql`
+    insert into catalog_hidden (code, hidden_at) values (${code}, now())
+    on conflict (code) do nothing
+  `;
+}
+
+export async function remettreItem(code) {
+  await sql`delete from catalog_hidden where code = ${code}`;
+}
+
+/**
+ * Suppression franche, réservée aux jantes ajoutées depuis l'admin : ce sont
+ * les seules qui n'existent qu'en base. On emporte ce qui s'y rattache, sinon
+ * une référence recréée plus tard sous le même code hériterait des photos et du
+ * prix de l'ancienne.
+ *
+ * Les commandes passées ne bougent pas : elles gardent le code et la famille en
+ * dur, l'historique reste lisible sans le catalogue.
+ */
+export async function supprimerExtraItem(code) {
+  await sql`delete from catalog_extra_items where code = ${code}`;
+  await sql`delete from item_photos where code = ${code}`;
+  await sql`delete from item_prices where code = ${code}`;
+  await sql`delete from home_featured where code = ${code}`;
+  await sql`delete from catalog_hidden where code = ${code}`;
+}
+
 export async function getCatalogItem(familySlug, slug) {
   let item = staticItems.find((i) => i.family === familySlug && i.slug === slug);
   if (!item) {
@@ -94,27 +138,36 @@ export async function getCatalogItem(familySlug, slug) {
     item = extra.find((i) => i.slug === slug) || null;
   }
   if (!item) return null;
+  // Retirée du site : la fiche n'existe plus non plus. Sans ça, l'adresse
+  // directe resterait ouverte et la jante continuerait d'être commandable.
+  if ((await codesRetires()).has(item.code)) return null;
   const overrides = await loadPhotoOverrides([item.code]);
   return applyPhotoOverride(item, overrides);
 }
 
 export async function countItemsForFamily(familySlug) {
-  const base = staticItemsForFamily(familySlug).length;
+  const retires = await codesRetires();
+  const base = staticItemsForFamily(familySlug).filter((i) => !retires.has(i.code)).length;
   const extra = await loadExtraItems(familySlug);
-  return base + extra.length;
+  return base + extra.filter((i) => !retires.has(i.code)).length;
 }
 
 export async function countAllItems() {
+  const retires = await codesRetires();
   const extra = await loadExtraItems(null);
-  return staticItems.length + extra.length;
+  return [...staticItems, ...extra].filter((i) => !retires.has(i.code)).length;
 }
 
 // Toutes les références, tous familles confondues, pour /admin/catalogue.
+// L'admin voit tout, y compris ce qui est retiré : c'est le seul endroit d'où
+// l'on peut remettre une jante en ligne, donc la cacher ici la rendrait
+// irrécupérable.
 export async function listAllItemsForAdmin() {
   const extra = await loadExtraItems(null);
   const combined = [...staticItems, ...extra];
   const overrides = await loadPhotoOverrides(combined.map((i) => i.code));
-  return combined.map((item) => applyPhotoOverride(item, overrides));
+  const retires = await codesRetires();
+  return combined.map((item) => ({ ...applyPhotoOverride(item, overrides), retire: retires.has(item.code) }));
 }
 
 export async function findItemByCode(code) {
@@ -134,7 +187,10 @@ export async function findItemByCode(code) {
 // résultat — l'appelant décide quoi en faire.
 export async function listItemsByCodes(codes) {
   if (codes.length === 0) return [];
-  const trouves = codes.map((c) => staticItems.find((i) => i.code === c)).filter(Boolean);
+  const retires = await codesRetires();
+  const trouves = codes
+    .map((c) => staticItems.find((i) => i.code === c))
+    .filter((i) => i && !retires.has(i.code));
   const overrides = await loadPhotoOverrides(trouves.map((i) => i.code));
   return trouves.map((item) => applyPhotoOverride(item, overrides));
 }

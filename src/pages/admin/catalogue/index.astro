@@ -64,14 +64,25 @@ const itemsByFamily = FAMILIES.map((family) => ({
                 <th>Nom fournisseur</th>
                 <th>Origine</th>
                 <th style="width:7rem">Rang accueil</th>
-                <th style="width:10rem"></th>
+                <th style="width:16rem"></th>
               </tr>
             </thead>
             <tbody>
               {familyItems.map((item) => (
-                <tr data-row data-code={item.code.toLowerCase()} data-name={(item.supplierName || "").toLowerCase()}>
+                <tr
+                  data-row
+                  data-code={item.code.toLowerCase()}
+                  data-name={(item.supplierName || "").toLowerCase()}
+                  data-ref={item.code}
+                  data-statique={isStaticItem(item.code) ? "1" : "0"}
+                  data-retire={item.retire ? "1" : "0"}
+                  style={item.retire ? "opacity:.45" : ""}
+                >
                   <td><img src={item.image} alt="" width="40" height="40" style="border-radius:.25rem;object-fit:cover;display:block" /></td>
-                  <td>{item.code}</td>
+                  <td>
+                    {item.code}
+                    {item.retire && <div class="muted" style="font-size:.72rem;color:#ff7a45">Retirée du site</div>}
+                  </td>
                   <td class="muted" style="max-width:22rem">{item.supplierName || "—"}</td>
                   <td class="muted">{isStaticItem(item.code) ? "Catalogue fournisseur" : "Ajoutée par l'admin"}</td>
                   <td>
@@ -87,7 +98,19 @@ const itemsByFamily = FAMILIES.map((family) => ({
                       style="margin:0;padding:.35rem .5rem;text-align:center"
                     />
                   </td>
-                  <td><a class="btn btn-outline" href={`/admin/catalogue/${item.code}`}>Gérer les photos</a></td>
+                  <td>
+                    <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+                      <a class="btn btn-outline" href={`/admin/catalogue/${item.code}`}>Photos</a>
+                      <button type="button" class="btn btn-outline mf-retirer" style="white-space:nowrap">
+                        {item.retire ? "Remettre en ligne" : "Retirer du site"}
+                      </button>
+                      {item.retire && !isStaticItem(item.code) && (
+                        <button type="button" class="btn btn-outline mf-supprimer" style="white-space:nowrap;color:#ff7a45">
+                          Supprimer
+                        </button>
+                      )}
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -98,6 +121,7 @@ const itemsByFamily = FAMILIES.map((family) => ({
   )}
 
   <script>
+    const etat = document.getElementById("mf-rangs-etat");
     const search = document.getElementById("mf-search") as HTMLInputElement | null;
     const rows = Array.from(document.querySelectorAll<HTMLTableRowElement>("tr[data-row]"));
     search?.addEventListener("input", () => {
@@ -108,10 +132,60 @@ const itemsByFamily = FAMILIES.map((family) => ({
       }
     });
 
+    // Retirer une jante du site. Pour le catalogue fournisseur c'est un
+    // masquage : la référence est écrite dans le code, on ne peut pas l'en
+    // effacer, mais la masquer la fait disparaître partout — grille, fiche,
+    // recherche — et se défait sans rien perdre. Les jantes ajoutées ici, elles,
+    // n'existent qu'en base : une fois retirées, elles peuvent être supprimées
+    // pour de bon.
+    async function agir(ligne, action, question) {
+      if (question && !confirm(question)) return;
+      const ref = ligne.dataset.ref;
+      try {
+        const res = await fetch("/api/admin/catalogue/retirer", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code: ref, action }),
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || "Échec.");
+        if (action === "supprimer") {
+          ligne.remove();
+          if (etat) {
+            etat.textContent = json.commandes
+              ? `${ref} supprimée. ${json.commandes} commande(s) la mentionnent — leur historique est conservé.`
+              : `${ref} supprimée définitivement.`;
+          }
+          return;
+        }
+        // Le bouton « Supprimer » n'apparaît qu'après un retrait, et la ligne
+        // change d'aspect : plutôt que de reconstruire la ligne à la main, on
+        // recharge — c'est une action rare, et l'état affiché reste celui de la
+        // base plutôt qu'une supposition du navigateur.
+        window.location.reload();
+      } catch (err) {
+        if (etat) etat.textContent = err instanceof Error ? err.message : "Échec.";
+      }
+    }
+
+    document.querySelectorAll("tr[data-row]").forEach((ligne) => {
+      const l = ligne as HTMLTableRowElement;
+      l.querySelector(".mf-retirer")?.addEventListener("click", () => {
+        const retire = l.dataset.retire === "1";
+        agir(l, retire ? "remettre" : "retirer",
+          retire
+            ? null
+            : `Retirer ${l.dataset.ref} du site ?\n\nElle disparaîtra du catalogue, de la page d'accueil et de sa fiche produit. Photos, prix et rang sont conservés, et tu peux la remettre à tout moment.`);
+      });
+      l.querySelector(".mf-supprimer")?.addEventListener("click", () => {
+        agir(l, "supprimer",
+          `Supprimer définitivement ${l.dataset.ref} ?\n\nSes photos, son prix et son rang d'accueil seront effacés. Cette action est irréversible. Les commandes déjà passées ne sont pas touchées.`);
+      });
+    });
+
     // Ordre d'affichage en tête de famille. Un simple numéro par ligne :
     // échanger deux jantes revient à échanger deux chiffres, et une case vide
     // veut dire « laisse-la où le catalogue la met ».
-    const etat = document.getElementById("mf-rangs-etat");
     const bouton = document.getElementById("mf-save-rangs") as HTMLButtonElement | null;
     bouton?.addEventListener("click", async () => {
       const rangs = Array.from(document.querySelectorAll<HTMLInputElement>(".mf-rang"))

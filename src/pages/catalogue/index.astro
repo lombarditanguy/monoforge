@@ -1,4 +1,10 @@
 ---
+// Rendue à la demande : les compteurs et les vignettes de famille viennent de
+// la base, et une jante retirée depuis l'admin doit disparaître d'ici aussi.
+// Figée à la construction, cette page annonçait encore 457 références après un
+// retrait, et sa vignette de famille pouvait montrer une jante qui n'existe
+// plus sur le site.
+export const prerender = false;
 import Layout from "../../layouts/Layout.astro";
 import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import FamilyCard from "../../components/FamilyCard.astro";
@@ -8,6 +14,8 @@ import { countAllItems } from "../../lib/catalogDb.js";
 import { breadcrumbLd } from "../../utils/seo.js";
 
 const totalItems = await countAllItems();
+
+Astro.response.headers.set("Cache-Control", "public, max-age=0, s-maxage=60");
 ---
 
 <Layout

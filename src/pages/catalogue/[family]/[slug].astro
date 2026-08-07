@@ -70,12 +70,15 @@ if (hasPricing && related.length > 0) {
 // minute suffit à absorber les rafales, et la revalidation en tâche de fond
 // est raccourcie d'autant — sinon une page pouvait rester vieille d'un jour.
 //
-// `max-age=0` vise le navigateur, pas le CDN. Sans lui, une réponse `public`
-// sans durée laisse le navigateur inventer la sienne : celui qui vient de
-// changer la photo est justement celui qui recharge, et il pouvait garder sa
-// propre copie périmée en plus de celle du CDN. Le partage reste servi par
-// `s-maxage`, donc rien n'est perdu côté charge.
-Astro.response.headers.set("Cache-Control", "public, max-age=0, s-maxage=60, stale-while-revalidate=300");
+// `max-age=0` vise le navigateur, pas le CDN : sans durée explicite il invente
+// la sienne, et celui qui vient de changer une photo est justement celui qui
+// recharge. Et pas de `stale-while-revalidate` : mesuré au navigateur, il
+// autorise aussi le navigateur à servir la vieille page pendant toute sa durée
+// pendant qu'il rafraîchit derrière. On retirait une jante de l'admin et la
+// page continuait de l'afficher — le symptôme exact qu'on cherchait à corriger.
+// Le CDN revalide donc franchement toutes les minutes ; c'est une requête par
+// minute et par page, et c'est le prix d'un site qui dit la vérité.
+Astro.response.headers.set("Cache-Control", "public, max-age=0, s-maxage=60");
 
 const ld = [
   breadcrumbLd([

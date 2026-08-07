@@ -220,6 +220,17 @@ create table if not exists home_featured (
   updated_at timestamptz not null default now()
 );
 
+-- Références retirées du site depuis /admin/catalogue. Retirer, et non
+-- supprimer : le catalogue fournisseur est écrit dans le code (data/catalog.js)
+-- et ne peut pas s'effacer à l'exécution. Une ligne ici suffit à faire
+-- disparaître la jante partout où le site l'affiche, et l'enlever la fait
+-- revenir intacte — photos, prix et rang compris. Une suppression franche
+-- perdrait tout ça sans rien apporter.
+create table if not exists catalog_hidden (
+  code text primary key,
+  hidden_at timestamptz not null default now()
+);
+
 create table if not exists invoices (
   id serial primary key,
   numero text not null unique,
