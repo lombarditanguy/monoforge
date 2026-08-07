@@ -103,7 +103,26 @@ export async function codesRetires() {
   }
 }
 
+/**
+ * La table est créée à la volée, au premier retrait.
+ *
+ * Sans ça, la fonctionnalité exigeait un passage manuel par /admin/setup après
+ * le déploiement : tant qu'il n'était pas fait, le bouton renvoyait une erreur
+ * de base de données. Un bouton qui échoue parce qu'une étape d'installation a
+ * été oubliée est un bouton cassé, du point de vue de celui qui l'utilise.
+ * `create table if not exists` ne coûte rien quand la table est déjà là.
+ */
+async function assurerTableMasquage() {
+  await sql`
+    create table if not exists catalog_hidden (
+      code text primary key,
+      hidden_at timestamptz not null default now()
+    )
+  `;
+}
+
 export async function retirerItem(code) {
+  await assurerTableMasquage();
   await sql`
     insert into catalog_hidden (code, hidden_at) values (${code}, now())
     on conflict (code) do nothing

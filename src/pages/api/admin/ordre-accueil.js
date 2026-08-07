@@ -3,9 +3,12 @@ import { codeExists } from "../../../lib/catalogDb.js";
 
 export const prerender = false;
 
-// Au-delà, ce n'est plus une mise en avant : la page d'accueil n'en montre que
-// douze par famille, et le reste du catalogue suit son ordre naturel.
-const MAX = 60;
+// Garde-fou contre une charge absurde, rien de plus. Il valait 60, alors que
+// l'ordre initial proposé au premier démarrage compte 74 références : le
+// formulaire arrivait donc pré-rempli au-dessus du plafond, et « Enregistrer
+// l'ordre » échouait sans que l'on ait rien touché. Un seuil qui rejette l'état
+// par défaut n'est pas un garde-fou, c'est une panne.
+const MAX = 300;
 
 function json(payload, status = 200) {
   return new Response(JSON.stringify(payload), {
@@ -33,6 +36,19 @@ export async function POST({ request }) {
     vus.add(code);
     propres.push({ code, position: Math.round(position) });
   }
+
+  // Créée à la volée, pour la même raison que catalog_hidden : sans ça,
+  // enregistrer un ordre échouait tant que /admin/setup n'avait pas été lancé
+  // après le déploiement.
+  await sql`
+    create table if not exists home_featured (
+      code text primary key,
+      position integer not null default 0,
+      tendance text,
+      argument text,
+      updated_at timestamptz not null default now()
+    )
+  `;
 
   // On réécrit la table entière : un rang effacé dans le formulaire doit
   // disparaître, et une mise à jour ligne à ligne laisserait traîner les

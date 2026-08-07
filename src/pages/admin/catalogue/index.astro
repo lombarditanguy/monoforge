@@ -110,6 +110,11 @@ const itemsByFamily = FAMILIES.map((family) => ({
                         </button>
                       )}
                     </div>
+                    {/* Le compte rendu se lit à côté du bouton. Placé en tête de
+                        page, il était invisible depuis une ligne située plus
+                        bas : on cliquait, l'erreur s'affichait à des milliers de
+                        pixels de là, et le bouton passait pour inerte. */}
+                    <span class="mf-ligne-etat muted" style="display:block;font-size:.75rem;margin-top:.35rem"></span>
                   </td>
                 </tr>
               ))}
@@ -141,14 +146,25 @@ const itemsByFamily = FAMILIES.map((family) => ({
     async function agir(ligne, action, question) {
       if (question && !confirm(question)) return;
       const ref = ligne.dataset.ref;
+      const dire = (msg) => {
+        const local = ligne.querySelector(".mf-ligne-etat");
+        if (local) local.textContent = msg;
+        if (etat) etat.textContent = msg;
+      };
+      dire("…");
       try {
         const res = await fetch("/api/admin/catalogue/retirer", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ code: ref, action }),
         });
-        const json = await res.json();
-        if (!res.ok) throw new Error(json.error || "Échec.");
+        // Une panne côté serveur renvoie une page HTML, pas du JSON : sans ce
+        // garde-fou, la lecture échouait et le vrai message était remplacé par
+        // une erreur d'analyse incompréhensible.
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(json.error || `Le serveur a répondu ${res.status}. Réessaie dans un instant.`);
+        }
         if (action === "supprimer") {
           ligne.remove();
           if (etat) {
@@ -164,7 +180,7 @@ const itemsByFamily = FAMILIES.map((family) => ({
         // base plutôt qu'une supposition du navigateur.
         window.location.reload();
       } catch (err) {
-        if (etat) etat.textContent = err instanceof Error ? err.message : "Échec.";
+        dire(err instanceof Error ? err.message : "Échec.");
       }
     }
 
