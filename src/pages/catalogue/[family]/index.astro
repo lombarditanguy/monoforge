@@ -49,7 +49,7 @@ const availableGroups = STYLE_GROUPS.map((g) => ({
   <Breadcrumbs items={[{ name: "Catalogue", path: "/catalogue" }, { name: family.short, path: `/catalogue/${family.slug}` }]} />
 
   <section class="container-mf pb-12 pt-6">
-    <p class="chip">{items.length} références{startingPrice > 0 ? ` · à partir de ${startingPrice.toFixed(0)} € HT` : ""}</p>
+    <p class="chip">{items.length} références{startingPrice > 0 ? ` · à partir de ${Math.round(startingPrice).toLocaleString("fr-FR")} € HT` : ""}</p>
     <h1 class="mt-6 max-w-2xl text-balance font-display text-4xl font-bold leading-tight text-(--color-paper) sm:text-5xl">
       {family.label}
     </h1>

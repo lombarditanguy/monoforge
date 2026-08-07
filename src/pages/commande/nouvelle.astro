@@ -177,7 +177,7 @@ if (unitPriceHt <= 0) return Astro.redirect(`/catalogue/${item.family}/${item.sl
         <div class="mt-5 border-t border-(--color-line) pt-4">
           <p class="flex justify-between font-display text-xl font-bold text-(--color-paper)">
             <span>Total HT</span>
-            <span>{totalHt.toFixed(0)} €</span>
+            <span>{Math.round(totalHt).toLocaleString("fr-FR")} €</span>
           </p>
         </div>
       </div>

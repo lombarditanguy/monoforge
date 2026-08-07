@@ -123,7 +123,7 @@ const ld = [
         <div class="mt-8 rounded-lg border border-(--color-line) bg-(--color-surface-2) p-5">
           <p class="text-xs uppercase tracking-widest text-(--color-fog)">Prix</p>
           <p id="mf-price-display" class="mt-1 font-display text-3xl font-bold text-(--color-paper)">
-            {startingPrice.toFixed(0)} € HT
+            {Math.round(startingPrice).toLocaleString("fr-FR")} € HT
           </p>
           <form id="mf-checkout-form" method="GET" action="/commande/nouvelle">
             <input type="hidden" name="code" value={item.code} />
@@ -311,7 +311,7 @@ const ld = [
         if (display) {
           display.textContent = auxCotesOrigine
             ? "Prix confirmé avec votre plaque"
-            : `${total.toFixed(0)} € HT (${qty} jante${qty > 1 ? "s" : ""})`;
+            : `${Math.round(total).toLocaleString("fr-FR")} € HT (${qty} jante${qty > 1 ? "s" : ""})`;
         }
         if (hiddenSizeLabel) hiddenSizeLabel.value = sizeSelect?.selectedOptions[0]?.dataset.label || "";
         if (hiddenWidthLabel) hiddenWidthLabel.value = widthLabelForForm;

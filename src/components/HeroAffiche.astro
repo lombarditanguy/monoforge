@@ -54,6 +54,11 @@
        `aspect-ratio` : les deux ensemble élargissent la boîte au lieu de la
        raccourcir, et la section débordait de l'écran. */
     height: clamp(19rem, 52vh, 30rem);
+    /* Opaque, pour arrêter le fond animé. Sans ce fond, la moitié gauche du
+       bandeau laissait voir la jante qui tourne derrière la photo : deux jantes
+       superposées en haut de page, l'une fixe et l'autre en rotation. La vidéo
+       ne commence donc qu'en dessous. */
+    background: var(--color-ink);
   }
   .mf-affiche-media {
     position: absolute;

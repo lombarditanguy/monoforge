@@ -1,6 +1,26 @@
 ---
+// Vignette du catalogue.
+//
+// Le pied ne portait qu'une ligne : le prix, centré et en gras, seul au milieu
+// de la carte. Une référence sans nom et un prix centré, c'est l'étiquette d'un
+// bac de promotion, pas la fiche d'une jante forgée à la commande. Deux choses
+// le corrigent, et elles ne coûtent aucune place :
+//
+//   * la référence est affichée. Sans elle les douze vignettes sont anonymes et
+//     interchangeables — or c'est le code que le client note, cherche et
+//     redemande ;
+//   * « à partir de » et le montant ne pèsent plus pareil. La mention est une
+//     réserve, le montant est l'information : au même corps et à la même
+//     graisse ils se valaient, et c'est ce qui faisait bon marché.
+//
+// Aligné à gauche, comme la référence : l'œil descend une colonne au lieu de
+// zigzaguer entre douze centres.
 interface Props { item: any; startingPrice?: number; tendance?: string; argument?: string }
 const { item, startingPrice = 0, tendance = "", argument = "" } = Astro.props;
+// Séparateur de milliers à la française. « 1811 € » se lit comme un nombre de
+// série, « 1 811 € » comme un prix — et au-dessus de mille euros c'est presque
+// tout le catalogue.
+const prix = startingPrice > 0 ? Math.round(startingPrice).toLocaleString("fr-FR") : null;
 ---
 
 <a
@@ -25,8 +45,31 @@ const { item, startingPrice = 0, tendance = "", argument = "" } = Astro.props;
     </span>
     {tendance && <span class="chip absolute left-3 top-3 bg-(--color-ink)/80">{tendance}</span>}
   </div>
-  <p class="px-3 py-2.5 text-center font-display text-sm font-bold text-(--color-paper)">
-    {startingPrice > 0 ? `à partir de ${startingPrice.toFixed(0)} €` : "Sur devis"}
-  </p>
-  {argument && <p class="-mt-1 px-3 pb-3.5 text-center text-xs leading-relaxed text-(--color-mist)">{argument}</p>}
+
+  <div class="border-t border-(--color-line)/60 px-3.5 pb-3 pt-2.5">
+    <p class="mf-carte-ref">{item.code}</p>
+    {prix ? (
+      <p class="mt-[.45rem] flex items-baseline gap-1.5">
+        <span class="text-[0.68rem] leading-none text-(--color-fog)">à partir de</span>
+        <span class="font-display text-[1.05rem] leading-none font-bold text-(--color-paper)">{prix}&nbsp;€</span>
+      </p>
+    ) : (
+      <p class="mt-[.45rem] text-[0.88rem] leading-none font-semibold text-(--color-mist)">Sur devis</p>
+    )}
+  </div>
+
+  {argument && <p class="px-3.5 pb-3.5 text-xs leading-relaxed text-(--color-mist)">{argument}</p>}
 </a>
+
+<style>
+  /* La référence en chasse fixe : c'est un code, pas un nom. Lue comme une
+     donnée technique, elle n'entre pas en concurrence avec le prix. */
+  .mf-carte-ref {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--color-fog);
+    line-height: 1;
+  }
+</style>
