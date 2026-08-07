@@ -221,6 +221,28 @@ export async function getEffectivePhotos(code) {
   return staticItem?.images || [];
 }
 
+/**
+ * Photos du catalogue fournisseur pour une référence, telles que livrées.
+ * Vide pour une jante ajoutée depuis l'admin : elle n'a pas d'original.
+ */
+export function photosOrigine(code) {
+  return staticItems.find((i) => i.code === code)?.images || [];
+}
+
+/**
+ * Efface la liste personnalisée : la référence repart sur les photos du
+ * catalogue fournisseur.
+ *
+ * Il faut ce retour en arrière parce qu'une liste vide fait autorité — c'est
+ * voulu, sinon supprimer la dernière photo ferait réapparaître celle du
+ * fournisseur et la suppression n'en serait pas une. Mais sans moyen d'annuler,
+ * un clic de trop retirait définitivement une photo qui est pourtant toujours
+ * sur le serveur, et l'admin n'avait plus qu'à la ré-uploader à la main.
+ */
+export async function reinitialiserPhotos(code) {
+  await sql`delete from item_photos where code = ${code}`;
+}
+
 export async function setItemPhotos(code, images) {
   await sql`
     insert into item_photos (code, images, updated_at)

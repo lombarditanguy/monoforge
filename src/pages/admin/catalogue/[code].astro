@@ -1,7 +1,7 @@
 ---
 export const prerender = false;
 import AdminLayout from "../../../layouts/AdminLayout.astro";
-import { findItemByCode, isStaticItem } from "../../../lib/catalogDb.js";
+import { findItemByCode, isStaticItem, photosOrigine } from "../../../lib/catalogDb.js";
 
 const { code } = Astro.params;
 let item = null;
@@ -12,6 +12,14 @@ try {
   dbError = err.message;
 }
 if (!dbError && !item) return Astro.redirect("/admin/catalogue", 302);
+
+// Le retour en arrière n'a de sens que si la liste affichée s'écarte de celle
+// du fournisseur — sinon le bouton ne ferait rien et sèmerait le doute.
+const origine = item ? photosOrigine(item.code) : [];
+const modifiee =
+  origine.length > 0 &&
+  (item?.images?.length !== origine.length ||
+    origine.some((src, i) => item.images[i] !== src));
 
 // Vercel expose l'accès au stockage sous plusieurs noms selon l'âge de
 // l'intégration : BLOB_READ_WRITE_TOKEN sur les anciens projets, BLOB_STORE_ID
@@ -95,7 +103,23 @@ const blobConfigured = Object.keys(process.env).some((k) => k.startsWith("BLOB_"
             </div>
           ))}
         </div>
-        {item.images.length === 0 && <p class="muted">Aucune photo pour l'instant — ajoutes-en une ci-dessous.</p>}
+        {item.images.length === 0 && (
+          <p class="muted">
+            Aucune photo pour l'instant — ajoutes-en une ci-dessous
+            {modifiee ? ", ou remets celle du fournisseur." : "."}
+          </p>
+        )}
+        {modifiee && (
+          <p style="margin-top:1rem">
+            <button type="button" class="btn btn-outline" id="mf-restaurer">
+              Remettre {origine.length > 1 ? `les ${origine.length} photos d'origine` : "la photo d'origine"}
+            </button>
+            <span class="muted" style="margin-left:.6rem;font-size:.8rem">
+              Les photos du fournisseur sont toujours sur le serveur : ce bouton annule tes modifications
+              et repart d'elles. Tes envois personnels ne sont pas effacés du stockage.
+            </span>
+          </p>
+        )}
         <p id="mf-photos-status" class="muted" style="margin-top:1rem"></p>
       </div>
 
@@ -204,6 +228,23 @@ const blobConfigured = Object.keys(process.env).some((k) => k.startsWith("BLOB_"
         } catch (err) {
           photosStatus.textContent = `Erreur : ${err.message}`;
         }
+      }
+    });
+
+    document.getElementById("mf-restaurer")?.addEventListener("click", async () => {
+      if (!confirm("Remettre les photos du fournisseur ?\n\nTes modifications de photos sur cette référence seront annulées.")) return;
+      photosStatus.textContent = "Restauration...";
+      try {
+        const res = await fetch("/api/admin/photos/restaurer", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code }),
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || "Échec.");
+        window.location.reload();
+      } catch (err) {
+        photosStatus.textContent = `Erreur : ${err.message}`;
       }
     });
 
