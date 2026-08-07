@@ -2,35 +2,21 @@
 export const prerender = false;
 import AdminLayout from "../../../layouts/AdminLayout.astro";
 import { FAMILIES } from "../../../data/catalog.js";
-import { listAllItemsForAdmin, isStaticItem, ordreAccueil } from "../../../lib/catalogDb.js";
+import { isStaticItem, listeAdminOrdonnee } from "../../../lib/catalogDb.js";
 
+// Une seule source pour l'ordre, partagée avec la fiche d'une jante : c'est
+// elle qui définit ce que « la suivante » veut dire.
 let items = [];
-let rangs = new Map();
 let dbError = null;
 try {
-  items = await listAllItemsForAdmin();
-  // Même source que le site : les cases montrent l'ordre réellement appliqué,
-  // y compris l'ordre initial tant que rien n'a été enregistré.
-  rangs = await ordreAccueil();
+  items = await listeAdminOrdonnee();
 } catch (err) {
   dbError = err.message;
 }
 
-// Les jantes qui ont un rang remontent en tête de leur famille, ici comme sur
-// le site : la liste d'admin doit montrer l'ordre réel, sinon on règle à
-// l'aveugle.
 const itemsByFamily = FAMILIES.map((family) => ({
   family,
-  items: items
-    .filter((i) => i.family === family.slug)
-    .map((item, ordre) => ({ item, ordre, rang: rangs.get(item.code) }))
-    .sort((a, b) => {
-      if (a.rang !== undefined && b.rang !== undefined) return a.rang - b.rang;
-      if (a.rang !== undefined) return -1;
-      if (b.rang !== undefined) return 1;
-      return a.ordre - b.ordre;
-    })
-    .map((x) => ({ ...x.item, rang: x.rang })),
+  items: items.filter((i) => i.family === family.slug),
 }));
 ---
 

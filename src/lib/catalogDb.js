@@ -1,6 +1,6 @@
 import { sql } from "./db.js";
 import { ORDRE_ACCUEIL_INITIAL } from "../data/ordreInitial.js";
-import { catalogItems as staticItems, itemsForFamily as staticItemsForFamily } from "../data/catalog.js";
+import { catalogItems as staticItems, itemsForFamily as staticItemsForFamily, FAMILIES } from "../data/catalog.js";
 
 const PLACEHOLDER_IMAGE = "/catalogue/placeholder.webp";
 
@@ -187,6 +187,33 @@ export async function listAllItemsForAdmin() {
   const overrides = await loadPhotoOverrides(combined.map((i) => i.code));
   const retires = await codesRetires();
   return combined.map((item) => ({ ...applyPhotoOverride(item, overrides), retire: retires.has(item.code) }));
+}
+
+/**
+ * Le catalogue d'admin à plat, dans l'ordre exact où la liste l'affiche :
+ * famille par famille, et à l'intérieur de chacune les jantes mises en tête
+ * d'abord, puis l'ordre naturel du catalogue.
+ *
+ * Partagée entre la liste et la fiche d'une jante, parce que c'est elle qui
+ * définit ce que veut dire « la suivante ». Recalculer le tri des deux côtés
+ * marcherait jusqu'au jour où l'un des deux changerait, et la navigation se
+ * mettrait alors à sauter sans raison visible.
+ */
+export async function listeAdminOrdonnee() {
+  const items = await listAllItemsForAdmin();
+  const rangs = await ordreAccueil();
+  return FAMILIES.flatMap((family) =>
+    items
+      .filter((i) => i.family === family.slug)
+      .map((item, ordre) => ({ item, ordre, rang: rangs.get(item.code) }))
+      .sort((a, b) => {
+        if (a.rang !== undefined && b.rang !== undefined) return a.rang - b.rang;
+        if (a.rang !== undefined) return -1;
+        if (b.rang !== undefined) return 1;
+        return a.ordre - b.ordre;
+      })
+      .map((x) => ({ ...x.item, rang: x.rang, familyLabel: family.short }))
+  );
 }
 
 export async function findItemByCode(code) {

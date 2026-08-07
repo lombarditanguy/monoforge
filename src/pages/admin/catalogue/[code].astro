@@ -1,7 +1,7 @@
 ---
 export const prerender = false;
 import AdminLayout from "../../../layouts/AdminLayout.astro";
-import { findItemByCode, isStaticItem, photosOrigine } from "../../../lib/catalogDb.js";
+import { findItemByCode, isStaticItem, photosOrigine, listeAdminOrdonnee } from "../../../lib/catalogDb.js";
 
 const { code } = Astro.params;
 let item = null;
@@ -31,6 +31,28 @@ const modifiee =
 // indiscernable d'un store public tant qu'on n'a pas tenté d'écrire. C'est
 // l'envoi lui-même qui le révèle, avec la marche à suivre.
 const blobConfigured = Object.keys(process.env).some((k) => k.startsWith("BLOB_"));
+
+// Voisines dans l'ordre du catalogue, pour enchaîner les jantes sans repasser
+// par la liste. L'ordre vient de la même fonction que la liste : « suivante »
+// désigne bien la ligne d'en dessous, pas une autre.
+let voisines = { precedente: null, suivante: null, rang: 0, total: 0, retiree: false };
+if (item) {
+  try {
+    const liste = await listeAdminOrdonnee();
+    const i = liste.findIndex((x) => x.code === item.code);
+    if (i >= 0) {
+      voisines = {
+        precedente: liste[i - 1] || null,
+        suivante: liste[i + 1] || null,
+        rang: i + 1,
+        total: liste.length,
+        retiree: Boolean(liste[i].retire),
+      };
+    }
+  } catch {
+    // Base injoignable : la fiche reste utilisable, seule la navigation manque.
+  }
+}
 ---
 
 <AdminLayout title={item ? `Photos — ${item.code}` : "Photos"}>
@@ -43,6 +65,36 @@ const blobConfigured = Object.keys(process.env).some((k) => k.startsWith("BLOB_"
   )}
   {item && (
     <>
+      <div class="card" style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
+        <a class="btn btn-outline" href={`/admin/catalogue#${item.code}`}>← Catalogue</a>
+        {voisines.precedente ? (
+          <a class="btn btn-outline" href={`/admin/catalogue/${voisines.precedente.code}`}>‹ {voisines.precedente.code}</a>
+        ) : (
+          <span class="btn btn-outline" style="opacity:.35">‹ début</span>
+        )}
+        {voisines.suivante ? (
+          <a class="btn btn-outline" href={`/admin/catalogue/${voisines.suivante.code}`}>{voisines.suivante.code} ›</a>
+        ) : (
+          <span class="btn btn-outline" style="opacity:.35">fin ›</span>
+        )}
+        {voisines.total > 0 && (
+          <span class="muted" style="font-size:.8rem">
+            {voisines.rang} / {voisines.total} · flèches ← → du clavier
+          </span>
+        )}
+        <span style="flex:1"></span>
+        <button type="button" class="btn btn-outline" id="mf-retirer-fiche" style="white-space:nowrap">
+          {voisines.retiree ? "Remettre en ligne" : "Retirer du site"}
+        </button>
+        <span class="muted" id="mf-retirer-etat" style="font-size:.8rem"></span>
+      </div>
+      {voisines.retiree && (
+        <div class="notice">
+          <strong>Cette jante est retirée du site.</strong> Elle n'apparaît ni au catalogue, ni sur la page d'accueil,
+          et sa fiche publique redirige. Ses photos, son prix et son rang sont conservés — « Remettre en ligne » annule
+          le retrait.
+        </div>
+      )}
       <h1>{item.code}</h1>
       <p class="muted" style="margin-top:-1rem">
         {item.family} · {isStaticItem(item.code) ? "Catalogue fournisseur" : "Ajoutée par l'admin"}
@@ -139,7 +191,48 @@ const blobConfigured = Object.keys(process.env).some((k) => k.startsWith("BLOB_"
     </>
   )}
 
-  <script define:vars={{ code: item?.code }}>
+  <script define:vars={{
+    code: item?.code,
+    retiree: voisines.retiree,
+    precedente: voisines.precedente?.code || null,
+    suivante: voisines.suivante?.code || null,
+  }}>
+    // Retrait depuis la fiche elle-même : c'est ici qu'on juge une jante, en la
+    // regardant, pas dans une liste de 457 lignes.
+    const retirerBtn = document.getElementById("mf-retirer-fiche");
+    const retirerEtat = document.getElementById("mf-retirer-etat");
+    retirerBtn?.addEventListener("click", async () => {
+      if (!retiree && !confirm(`Retirer ${code} du site ?\n\nElle disparaîtra du catalogue, de la page d'accueil et de sa fiche produit. Photos, prix et rang sont conservés, et tu peux la remettre à tout moment.`)) return;
+      retirerBtn.disabled = true;
+      if (retirerEtat) retirerEtat.textContent = "…";
+      try {
+        const res = await fetch("/api/admin/catalogue/retirer", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code, action: retiree ? "remettre" : "retirer" }),
+        });
+        // Une panne serveur répond en HTML : sans ce garde-fou, la lecture
+        // échoue et le vrai message est remplacé par une erreur d'analyse.
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(json.error || `Le serveur a répondu ${res.status}.`);
+        window.location.reload();
+      } catch (err) {
+        retirerBtn.disabled = false;
+        if (retirerEtat) retirerEtat.textContent = err instanceof Error ? err.message : "Échec.";
+      }
+    });
+
+    // Flèches du clavier pour enchaîner. Neutralisées dès qu'on est dans un
+    // champ : sinon déplacer le curseur dans un texte changerait de jante.
+    document.addEventListener("keydown", (e) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const cible = e.target;
+      if (cible instanceof HTMLElement &&
+          (cible.isContentEditable || ["INPUT", "TEXTAREA", "SELECT", "BUTTON"].includes(cible.tagName))) return;
+      if (e.key === "ArrowLeft" && precedente) window.location.href = `/admin/catalogue/${precedente}`;
+      if (e.key === "ArrowRight" && suivante) window.location.href = `/admin/catalogue/${suivante}`;
+    });
+
     const copyBtn = document.getElementById("mf-copy-name");
     const copyStatus = document.getElementById("mf-copy-status");
     copyBtn?.addEventListener("click", async () => {

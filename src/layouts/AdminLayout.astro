@@ -22,7 +22,14 @@ const nav = [
     <meta name="robots" content="noindex, nofollow" />
     <title>{title} — Admin Kessler Wheels</title>
     <link rel="icon" type="image/png" href="/favicon.png" />
-    <style>
+    {/* `is:global` est indispensable ici. Astro limite un <style> aux éléments
+        écrits dans le composant lui-même ; le contenu des pages arrive par le
+        <slot> et porte la portée de la page, pas celle du gabarit. Sans cette
+        directive, aucune de ces règles n'atteignait les pages : cartes,
+        boutons, tableaux et encadrés s'affichaient sans aucun style, et seule
+        la colonne de navigation — écrite ici — était mise en forme. Ce gabarit
+        ne sert qu'à /admin, donc rien ne fuit vers le site public. */}
+    <style is:global>
       :root {
         color-scheme: dark;
       }
