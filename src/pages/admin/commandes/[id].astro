@@ -103,7 +103,7 @@ const propositions = proposition
         </table>
 
         <div style="margin:1rem 0;display:flex;align-items:center;gap:.75rem">
-          <button type="button" id="mf-lookup-btn" class="btn btn-outline">Rechercher via l'API</button>
+          <button type="button" id="mf-lookup-btn" class="btn btn-outline">Rechercher le véhicule</button>
           <span id="mf-lookup-status" class="muted"></span>
         </div>
 
@@ -210,7 +210,7 @@ const propositions = proposition
           <p class="muted" style="margin-top:0">
             Aucune monte d'origine trouvée pour ce véhicule{monte?.note ? ` — ${monte.note}` : "."} Le déport se
             renseigne à la main ci-dessus, comme avant. Si le jeu de données constructeur vient d'être chargé, relance
-            la recherche avec le bouton « Rechercher via l'API ».
+            la recherche avec le bouton « Rechercher le véhicule ».
           </p>
         )}
 
@@ -343,7 +343,9 @@ const propositions = proposition
         }
 
         const vehicule = `${json.marque || "?"} ${json.modele || ""} ${json.annee || ""}`.trim();
-        const origine = json.source === "api" ? "via l'API" : "table interne";
+        const origine =
+          { constructeur: "cotes constructeur", table: "table interne, par marque" }[json.source] ||
+          "origine inconnue";
         const parts = [`Véhicule : ${vehicule}${json.finition ? ` — ${json.finition}` : ""}.`];
         if (json.entraxe) parts.push(`Entraxe ${json.entraxe} (${origine}).`);
         if (json.confiance && json.confiance !== "haute") parts.push(`Fiabilité ${json.confiance} — à confirmer.`);

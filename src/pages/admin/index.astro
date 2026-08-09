@@ -75,15 +75,13 @@ const integrations = [
         : "Déport de la monte d'origine sur les commandes catalogue.",
     aide: "Charge le jeu de données acheté depuis /admin/fitments. Sans lui, le déport se renseigne à la main.",
   },
-  {
-    nom: "API cotes jante (déport)",
-    ok: Boolean(process.env.VDIM_API_KEY || process.env.WHEELSIZE_API_KEY),
-    variable: "VDIM_API_KEY",
-    role: "Abandonné : catalogue nord-américain, non fiable sur les véhicules européens. Remplacé par les cotes constructeur ci-dessus.",
-    aide: "Non configuré = fonctionnement normal aujourd'hui.",
-    facultatif: true,
-  },
 ];
+
+// tire.vdim.app a été retiré du code : son catalogue est nord-américain, donc
+// inutilisable sur une immatriculation française. Si VDIM_API_KEY ou
+// WHEELSIZE_API_KEY traînent encore chez Vercel, elles ne sont plus lues par
+// personne — on le dit ici plutôt que de laisser croire à une brique en panne.
+const clesAbandonnees = ["VDIM_API_KEY", "WHEELSIZE_API_KEY"].filter((v) => process.env[v]);
 ---
 
 <AdminLayout title="Tableau de bord">
@@ -121,6 +119,14 @@ const integrations = [
         ))}
       </tbody>
     </table>
+    {clesAbandonnees.length > 0 && (
+      <p class="muted" style="font-size:.85em;margin-top:.75rem">
+        {clesAbandonnees.map((v) => <code>{v}</code>).reduce((a, b) => [a, " et ", b])} {clesAbandonnees.length > 1 ? "sont encore présentes" : "est encore présente"} dans
+        l'environnement mais {clesAbandonnees.length > 1 ? "ne sont" : "n'est"} plus {clesAbandonnees.length > 1 ? "lues" : "lue"} : l'API de cotes qui {clesAbandonnees.length > 1 ? "les" : "l'"} utilisait
+        a été retirée, son catalogue étant nord-américain. Tu peux {clesAbandonnees.length > 1 ? "les" : "la"} supprimer chez Vercel — et
+        résilier l'abonnement s'il est payant.
+      </p>
+    )}
   </div>
 
   {dbError && (
