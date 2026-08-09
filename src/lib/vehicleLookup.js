@@ -16,7 +16,7 @@
 import { guessBoltPattern } from "./boltPatterns.js";
 // « CLASSE E » et « E-Class » désignent le même modèle : le rapprochement des
 // libellés est mutualisé avec la recherche des cotes constructeur.
-import { bestMatch } from "./textMatch.js";
+import { bestMatch, decrireCandidats } from "./textMatch.js";
 
 function firstDefined(...values) {
   for (const v of values) {
@@ -263,7 +263,7 @@ export async function lookupFitmentVdim(marque, modele, annee, finition) {
   const model = bestMatch(models, modele, finition);
   if (!model) {
     throw new Error(
-      `Modèle « ${modele} » introuvable pour ${make} en ${annee}. Modèles proposés : ${models.slice(0, 12).join(", ")}`
+      `Modèle « ${modele} » introuvable pour ${make} en ${annee}. ${decrireCandidats(models, modele, finition)}`
     );
   }
   trace.push(`model: ${modele} -> ${model}`);
@@ -283,9 +283,14 @@ export async function lookupFitmentVdim(marque, modele, annee, finition) {
   const preferred = trims.length === 1 ? trims[0] : bestMatch(trims, finition, finition);
   if (!preferred) {
     throw new Error(
-      `Finition non déterminée : « ${finition || "inconnue"} » ne correspond à aucune de leurs ${trims.length} finitions (${trims
-        .slice(0, 10)
-        .join(", ")}). Le déport dépend de la finition — renseigne-le à la main plutôt que de risquer une valeur fausse.`
+      `Finition non déterminée : « ${finition || "inconnue"} » ne correspond à aucune de leurs ${
+        trims.length
+      } finitions. ${decrireCandidats(
+        trims,
+        finition,
+        finition,
+        10
+      )} Le déport dépend de la finition — renseigne-le à la main plutôt que de risquer une valeur fausse.`
     );
   }
   trace.push(`trim: ${finition || "(non fournie)"} -> ${preferred}${trims.length > 1 ? ` (parmi ${trims.length})` : ""}`);

@@ -305,6 +305,19 @@ const propositions = proposition
 
     const lookupBtn = document.getElementById("mf-lookup-btn");
     const lookupStatus = document.getElementById("mf-lookup-status");
+
+    // La carte « Emplacement de la jante » est rendue par le serveur au
+    // chargement : après une recherche, elle continue d'afficher l'état
+    // d'avant, donc « aucune monte d'origine trouvée » alors que le déport
+    // vient d'être trouvé. On recharge, et on fait passer le compte rendu par
+    // le stockage de session pour qu'il survive au rechargement.
+    const MEMO = `mf-lookup-${commandeId}`;
+    const memo = sessionStorage.getItem(MEMO);
+    if (memo && lookupStatus) {
+      lookupStatus.textContent = memo;
+      sessionStorage.removeItem(MEMO);
+    }
+
     lookupBtn?.addEventListener("click", async () => {
       if (lookupStatus) lookupStatus.textContent = "Recherche en cours...";
       lookupBtn.setAttribute("disabled", "true");
@@ -329,32 +342,35 @@ const propositions = proposition
           );
         }
 
-        const marqueInput = document.getElementById("vehicule_marque");
-        const modeleInput = document.getElementById("vehicule_modele");
-        const entraxeInput = document.getElementById("entraxe");
-        const deportInput = document.getElementById("deport");
-        if (marqueInput) marqueInput.value = json.marque || "";
-        if (modeleInput) modeleInput.value = json.modele || "";
-        if (json.entraxe && entraxeInput) entraxeInput.value = json.entraxe;
-        if (json.deport && deportInput) deportInput.value = json.deport;
-
-        if (lookupStatus) {
-          const vehicule = `${json.marque || "?"} ${json.modele || ""} ${json.annee || ""}`.trim();
-          const origine = json.source === "api" ? "via l'API" : "table interne";
-          const parts = [`Véhicule : ${vehicule}${json.finition ? ` — ${json.finition}` : ""}.`];
-          if (json.entraxe) parts.push(`Entraxe ${json.entraxe} (${origine}).`);
-          if (json.confiance && json.confiance !== "haute") parts.push(`Fiabilité ${json.confiance} — à confirmer.`);
-          if (json.fitmentError) parts.push(json.fitmentError);
-          if (json.deportPropose) {
-            parts.push(
-              `Déport d'origine : ${json.deportPropose} (fiabilité ${json.deportConfiance}${json.deportVerification ? ", à valider" : ""}) — recharge la page pour le détail.`
-            );
-          } else if (!json.deport) {
-            parts.push(json.oeNote || "Déport non récupéré — à renseigner ici avant fabrication.");
-          }
-          parts.push("Vérifie puis enregistre.");
-          lookupStatus.textContent = parts.join(" ");
+        const vehicule = `${json.marque || "?"} ${json.modele || ""} ${json.annee || ""}`.trim();
+        const origine = json.source === "api" ? "via l'API" : "table interne";
+        const parts = [`Véhicule : ${vehicule}${json.finition ? ` — ${json.finition}` : ""}.`];
+        if (json.entraxe) parts.push(`Entraxe ${json.entraxe} (${origine}).`);
+        if (json.confiance && json.confiance !== "haute") parts.push(`Fiabilité ${json.confiance} — à confirmer.`);
+        if (json.fitmentError) parts.push(json.fitmentError);
+        if (json.deportPropose) {
+          parts.push(
+            `Déport d'origine : ${json.deportPropose} (fiabilité ${json.deportConfiance}${json.deportVerification ? ", à valider" : ""}) — détail dans « Emplacement de la jante » ci-dessous.`
+          );
+        } else if (!json.deport) {
+          parts.push(json.oeNote || "Déport non récupéré — à renseigner ici avant fabrication.");
         }
+        // La recherche a déjà écrit marque, modèle, entraxe et alésage en base :
+        // le dire évite de croire qu'un oubli d'« Enregistrer » perd le résultat.
+        parts.push("Véhicule et entraxe enregistrés — vérifie-les et complète le déport.");
+        const compteRendu = parts.join(" ");
+        if (lookupStatus) lookupStatus.textContent = compteRendu;
+        try {
+          sessionStorage.setItem(MEMO, compteRendu);
+        } catch {
+          // Stockage indisponible : on recharge quand même, le compte rendu
+          // sera simplement perdu — la carte à jour vaut mieux que le message.
+        }
+        // Sans ce rechargement, les champs remplis en JavaScript cohabitent avec
+        // une carte « Emplacement de la jante » rendue AVANT la recherche : elle
+        // annonce « aucune monte d'origine trouvée » à l'instant même où le
+        // déport vient d'être trouvé.
+        location.reload();
       } catch (err) {
         if (lookupStatus) lookupStatus.textContent = `Erreur : ${err.message}`;
       } finally {

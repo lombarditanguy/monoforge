@@ -26,7 +26,7 @@
 // millimètres ce que ça déplace — à charge pour l'atelier de valider.
 
 import { query } from "./db.js";
-import { normalizeKey, bestMatch } from "./textMatch.js";
+import { normalizeKey, bestMatch, decrireCandidats } from "./textMatch.js";
 
 const MM_PAR_POUCE = 25.4;
 
@@ -454,10 +454,11 @@ export async function findOeFitments({ marque, modele, annee, finition }) {
     return {
       montes: [],
       trace,
-      note: `Modèle « ${modele || "?"} » introuvable. Modèles connus pour cette marque : ${modeles
-        .slice(0, 12)
-        .map((m) => m.modele)
-        .join(", ")}${modeles.length > 12 ? "…" : ""}`,
+      note: `Modèle « ${modele || "?"} » introuvable. ${decrireCandidats(
+        modeles.map((m) => m.modele),
+        modele,
+        finition
+      )}`,
     };
   }
   trace.push(`modèle : ${modele || "?"} → ${modeleChoisi}`);

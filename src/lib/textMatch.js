@@ -126,3 +126,39 @@ export function bestMatch(candidates, wanted, hint) {
   if (scored.length > 1 && scored[0].score === scored[1].score) return null;
   return scored[0].score > 0 ? scored[0].c : null;
 }
+
+/**
+ * Quand `bestMatch` ne trouve rien, il faut dire pourquoi — et une liste
+ * tronquée par ordre alphabétique ne le dit pas. « Modèle CLASSE E introuvable,
+ * modèles proposés : C300, C350, C63 AMG, CL550... » laisse croire que la
+ * gamme E est absente du catalogue, alors que la liste s'arrête simplement
+ * avant la lettre E.
+ *
+ * On garde donc les candidats de la même famille — même première lettre que le
+ * modèle cherché ou que la finition — parce que ce sont les seuls qui
+ * renseignent : voir « E320, E350, E550 » en face d'une E280 explique
+ * l'échec d'un coup d'œil.
+ */
+export function candidatsProches(candidates, wanted, hint, max = 12) {
+  const liste = (candidates || []).filter(Boolean);
+  const initiale = (v) => (tokens(v)[0] || "")[0] || "";
+  const cherchees = [...new Set([initiale(wanted), initiale(hint)].filter(Boolean))];
+  const proches = cherchees.length ? liste.filter((c) => cherchees.includes(initiale(c))) : [];
+  const retenus = proches.length ? proches : liste;
+  return {
+    liste: retenus.slice(0, max),
+    tronque: retenus.length > max,
+    memeFamille: proches.length > 0,
+    total: liste.length,
+  };
+}
+
+/** Rend `candidatsProches` en une phrase lisible dans un message d'erreur. */
+export function decrireCandidats(candidates, wanted, hint, max = 12) {
+  const { liste, tronque, memeFamille, total } = candidatsProches(candidates, wanted, hint, max);
+  if (total === 0) return "Leur catalogue ne renvoie aucun libellé.";
+  const enumeration = `${liste.join(", ")}${tronque ? "…" : ""}`;
+  return memeFamille
+    ? `De la même famille chez eux : ${enumeration} (sur ${total} au total) — aucune ne correspond, c'est donc une autre motorisation ou un autre marché.`
+    : `Rien de la même famille. Ils listent : ${enumeration} (sur ${total} au total).`;
+}
