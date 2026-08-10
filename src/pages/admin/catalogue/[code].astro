@@ -218,6 +218,48 @@ if (item) {
       return `${defaut} — HTTP ${res.status}${extrait ? ` : ${extrait}` : ""}`;
     }
 
+    /**
+     * Ré-encode la photo dans le navigateur avant de l'envoyer.
+     *
+     * La plateforme refusait certains fichiers par un 403 émis avant même que
+     * la requête n'atteigne la fonction — donc avant tout code à nous. Le refus
+     * était reproductible sur un fichier précis et absent sur d'autres : c'est
+     * la signature d'un pare-feu qui inspecte le corps de la requête et tombe,
+     * dans les octets compressés d'une image, sur une séquence qu'il prend pour
+     * une attaque. Un faux positif classique sur les envois de fichiers, et
+     * impossible à contourner en changeant le nom : on l'a essayé.
+     *
+     * Passer l'image par un canevas la recompresse intégralement : les octets
+     * envoyés n'ont plus rien de commun avec ceux du fichier d'origine, et la
+     * séquence fautive disparaît avec eux.
+     *
+     * Deux bénéfices en prime, indépendants de la panne : le poids retombe
+     * largement sous le plafond de 4,5 Mo imposé au corps d'une requête, et
+     * toutes les photos du catalogue arrivent au même format et à la même
+     * définition, au lieu de suivre les caprices de l'export.
+     *
+     * WebP plutôt que JPEG pour garder la transparence d'une éventuelle photo
+     * détourée. En cas d'échec — format exotique, canevas indisponible — on
+     * renvoie le fichier tel quel plutôt que de bloquer l'envoi.
+     */
+    async function preparerPhoto(file, coteMax = 1600, qualite = 0.92) {
+      try {
+        const bitmap = await createImageBitmap(file);
+        const k = Math.min(1, coteMax / Math.max(bitmap.width, bitmap.height));
+        const w = Math.max(1, Math.round(bitmap.width * k));
+        const h = Math.max(1, Math.round(bitmap.height * k));
+        const canevas = document.createElement("canvas");
+        canevas.width = w;
+        canevas.height = h;
+        canevas.getContext("2d").drawImage(bitmap, 0, 0, w, h);
+        bitmap.close?.();
+        const blob = await new Promise((r) => canevas.toBlob(r, "image/webp", qualite));
+        return blob && blob.size > 0 ? blob : file;
+      } catch {
+        return file;
+      }
+    }
+
     // Retrait depuis la fiche elle-même : c'est ici qu'on juge une jante, en la
     // regardant, pas dans une liste de 457 lignes.
     const retirerBtn = document.getElementById("mf-retirer-fiche");
@@ -371,32 +413,16 @@ if (item) {
       const input = uploadForm.querySelector('input[type="file"]');
       const files = input.files;
       if (!files || files.length === 0) return;
-      // La photo transite par notre fonction, et Vercel plafonne le corps d'une
-      // requête à 4,5 Mo. Au-delà, la requête est rejetée avant d'arriver
-      // jusqu'au code : aucun de nos messages ne peut alors s'afficher, d'où
-      // l'intérêt de le dire ici, avant d'envoyer quoi que ce soit.
-      const LIMITE = 4.4 * 1024 * 1024;
-      const trop = [...files].filter((f) => f.size > LIMITE);
-      if (trop.length) {
-        uploadStatus.textContent =
-          `Trop lourd : ${trop.map((f) => `${f.name} (${(f.size / 1048576).toFixed(1)} Mo)`).join(", ")}. ` +
-          `La limite est de 4,4 Mo par photo. Réexporte en JPEG ou en WebP — une photo de catalogue n'a pas besoin de plus.`;
-        return;
-      }
-      uploadStatus.textContent = `Upload de ${files.length} photo(s)...`;
+      uploadStatus.textContent = `Préparation de ${files.length} photo(s)...`;
       try {
         for (const [i, file] of [...files].entries()) {
-          uploadStatus.textContent = `Upload ${i + 1}/${files.length} — ${file.name}...`;
-          // Le nom d'origine ne sert à rien : le serveur n'en garde que
-          // l'extension, et le chemin de stockage est fabriqué à partir de la
-          // référence. Or ces noms viennent d'un générateur d'images et
-          // ressemblent à des phrases — cent caractères, espaces, parenthèses,
-          // accents remplacés. Ils voyagent dans l'en-tête de la pièce jointe,
-          // là où un pare-feu regarde. On envoie donc un nom court et neutre.
-          const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 5);
+          uploadStatus.textContent = `Photo ${i + 1}/${files.length} — préparation...`;
+          const prete = await preparerPhoto(file);
+          uploadStatus.textContent =
+            `Photo ${i + 1}/${files.length} — envoi (${(prete.size / 1024).toFixed(0)} Ko)...`;
           const fd = new FormData();
           fd.append("code", code);
-          fd.append("file", file, `${code.toLowerCase()}-${Date.now()}-${i + 1}.${ext || "jpg"}`);
+          fd.append("file", prete, `${code.toLowerCase()}-${Date.now()}-${i + 1}.webp`);
           const res = await fetch("/api/admin/photos/upload", { method: "POST", body: fd });
           if (!res.ok) throw new Error(await messageErreur(res, `Envoi de ${file.name} refusé`));
         }
