@@ -197,6 +197,27 @@ if (item) {
     precedente: voisines.precedente?.code || null,
     suivante: voisines.suivante?.code || null,
   }}>
+    /**
+     * Message d'erreur d'une réponse, quelle que soit sa forme.
+     *
+     * Toutes nos routes répondent en JSON, mais toutes les réponses ne viennent
+     * pas de nos routes : une requête refusée par la plateforme, avant même
+     * d'atteindre la fonction, renvoie un corps en texte brut. `res.json()`
+     * échouait dessus, et son erreur d'analyse — « Unexpected token 'F' » —
+     * remplaçait le seul renseignement utile, à savoir que le serveur avait
+     * répondu 403 Forbidden. On lit donc en texte, on tente le JSON ensuite, et
+     * à défaut on montre le code HTTP et le début du corps.
+     */
+    async function messageErreur(res, defaut) {
+      const texte = await res.text().catch(() => "");
+      try {
+        const j = JSON.parse(texte);
+        if (j && j.error) return j.error;
+      } catch {}
+      const extrait = texte.trim().replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").slice(0, 140);
+      return `${defaut} — HTTP ${res.status}${extrait ? ` : ${extrait}` : ""}`;
+    }
+
     // Retrait depuis la fiche elle-même : c'est ici qu'on juge une jante, en la
     // regardant, pas dans une liste de 457 lignes.
     const retirerBtn = document.getElementById("mf-retirer-fiche");
@@ -273,7 +294,7 @@ if (item) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ code, images }),
         });
-        if (!res.ok) throw new Error((await res.json()).error || "Erreur");
+        if (!res.ok) throw new Error(await messageErreur(res, "Réordonnancement refusé"));
         photosStatus.textContent = "Enregistré.";
       } catch (err) {
         photosStatus.textContent = `Erreur : ${err.message}`;
@@ -317,7 +338,7 @@ if (item) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ code, src }),
           });
-          if (!res.ok) throw new Error((await res.json()).error || "Erreur");
+          if (!res.ok) throw new Error(await messageErreur(res, "Suppression refusée"));
           item.remove();
           renumeroter();
           photosStatus.textContent = "Photo supprimée.";
@@ -336,7 +357,8 @@ if (item) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ code }),
         });
-        const json = await res.json();
+        const json = res.ok ? await res.json().catch(() => ({})) : null;
+        if (!json) throw new Error(await messageErreur(res, "Restauration refusée"));
         if (!res.ok) throw new Error(json.error || "Échec.");
         window.location.reload();
       } catch (err) {
@@ -349,14 +371,27 @@ if (item) {
       const input = uploadForm.querySelector('input[type="file"]');
       const files = input.files;
       if (!files || files.length === 0) return;
+      // La photo transite par notre fonction, et Vercel plafonne le corps d'une
+      // requête à 4,5 Mo. Au-delà, la requête est rejetée avant d'arriver
+      // jusqu'au code : aucun de nos messages ne peut alors s'afficher, d'où
+      // l'intérêt de le dire ici, avant d'envoyer quoi que ce soit.
+      const LIMITE = 4.4 * 1024 * 1024;
+      const trop = [...files].filter((f) => f.size > LIMITE);
+      if (trop.length) {
+        uploadStatus.textContent =
+          `Trop lourd : ${trop.map((f) => `${f.name} (${(f.size / 1048576).toFixed(1)} Mo)`).join(", ")}. ` +
+          `La limite est de 4,4 Mo par photo. Réexporte en JPEG ou en WebP — une photo de catalogue n'a pas besoin de plus.`;
+        return;
+      }
       uploadStatus.textContent = `Upload de ${files.length} photo(s)...`;
       try {
-        for (const file of files) {
+        for (const [i, file] of [...files].entries()) {
+          uploadStatus.textContent = `Upload ${i + 1}/${files.length} — ${file.name}...`;
           const fd = new FormData();
           fd.append("code", code);
           fd.append("file", file);
           const res = await fetch("/api/admin/photos/upload", { method: "POST", body: fd });
-          if (!res.ok) throw new Error((await res.json()).error || "Erreur d'upload");
+          if (!res.ok) throw new Error(await messageErreur(res, `Envoi de ${file.name} refusé`));
         }
         window.location.reload();
       } catch (err) {
