@@ -1,4 +1,11 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.kesslerwheels.fr/sitemap-index.xml
+# L'administration n'a rien à faire dans un index : ni ses pages, ni sa page de
+# connexion, ni ses routes d'API. Le plan du site les excluait déjà, mais un
+# robot ne s'en tient pas au plan — il suit aussi les liens.
+Disallow: /admin/
+Disallow: /api/
+Disallow: /commande/
+
+Sitemap: https://www.kesslerwheels.fr/sitemap.xml
